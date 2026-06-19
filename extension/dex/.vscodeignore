@@ -2,5 +2,6 @@
 src/**
 tsconfig.json
 .gitignore
+README.dev.md
 node_modules/**
 **/*.map

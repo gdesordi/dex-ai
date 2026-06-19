@@ -1,0 +1,10 @@
+{
+  "extension.displayName": "Dex",
+  "extension.description": "Dex extension for Visual Studio Code.",
+  "command.category": "Dex",
+  "command.downloadSkills.title": "Download skills",
+  "command.openSkillsFolder.title": "Open skills folder",
+  "command.addSkillsToWorkspace.title": "Add Skills to Workspace",
+  "command.configureSkills.title": "Configure skills",
+  "command.checkSkillsUpdates.title": "Check for skills updates"
+}

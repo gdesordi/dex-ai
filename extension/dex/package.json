@@ -1,7 +1,7 @@
 {
   "name": "dex",
-  "displayName": "Dex",
-  "description": "Extensão Dex para o Visual Studio Code.",
+  "displayName": "%extension.displayName%",
+  "description": "%extension.description%",
   "version": "0.0.1",
   "publisher": "dex-ai",
   "icon": "media/dex-icon.svg",
@@ -11,14 +11,36 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "dex.open",
-        "title": "Abrir",
-        "category": "Dex"
+        "command": "dex.downloadSkills",
+        "title": "%command.downloadSkills.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "dex.openSkillsFolder",
+        "title": "%command.openSkillsFolder.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "dex.addSkillsToWorkspace",
+        "title": "%command.addSkillsToWorkspace.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "dex.configureSkills",
+        "title": "%command.configureSkills.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "dex.checkSkillsUpdates",
+        "title": "%command.checkSkillsUpdates.title%",
+        "category": "%command.category%"
       }
     ]
   },
