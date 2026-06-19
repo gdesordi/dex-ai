@@ -4,6 +4,7 @@
   "description": "Extensão Dex para o Visual Studio Code.",
   "version": "0.0.1",
   "publisher": "dex-ai",
+  "icon": "media/dex-icon.svg",
   "engines": {
     "vscode": "^1.95.0"
   },

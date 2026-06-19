@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">Dex</title>
+  <desc id="description">Um raio dentro de um decágono.</desc>
+  <defs>
+    <linearGradient id="face" x1="24" y1="16" x2="104" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#172554"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="80" y1="27" x2="48" y2="103" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#67e8f9"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+
+  <path
+    d="M64 8 96.9 18.7 117.2 46.7 117.2 81.3 96.9 109.3 64 120 31.1 109.3 10.8 81.3 10.8 46.7 31.1 18.7Z"
+    fill="url(#face)"
+    stroke="#22d3ee"
+    stroke-width="6"
+    stroke-linejoin="round"
+  />
+
+  <path
+    d="M72.5 25 39 70.5h21L53.5 103 89 57.5H67.5Z"
+    fill="url(#bolt)"
+    stroke="#ecfeff"
+    stroke-width="3"
+    stroke-linejoin="round"
+  />
+</svg>
