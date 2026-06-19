@@ -12,6 +12,18 @@ recente deste changelog.
 
 Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
 
+## [1.1.0] - 2026-06-19
+
+### Adicionado
+
+- `spec-plan`: criação de planos de implementação divididos em fases a partir
+  de especificações consolidadas.
+
+### Modificado
+
+- Skills `spec-*` passam a criar `specs/readme.md` a partir do template
+  distribuído quando a pasta de especificações ainda não possuir esse arquivo.
+
 ## [1.0.0] - 2026-06-19
 
 ### Adicionado

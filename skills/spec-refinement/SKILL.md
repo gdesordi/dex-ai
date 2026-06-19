@@ -38,12 +38,16 @@ Antes de escrever:
 
 1. Ler o `AGENTS.md` aplicável e todos os arquivos diretamente indicados por
    ele.
-2. Ler `specs/README.md` quando existir.
-3. Ler o briefing inteiro.
-4. Inspecionar `specs/` para preservar convenções e refinamentos existentes.
-5. Localizar o código, manifests, traduções, testes e documentação relacionados
+2. Criar `specs/` quando ainda não existir.
+3. Se `specs/readme.md` não existir, copiar integralmente o arquivo
+   `assets/specs-readme.md` desta skill para esse caminho.
+4. Preservar `specs/readme.md` sem alterações quando ele já existir.
+5. Ler `specs/readme.md` antes de continuar.
+6. Ler o briefing inteiro.
+7. Inspecionar `specs/` para preservar convenções e refinamentos existentes.
+8. Localizar o código, manifests, traduções, testes e documentação relacionados
    à feature.
-6. Identificar comportamento atual, restrições técnicas e padrões reutilizáveis.
+9. Identificar comportamento atual, restrições técnicas e padrões reutilizáveis.
 
 Usar `rg` e `rg --files` para descoberta. Não transformar detalhes incidentais
 da implementação atual em requisitos de produto sem justificativa.

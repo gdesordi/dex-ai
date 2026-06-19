@@ -2,7 +2,7 @@
   "name": "dex",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "sordi",
   "license": "SEE LICENSE IN license.MD",
   "repository": {
@@ -53,7 +53,9 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "check": "tsc --noEmit -p ./"
+    "check": "tsc --noEmit -p ./",
+    "package": "vsce package",
+    "publish": "vsce publish"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

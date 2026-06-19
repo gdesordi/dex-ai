@@ -50,11 +50,15 @@ Antes de atualizar:
 
 1. Ler o `AGENTS.md` aplicável e todos os arquivos diretamente indicados por
    ele.
-2. Ler `specs/README.md` quando existir.
-3. Ler integralmente briefing, questionário e especificação da feature.
-4. Ler a fonte da mudança indicada pelo usuário.
-5. Inspecionar código, manifests, traduções, testes e documentação relacionados.
-6. Consultar o histórico ou diff relevante quando ele ajudar a distinguir uma
+2. Criar `specs/` quando ainda não existir.
+3. Se `specs/readme.md` não existir, copiar integralmente o arquivo
+   `assets/specs-readme.md` desta skill para esse caminho.
+4. Preservar `specs/readme.md` sem alterações quando ele já existir.
+5. Ler `specs/readme.md` antes de continuar.
+6. Ler integralmente briefing, questionário e especificação da feature.
+7. Ler a fonte da mudança indicada pelo usuário.
+8. Inspecionar código, manifests, traduções, testes e documentação relacionados.
+9. Consultar o histórico ou diff relevante quando ele ajudar a distinguir uma
    mudança intencional de um desvio acidental.
 
 Usar `rg` e `rg --files` para descoberta. Não assumir que o código é a fonte de

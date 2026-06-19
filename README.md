@@ -47,6 +47,7 @@ As skills ficam em subdiretórios de `skills/`. Cada uma possui um arquivo
 
 - `node-version-bump`: atualiza versões SemVer em projetos Node.js;
 - `spec-create`: inicia a documentação de uma feature;
+- `spec-plan`: divide a implementação de uma feature especificada em fases;
 - `spec-refinement`: transforma briefings em especificações implementáveis;
 - `spec-update`: mantém especificações existentes sincronizadas.
 
