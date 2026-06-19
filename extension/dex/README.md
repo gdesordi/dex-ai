@@ -33,8 +33,3 @@ Brasil.
 A extensão verifica novas versões automaticamente uma vez ao dia. A verificação
 é silenciosa quando o catálogo já está atualizado e mostra as opções de
 atualização somente quando uma versão mais recente estiver disponível.
-
-## Atualizações
-
-Consulte o [CHANGELOG.md](CHANGELOG.md) para conhecer as mudanças de cada
-versão.
