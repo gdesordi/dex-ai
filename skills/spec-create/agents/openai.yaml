@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Create"
+  short_description: "Criar briefing inicial de uma nova feature"
+  default_prompt: "Use $spec-create para solicitar o nome e o briefing de uma feature e criar sua estrutura inicial em specs/."
