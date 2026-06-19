@@ -16,6 +16,9 @@ download.
 
 - `Dex: Configurar skills`: baixa ou atualiza as skills e as adiciona ao
   workspace. Este é o comando recomendado para a configuração completa.
+- `Dex: Verificar atualizações das skills`: compara a versão local com a versão
+  publicada, permite consultar o changelog e oferece a atualização das skills e
+  do workspace.
 - `Dex: Baixar skills`: atualiza a cópia de skills armazenada localmente pela
   extensão.
 - `Dex: Adicionar Skills ao Workspace`: copia as skills já baixadas para
@@ -26,6 +29,10 @@ download.
 Em workspaces com várias raízes, a extensão solicita qual pasta deve receber as
 skills. Os comandos acompanham o idioma do VS Code em inglês ou português do
 Brasil.
+
+A extensão verifica novas versões automaticamente uma vez ao dia. A verificação
+é silenciosa quando o catálogo já está atualizado e mostra as opções de
+atualização somente quando uma versão mais recente estiver disponível.
 
 ## Atualizações
 

@@ -7,6 +7,16 @@ Semântico.
 
 ## [Não publicado]
 
+### Adicionado
+
+- Verificação de atualizações do catálogo por meio do `skillsVersion` em
+  `dex.json`.
+- Ações para visualizar o changelog, atualizar as skills ou ignorar uma nova
+  versão.
+- Confirmação opcional para sincronizar o workspace após uma atualização.
+- Verificação automática diária de novas versões, silenciosa quando o catálogo
+  local já está atualizado.
+
 ### Removido
 
 - Comando de diagnóstico `Dex: Abrir`.

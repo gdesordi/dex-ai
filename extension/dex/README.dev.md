@@ -48,6 +48,11 @@ O comando de download grava os arquivos em
 `context.globalStorageUri/skills`. A cópia para o workspace é feita de forma
 recursiva em `.agents/skills`, preservando os demais arquivos do workspace.
 
+A última verificação automática de atualização é persistida em
+`context.globalState` pela chave `dex.skills.lastUpdateCheckAt`. A extensão é
+ativada em `onStartupFinished` e um timer avalia a cada hora se o intervalo de
+24 horas já foi atingido.
+
 ## Localização
 
 Textos do manifesto usam chaves no formato `%chave%`. Ao adicionar ou alterar

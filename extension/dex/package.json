@@ -11,7 +11,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -33,6 +35,11 @@
       {
         "command": "dex.configureSkills",
         "title": "%command.configureSkills.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "dex.checkSkillsUpdates",
+        "title": "%command.checkSkillsUpdates.title%",
         "category": "%command.category%"
       }
     ]
