@@ -3,8 +3,13 @@
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
   "version": "0.0.1",
-  "publisher": "dex-ai",
-  "icon": "media/dex-icon.svg",
+  "publisher": "sordi",
+  "license": "SEE LICENSE IN license.MD",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gdesordi/dex-ai/"
+  },
+  "icon": "media/dex-icon.png",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -53,6 +58,7 @@
   "devDependencies": {
     "@types/node": "^22.10.0",
     "@types/vscode": "^1.95.0",
+    "@vscode/vsce": "^3.9.2",
     "typescript": "^5.7.2"
   }
 }
