@@ -1,0 +1,35 @@
+{
+  "name": "dex",
+  "displayName": "Dex",
+  "description": "Extensão Dex para o Visual Studio Code.",
+  "version": "0.0.1",
+  "publisher": "dex-ai",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "dex.open",
+        "title": "Abrir",
+        "category": "Dex"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "check": "tsc --noEmit -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.95.0",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build: dex",
+      "type": "npm",
+      "script": "compile",
+      "path": "extension/dex",
+      "problemMatcher": "$tsc",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "silent"
+      }
+    }
+  ]
+}
