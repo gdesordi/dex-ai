@@ -12,6 +12,36 @@ recente deste changelog.
 
 Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
 
+## [2.0.0] - 2026-06-20
+
+### Adicionado
+
+- `spec-manage`: refinamento, consolidação inicial e atualização posterior de
+  especificações em um único fluxo orientado pelo estado dos artefatos.
+
+### Modificado
+
+- `spec-create` e `spec-plan` passam a encaminhar refinamentos e mudanças de
+  especificação para `spec-manage`.
+- Alterações em uma especificação com plano existente passam a avisar que o
+  plano pode precisar de reconciliação por `spec-plan`.
+
+### Removido
+
+- `spec-refinement` e `spec-update`, substituídas por `spec-manage`.
+
+## [1.1.0] - 2026-06-19
+
+### Adicionado
+
+- `spec-plan`: criação de planos de implementação divididos em fases a partir
+  de especificações consolidadas.
+
+### Modificado
+
+- Skills `spec-*` passam a criar `specs/readme.md` a partir do template
+  distribuído quando a pasta de especificações ainda não possuir esse arquivo.
+
 ## [1.0.0] - 2026-06-19
 
 ### Adicionado

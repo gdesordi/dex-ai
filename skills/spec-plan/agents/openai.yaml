@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Plan"
+  short_description: "Planejar implementação de uma feature em fases"
+  default_prompt: "Use $spec-plan para criar um plano de implementação dividido em fases a partir da especificação consolidada de uma feature."
