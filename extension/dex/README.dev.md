@@ -31,6 +31,9 @@ local dessa pasta.
 - `npm run watch`: recompila automaticamente durante o desenvolvimento.
 - `npm run check`: valida os tipos sem gerar arquivos.
 - `npm run vscode:prepublish`: prepara a extensão para empacotamento.
+- `npm run package`: compila e gera o arquivo `.vsix` da versão atual.
+- `npm run publish`: publica a versão atual no Visual Studio Marketplace; exige
+  autenticação prévia com `vsce login <publisher>` ou a variável `VSCE_PAT`.
 
 ## Estrutura
 

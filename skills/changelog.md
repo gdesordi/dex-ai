@@ -12,7 +12,7 @@ recente deste changelog.
 
 Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
 
-## [2.0.0] - 2026-06-20
+## [1.2.0] - 2026-06-20
 
 ### Adicionado
 

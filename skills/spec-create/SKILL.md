@@ -71,9 +71,13 @@ original no conteúdo quando ele for usado como título pelo próprio usuário.
 Antes de criar arquivos:
 
 1. Ler o `AGENTS.md` aplicável e os arquivos diretamente indicados por ele.
-2. Ler `specs/README.md` quando existir.
-3. Inspecionar `specs/` para identificar colisões e convenções existentes.
-4. Verificar se `specs/<feature>/` já existe.
+2. Criar `specs/` quando ainda não existir.
+3. Se `specs/readme.md` não existir, copiar integralmente o arquivo
+   `assets/specs-readme.md` desta skill para esse caminho.
+4. Preservar `specs/readme.md` sem alterações quando ele já existir.
+5. Ler `specs/readme.md` antes de continuar.
+6. Inspecionar `specs/` para identificar colisões e convenções existentes.
+7. Verificar se `specs/<feature>/` já existe.
 
 Se a feature já existir, não sobrescrever arquivos. Informar os caminhos
 encontrados e perguntar se o usuário deseja atualizar o briefing existente ou

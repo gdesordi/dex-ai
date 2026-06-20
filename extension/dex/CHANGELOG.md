@@ -9,6 +9,12 @@ Semântico.
 
 ### Adicionado
 
+- Scripts npm para empacotar e publicar a extensão com `vsce`.
+
+## [1.0.0] - 2026-06-19
+
+### Adicionado
+
 - Verificação de atualizações do catálogo por meio do `skillsVersion` em
   `dex.json`.
 - Ações para visualizar o changelog, atualizar as skills ou ignorar uma nova
