@@ -1,13 +1,13 @@
 ---
 name: spec-create
-description: Cria a estrutura inicial de uma nova feature em `specs/nome-da-feature/`, solicitando primeiro o nome da feature e depois o briefing, que é preservado no arquivo de briefing correspondente. Usar quando Codex precisar registrar uma nova ideia, demanda ou feature antes do refinamento, iniciar uma especificação a partir de texto fornecido pelo usuário ou preparar os artefatos que serão posteriormente processados pela skill spec-refinement.
+description: Cria a estrutura inicial de uma nova feature em `specs/nome-da-feature/`, solicitando primeiro o nome da feature e depois o briefing, que é preservado no arquivo de briefing correspondente. Usar quando Codex precisar registrar uma nova ideia, demanda ou feature antes do refinamento, iniciar uma especificação a partir de texto fornecido pelo usuário ou preparar os artefatos que serão posteriormente processados pela skill spec-manage.
 ---
 
 # Spec Create
 
 Iniciar uma nova feature coletando seu nome e briefing em etapas separadas.
 Produzir os artefatos em português do Brasil e seguir a estrutura consumida por
-`spec-refinement`.
+`spec-manage`.
 
 ## Fluxo obrigatório
 
@@ -99,7 +99,7 @@ Não criar antecipadamente:
 - `<feature>.spec.md`.
 
 Esses arquivos pertencem, respectivamente, às etapas de questionário e
-consolidação da skill `spec-refinement`.
+consolidação da skill `spec-manage`.
 
 ## Gravar o briefing
 
@@ -130,6 +130,6 @@ Depois de criar o briefing:
 2. verificar se o conteúdo não ficou vazio;
 3. executar `git diff --check` para detectar problemas básicos de formatação;
 4. informar ao usuário o arquivo criado;
-5. sugerir `spec-refinement` como próximo passo, sem executá-la automaticamente.
+5. sugerir `spec-manage` como próximo passo, sem executá-la automaticamente.
 
 Não executar testes de código para essa mudança exclusivamente documental.

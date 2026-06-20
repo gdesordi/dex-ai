@@ -1,4 +1,0 @@
-interface:
-  display_name: "Spec Update"
-  short_description: "Manter especificações consolidadas sincronizadas"
-  default_prompt: "Use $spec-update para atualizar uma especificação consolidada com uma mudança de requisito ou comportamento já aprovada."

@@ -1,6 +1,6 @@
 ---
 name: node-version-bump
-description: Executa bumps SemVer major, minor ou patch em projetos Node.js, incluindo pacotes únicos e monorepos. Use quando o usuário pedir bump, pump ou incremento de versão e for necessário descobrir a política do repositório, atualizar manifests e dependências internas, regenerar o lockfile, manter changelog e documentação de release consistentes e validar a alteração sem criar commit, tag, publicação ou release implicitamente.
+description: Executa bumps SemVer major, minor ou patch em projetos Node.js, incluindo pacotes únicos e monorepos. Use quando o usuário pedir bump, pump ou incremento de versão e for necessário descobrir a política do repositório, atualizar manifests e dependências internas, regenerar o lockfile, promover e resumir alterações de `[Não publicado]` no changelog, manter documentação de release consistente e validar a alteração sem criar commit, tag, publicação ou release implicitamente.
 ---
 
 # Node Version Bump
@@ -78,13 +78,41 @@ Usar a ferramenta de edição apropriada e preservar estilo, ordenação e forma
 Seguir a convenção existente:
 
 - Se o projeto usa Changesets ou ferramenta equivalente, criar ou atualizar apenas o artefato esperado pelo fluxo configurado.
-- Se há changelog obrigatório, mover ou registrar conteúdo já conhecido conforme o formato existente e usar a data local quando a convenção exigir.
+- Se há changelog obrigatório com uma seção `[Não publicado]`, promover seu conteúdo para a nova versão conforme o fluxo abaixo.
+- Se há changelog obrigatório sem seção `[Não publicado]`, registrar conteúdo já conhecido conforme o formato existente e usar a data local quando a convenção exigir.
 - Se faltarem informações para uma entrada obrigatória, pedir ao usuário o conteúdo; não fabricar mudanças de produto.
 - Se a convenção permitir explicitamente uma entrada mecânica de versionamento, registrar somente essa mudança factual.
 - Atualizar documentação operacional que referencia a versão corrente, como exemplos de tag ou comandos de release, apenas quando ela realmente ficar obsoleta.
 - Preservar entradas históricas e exemplos que não representam a versão corrente.
 
 Não criar changelog ou política de release novos quando o projeto não exigir isso.
+
+#### Promover `[Não publicado]`
+
+Quando o changelog adotar uma seção `[Não publicado]` ou equivalente:
+
+1. Ler todo o conteúdo entre essa seção e a versão publicada seguinte.
+2. Usar esse conteúdo como fonte primária das notas da nova versão.
+3. Comparar as notas com o diff não commitado relacionado ao bump somente para
+   detectar afirmações sem suporte, omissões evidentes ou itens já obsoletos.
+4. Criar a seção da nova versão imediatamente abaixo de `[Não publicado]`,
+   usando a versão calculada e a data local no formato adotado pelo projeto.
+5. Mover para a nova seção todas as alterações válidas, preservando categorias
+   como `Adicionado`, `Modificado`, `Corrigido`, `Removido` e `Segurança` quando
+   forem usadas pelo projeto.
+6. Resumir as alterações em notas curtas e factuais: agrupar itens redundantes,
+   remover detalhes puramente operacionais e manter nomes, impactos e mudanças
+   incompatíveis necessários para compreender a release.
+7. Preservar itens distintos e informações relevantes; não reduzir várias
+   mudanças a uma frase genérica nem acrescentar fatos inferidos apenas do nome
+   de arquivos ou commits.
+8. Recriar `[Não publicado]` vazio no mesmo formato, mantendo o texto
+   introdutório padrão do projeto quando existir.
+
+Não promover uma seção vazia como se contivesse uma release. Se não houver notas
+confiáveis e a convenção exigir conteúdo, pedir ao usuário as informações
+faltantes. Não incorporar automaticamente toda alteração não commitada ao
+changelog: mudanças preexistentes podem estar fora do escopo do bump.
 
 ### 6. Regenerar o lockfile
 
@@ -106,9 +134,11 @@ Executar validações proporcionais ao risco e às regras do projeto:
 3. Confirmar que pacotes independentes fora do escopo permaneceram inalterados.
 4. Confirmar a consistência das dependências internas em todos os campos relevantes.
 5. Confirmar que o lockfile corresponde aos manifests e ao gerenciador correto.
-6. Confirmar que changelog, changesets e documentação obedecem à política existente.
-7. Executar scripts específicos de validação/versionamento definidos pelo repositório quando forem seguros.
-8. Executar `git diff --check` e revisar o diff completo para detectar alterações acidentais.
+6. Confirmar que `[Não publicado]` foi esvaziado, que seu conteúdo válido aparece
+   resumido na nova versão e que nenhuma entrada histórica foi alterada.
+7. Confirmar que changelog, changesets e documentação obedecem à política existente.
+8. Executar scripts específicos de validação/versionamento definidos pelo repositório quando forem seguros.
+9. Executar `git diff --check` e revisar o diff completo para detectar alterações acidentais.
 
 Não exigir uma suíte completa de testes para uma alteração puramente declarativa, salvo quando as instruções do projeto ou scripts de versionamento tornarem isso necessário.
 

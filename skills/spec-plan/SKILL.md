@@ -19,7 +19,7 @@ specs/<feature>/<feature>.spec.md
 Se a feature ainda não tiver estrutura, encaminhar para `spec-create`. Se
 existirem apenas briefing ou questionário, ou se a especificação tiver uma
 pendência material capaz de mudar a implementação, encaminhar para
-`spec-refinement` antes de planejar.
+`spec-manage` antes de planejar.
 
 Quando mais de uma feature puder corresponder ao pedido, listar as candidatas e
 solicitar a escolha antes de editar arquivos.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gerenciar especificação"
+  short_description: "Refina, consolida e atualiza especificações"
+  default_prompt: "Use $spec-manage para refinar, consolidar ou atualizar a especificação de uma feature."

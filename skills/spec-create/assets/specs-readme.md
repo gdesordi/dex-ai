@@ -49,11 +49,9 @@ especificação consolidada e não substitui requisitos nem decisões de produto
 ## Fluxo
 
 1. `spec-create` solicita o nome e o briefing e cria o arquivo inicial.
-2. `spec-refinement` cria o questionário e, depois das respostas essenciais,
-   consolida a especificação.
+2. `spec-manage` cria o questionário, consolida a primeira especificação e a
+   mantém sincronizada com mudanças posteriores já aprovadas.
 3. `spec-plan` cria ou atualiza o plano de implementação dividido em fases.
-4. `spec-update` mantém a especificação sincronizada com mudanças posteriores
-   já aprovadas.
 
 ## Regras
 

@@ -47,9 +47,8 @@ As skills ficam em subdiretórios de `skills/`. Cada uma possui um arquivo
 
 - `node-version-bump`: atualiza versões SemVer em projetos Node.js;
 - `spec-create`: inicia a documentação de uma feature;
+- `spec-manage`: refina, consolida e mantém especificações funcionais;
 - `spec-plan`: divide a implementação de uma feature especificada em fases;
-- `spec-refinement`: transforma briefings em especificações implementáveis;
-- `spec-update`: mantém especificações existentes sincronizadas.
 
 Ao executar `Dex: Configurar skills`, a extensão baixa o catálogo e o copia para
 `.agents/skills` no workspace selecionado.

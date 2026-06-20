@@ -1,4 +1,0 @@
-interface:
-  display_name: "Spec Refinement"
-  short_description: "Refinar briefing em especificação implementável"
-  default_prompt: "Use $spec-refinement para transformar o briefing em um questionário de decisões ou consolidar as respostas em uma especificação final."
