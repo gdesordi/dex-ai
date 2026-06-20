@@ -12,6 +12,14 @@ recente deste changelog.
 
 Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
 
+## [1.3.0] - 2026-06-20
+
+### Modificado
+
+- `node-version-bump` passa a promover e resumir as alterações registradas em
+  `[Não publicado]` na seção da nova versão, preservando categorias e evitando
+  notas sem suporte.
+
 ## [1.2.0] - 2026-06-20
 
 ### Adicionado

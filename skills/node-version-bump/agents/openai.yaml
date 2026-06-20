@@ -1,4 +1,4 @@
 interface:
   display_name: "Node Version Bump"
   short_description: "Executar bumps SemVer em projetos Node"
-  default_prompt: "Use $node-version-bump para executar um bump major, minor ou patch e sincronizar manifests, dependências internas, lockfile e changelog."
+  default_prompt: "Use $node-version-bump para executar um bump major, minor ou patch, sincronizar os artefatos e promover as alterações de [Não publicado] no changelog."
