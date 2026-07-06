@@ -1,6 +1,6 @@
 ---
 name: node-version-bump
-description: Executa bumps SemVer major, minor ou patch em projetos Node.js, incluindo pacotes únicos e monorepos. Use quando o usuário pedir bump, pump ou incremento de versão e for necessário descobrir a política do repositório, atualizar manifests e dependências internas, regenerar o lockfile, promover e resumir alterações de `[Não publicado]` no changelog, manter documentação de release consistente e validar a alteração sem criar commit, tag, publicação ou release implicitamente.
+description: Executa bumps SemVer major, minor ou patch em projetos Node.js, incluindo pacotes únicos e monorepos. Use quando o usuário pedir bump, pump ou incremento de versão e for necessário descobrir a política do repositório, identificar manifests usados por workflows de release/tag, atualizar manifests e dependências internas, regenerar o lockfile, promover e resumir alterações de `[Não publicado]` no changelog, manter documentação de release consistente e validar a alteração sem criar commit, tag, publicação ou release implicitamente.
 ---
 
 # Node Version Bump
@@ -32,7 +32,11 @@ Antes de editar:
 3. Detectar ferramentas configuradas, como Changesets, Lerna, Nx Release, Rush ou semantic-release.
 4. Localizar workspaces pelos campos do `package.json`, por `pnpm-workspace.yaml` ou pela configuração equivalente.
 5. Localizar manifests relevantes sem percorrer `node_modules`, diretórios de build, caches ou dependências vendorizadas.
-6. Verificar changelogs, arquivos de changeset e documentação operacional de release.
+6. Inspecionar workflows e automações de release/tag, por exemplo
+   `.github/workflows/*`, scripts de CI e scripts de publicação, procurando
+   validações que leem `package.json`, comparam tags como `vX.Y.Z`, geram
+   imagens, pacotes, releases ou metadados de versão.
+7. Verificar changelogs, arquivos de changeset e documentação operacional de release.
 
 Preferir o comando de versionamento oficial do projeto quando ele for documentado, determinístico e não provocar ações externas não solicitadas. Inspecionar o diff produzido pelo comando.
 
@@ -43,6 +47,13 @@ Classificar o projeto antes de calcular versões:
 - **Pacote único:** atualizar o único pacote publicável ou o pacote raiz indicado pelas instruções.
 - **Versão fixa ou sincronizada:** atualizar todos os manifests pertencentes ao grupo quando a configuração, a documentação ou o padrão consistente do repositório confirmar esse modelo.
 - **Versões independentes:** atualizar somente os pacotes solicitados e os metadados realmente afetados.
+
+Em monorepos, tratar manifests usados por workflows de release/tag como fonte
+de verdade do escopo. Se múltiplos workflows disparam pela mesma tag e validam
+essa tag contra manifests diferentes, esses manifests pertencem ao mesmo grupo
+para aquele bump, mesmo que alguns workspaces tenham histórico de versões
+diferentes. Não atualizar todos os `package.json` cegamente; atualizar todos os
+manifests que participam da mesma tag, publicação, imagem, pacote ou release.
 
 Não assumir que todos os workspaces compartilham versão apenas porque atualmente possuem o mesmo número. Se o escopo ou o modelo permanecer ambíguo e a escolha puder alterar pacotes adicionais, perguntar ao usuário antes de editar.
 
@@ -137,8 +148,12 @@ Executar validações proporcionais ao risco e às regras do projeto:
 6. Confirmar que `[Não publicado]` foi esvaziado, que seu conteúdo válido aparece
    resumido na nova versão e que nenhuma entrada histórica foi alterada.
 7. Confirmar que changelog, changesets e documentação obedecem à política existente.
-8. Executar scripts específicos de validação/versionamento definidos pelo repositório quando forem seguros.
-9. Executar `git diff --check` e revisar o diff completo para detectar alterações acidentais.
+8. Reproduzir localmente, quando forem seguros, os validadores de tag/versionamento
+   encontrados nos workflows. Para validações simples em Node, simular a tag
+   esperada e confirmar que cada manifest lido pelo workflow aceita a nova
+   versão.
+9. Executar scripts específicos de validação/versionamento definidos pelo repositório quando forem seguros.
+10. Executar `git diff --check` e revisar o diff completo para detectar alterações acidentais.
 
 Não exigir uma suíte completa de testes para uma alteração puramente declarativa, salvo quando as instruções do projeto ou scripts de versionamento tornarem isso necessário.
 
