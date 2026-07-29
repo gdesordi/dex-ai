@@ -3,6 +3,7 @@ import { WorkspaceConfigManager } from './workspace-config';
 import { SourceService } from './source-service';
 import { SourcesTreeProvider, isSourceNode } from './sources-tree';
 import { SyncSource } from './sync-types';
+import { resolveSkillsDestination } from './environment';
 
 const skillsTreeUrl =
   'https://api.github.com/repos/gdesordi/dex-ai/git/trees/main?recursive=1';
@@ -147,7 +148,7 @@ export function activate(context: vscode.ExtensionContext): void {
       const sourcePath = await promptQuickPickValue(
         'Adicionar fonte — Pasta',
         'Digite o caminho relativo do catálogo no repositório',
-        ['skills', '.agents/skills'],
+        ['skills', 'catalog/skills'],
       );
       if (!sourcePath) return;
       const enabledChoice = await vscode.window.showQuickPick(
@@ -258,8 +259,18 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
 
-      const agentsUri = vscode.Uri.joinPath(workspaceFolder.uri, '.agents');
-      const destinationUri = vscode.Uri.joinPath(agentsUri, 'skills');
+      const target = resolveSkillsDestination(
+        vscode.env.appName,
+        vscode.env.uriScheme,
+      );
+      const environmentRootUri = vscode.Uri.joinPath(
+        workspaceFolder.uri,
+        target.rootDirectory,
+      );
+      const destinationUri = vscode.Uri.joinPath(
+        environmentRootUri,
+        target.skillsDirectory,
+      );
 
       const copiedFiles = await vscode.window.withProgress(
         {
@@ -267,7 +278,7 @@ export function activate(context: vscode.ExtensionContext): void {
           title: 'Dex: adicionando skills ao workspace',
         },
         async (progress) => {
-          await vscode.workspace.fs.createDirectory(agentsUri);
+          await vscode.workspace.fs.createDirectory(environmentRootUri);
           return copyDirectory(sourceUri, destinationUri, (relativePath) => {
             progress.report({ message: relativePath });
           });
@@ -282,7 +293,7 @@ export function activate(context: vscode.ExtensionContext): void {
       }
 
       void vscode.window.showInformationMessage(
-        `${copiedFiles} arquivo(s) de skills adicionado(s) a ${workspaceFolder.name}/.agents/skills.`,
+        `${copiedFiles} arquivo(s) de skills adicionado(s) a ${workspaceFolder.name}/${target.relativePath}.`,
       );
     },
   );

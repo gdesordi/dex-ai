@@ -4,6 +4,7 @@ import { GitHubSourceProvider } from './github-source';
 import { SourceStorage } from './source-storage';
 import { SyncSource, SourceSyncResult } from './sync-types';
 import { WorkspaceConfigManager } from './workspace-config';
+import { resolveSkillsDestination } from './environment';
 
 export class SourceService {
   private readonly provider = new GitHubSourceProvider();
@@ -92,10 +93,20 @@ export class SourceService {
       }
     }
 
-    const agents = vscode.Uri.joinPath(folder.uri, '.agents');
-    const destination = vscode.Uri.joinPath(agents, 'skills');
-    const temporary = vscode.Uri.joinPath(agents, 'skills-dex-next');
-    const backup = vscode.Uri.joinPath(agents, 'skills-dex-backup');
+    const target = resolveSkillsDestination(
+      vscode.env.appName,
+      vscode.env.uriScheme,
+    );
+    const environmentRoot = vscode.Uri.joinPath(
+      folder.uri,
+      target.rootDirectory,
+    );
+    const destination = vscode.Uri.joinPath(
+      environmentRoot,
+      target.skillsDirectory,
+    );
+    const temporary = vscode.Uri.joinPath(environmentRoot, 'skills-dex-next');
+    const backup = vscode.Uri.joinPath(environmentRoot, 'skills-dex-backup');
     await remove(temporary);
     await remove(backup);
     await vscode.workspace.fs.createDirectory(temporary);

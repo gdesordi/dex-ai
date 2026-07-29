@@ -60,7 +60,10 @@ local dessa pasta.
 
 O comando de download grava os arquivos em
 `context.globalStorageUri/skills`. A cópia para o workspace é feita de forma
-recursiva em `.agents/skills`, preservando os demais arquivos do workspace.
+recursiva em `.agents/skills` no VS Code ou `.kiro/skills` no Kiro, preservando
+os demais arquivos do workspace. A decisão fica centralizada em
+`src/environment.ts` e considera `vscode.env.appName` e
+`vscode.env.uriScheme`.
 
 A última verificação automática de atualização é persistida em
 `context.globalState` pela chave `dex.skills.lastUpdateCheckAt`. A extensão é
@@ -91,6 +94,7 @@ um comando, mantenha a mesma chave nos dois catálogos `package.nls.json` e
 1. Inicie o Extension Development Host com `F5`.
 2. Abra um workspace de teste.
 3. Execute `Dex: Configurar skills`.
-4. Confirme que `.agents/skills` contém os arquivos baixados.
+4. Confirme que `.agents/skills` no VS Code ou `.kiro/skills` no Kiro contém os
+   arquivos baixados.
 5. Execute `Dex: Abrir pasta das skills` e confirme que o diretório correto foi
    aberto no sistema.

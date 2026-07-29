@@ -11,6 +11,8 @@ Semântico.
 
 - Botões inline para abrir o repositório e remover fontes na Tree View.
 - Botão no header da Tree View com fluxo de Quick Picks para cadastrar fontes.
+- Detecção automática do Kiro para instalar skills em `.kiro/skills`, mantendo
+  `.agents/skills` no Visual Studio Code.
 
 ### Modificado
 
