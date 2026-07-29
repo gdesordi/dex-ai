@@ -7,9 +7,21 @@ Semântico.
 
 ## [Não publicado]
 
+## [1.1.0] - 2026-07-29
+
 ### Adicionado
 
 - Scripts npm para empacotar e publicar a extensão com `vsce`.
+- Configuração versionada `.dex/sync.json`, criada com a fonte Dex padrão em
+  workspaces confiáveis.
+- Comando `Dex: Adicionar fonte Dex padrão` para restaurar a fonte sem criar
+  duplicatas ou sobrescrever conflitos.
+- Contratos e fundações para fontes públicas do GitHub, validação de catálogos e
+  armazenamento isolado por workspace.
+- Testes automatizados para configuração, catálogo e provedor GitHub.
+- Tree View no Explorer para visualizar fontes configuradas.
+- Sincronização de múltiplas fontes públicas do GitHub com detecção de colisões
+  entre nomes de skills.
 
 ## [1.0.0] - 2026-06-19
 

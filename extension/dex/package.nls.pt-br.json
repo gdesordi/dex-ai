@@ -6,5 +6,9 @@
   "command.openSkillsFolder.title": "Abrir pasta das skills",
   "command.addSkillsToWorkspace.title": "Adicionar Skills ao Workspace",
   "command.configureSkills.title": "Configurar skills",
-  "command.checkSkillsUpdates.title": "Verificar atualizações das skills"
+  "command.checkSkillsUpdates.title": "Verificar atualizações das skills",
+  "command.addDefaultSource.title": "Adicionar fonte Dex padrão",
+  "command.openSyncConfig.title": "Abrir configuração de fontes",
+  "command.openSourceRepository.title": "Abrir repositório da fonte",
+  "view.skillSources.name": "Fontes de skills Dex"
 }

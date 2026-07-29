@@ -1,4 +1,7 @@
 import * as vscode from 'vscode';
+import { WorkspaceConfigManager } from './workspace-config';
+import { SourceService } from './source-service';
+import { SourcesTreeProvider, isSourceNode } from './sources-tree';
 
 const skillsTreeUrl =
   'https://api.github.com/repos/gdesordi/dex-ai/git/trees/main?recursive=1';
@@ -28,9 +31,107 @@ let isDownloadingSkills = false;
 
 export function activate(context: vscode.ExtensionContext): void {
   const outputChannel = vscode.window.createOutputChannel('Dex');
+  const workspaceConfigManager = new WorkspaceConfigManager(outputChannel);
+  const sourceService = new SourceService(context, workspaceConfigManager);
+  const sourcesTree = new SourcesTreeProvider(
+    workspaceConfigManager,
+    sourceService.storage,
+  );
+  const sourcesView = vscode.window.createTreeView('dex.skillSources', {
+    treeDataProvider: sourcesTree,
+    showCollapseAll: true,
+  });
   const downloadSkillsCommand = vscode.commands.registerCommand(
     'dex.downloadSkills',
-    async () => runSkillsDownload(context, true),
+    async () => {
+      const folder = await selectWorkspaceFolder();
+      if (!folder) return false;
+      try {
+        const results = await sourceService.syncAll(folder);
+        sourcesTree.refresh();
+        const failures = results.filter((result) => result.status === 'error');
+        if (failures.length) {
+          void vscode.window.showWarningMessage(
+            `Sincronização concluída com ${failures.length} falha(s): ${failures.map((item) => item.sourceId).join(', ')}.`,
+          );
+        } else {
+          void vscode.window.showInformationMessage(
+            `${results.length} fonte(s) sincronizada(s) em ${folder.name}.`,
+          );
+        }
+        return failures.length === 0;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(`Não foi possível sincronizar: ${message}`);
+        return false;
+      }
+    },
+  );
+
+  const openSourceRepositoryCommand = vscode.commands.registerCommand(
+    'dex.openSourceRepository',
+    async (node: unknown) => {
+      if (isSourceNode(node)) {
+        await vscode.env.openExternal(vscode.Uri.parse(node.source.repository));
+      }
+    },
+  );
+
+  const openSyncConfigCommand = vscode.commands.registerCommand(
+    'dex.openSyncConfig',
+    async () => {
+      const folder = await selectWorkspaceFolder();
+      if (!folder) return;
+      const document = await vscode.workspace.openTextDocument(
+        vscode.Uri.joinPath(folder.uri, '.dex', 'sync.json'),
+      );
+      await vscode.window.showTextDocument(document);
+    },
+  );
+
+  const addDefaultSourceCommand = vscode.commands.registerCommand(
+    'dex.addDefaultSource',
+    async () => {
+      const workspaceFolder = await selectWorkspaceFolder();
+      if (!workspaceFolder) {
+        void vscode.window.showErrorMessage(
+          'Abra uma pasta ou workspace antes de incluir a fonte Dex.',
+        );
+        return;
+      }
+
+      try {
+        const result = await workspaceConfigManager.addDefaultSource(
+          workspaceFolder,
+        );
+        if (result.status === 'added') {
+          void vscode.window.showInformationMessage(
+            `A fonte dex-ai foi adicionada a ${workspaceFolder.name}/.dex/sync.json.`,
+          );
+          return;
+        }
+        if (result.status === 'already-configured') {
+          void vscode.window.showInformationMessage(
+            'A fonte dex-ai já está configurada.',
+          );
+          return;
+        }
+        if (result.status === 'catalog-already-configured') {
+          void vscode.window.showInformationMessage(
+            `O catálogo Dex já está configurado pela fonte “${result.sourceId}”.`,
+          );
+          return;
+        }
+        void vscode.window.showErrorMessage(
+          'O identificador dex-ai já pertence a uma fonte com outros valores.',
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(
+          `Não foi possível incluir a fonte Dex: ${message}`,
+        );
+      }
+    },
   );
 
   const openSkillsFolderCommand = vscode.commands.registerCommand(
@@ -102,14 +203,7 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
 
-      const downloaded = await vscode.commands.executeCommand<boolean>(
-        'dex.downloadSkills',
-      );
-      if (!downloaded) {
-        return;
-      }
-
-      await vscode.commands.executeCommand('dex.addSkillsToWorkspace');
+      await vscode.commands.executeCommand<boolean>('dex.downloadSkills');
     },
   );
 
@@ -117,8 +211,15 @@ export function activate(context: vscode.ExtensionContext): void {
     'dex.checkSkillsUpdates',
     async () => {
       try {
-        await checkSkillsUpdates(context, true);
+        const folder = await selectWorkspaceFolder();
+        if (!folder) return;
+        const updates = await sourceService.checkUpdates(folder);
         await context.globalState.update(lastUpdateCheckKey, Date.now());
+        void vscode.window.showInformationMessage(
+          updates.length
+            ? `Atualizações disponíveis para: ${updates.join(', ')}.`
+            : 'Todas as fontes de skills estão atualizadas.',
+        );
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         void vscode.window.showErrorMessage(
@@ -141,6 +242,12 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     outputChannel,
+    workspaceConfigManager,
+    sourcesTree,
+    sourcesView,
+    openSourceRepositoryCommand,
+    openSyncConfigCommand,
+    addDefaultSourceCommand,
     downloadSkillsCommand,
     openSkillsFolderCommand,
     addSkillsToWorkspaceCommand,
@@ -149,6 +256,12 @@ export function activate(context: vscode.ExtensionContext): void {
     updateCheckTimerDisposable,
   );
 
+  void workspaceConfigManager.start().catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error);
+    outputChannel.appendLine(
+      `[${new Date().toISOString()}] Falha ao inicializar configurações: ${message}`,
+    );
+  });
   periodicUpdateCheck();
 }
 

@@ -2,7 +2,7 @@
   "name": "dex",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "sordi",
   "license": "SEE LICENSE IN license.MD",
   "repository": {
@@ -46,14 +46,52 @@
         "command": "dex.checkSkillsUpdates",
         "title": "%command.checkSkillsUpdates.title%",
         "category": "%command.category%"
+      },
+      {
+        "command": "dex.addDefaultSource",
+        "title": "%command.addDefaultSource.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "dex.openSyncConfig",
+        "title": "%command.openSyncConfig.title%",
+        "category": "%command.category%"
+      },
+      {
+        "command": "dex.openSourceRepository",
+        "title": "%command.openSourceRepository.title%",
+        "category": "%command.category%"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "dex.skillSources",
+          "name": "%view.skillSources.name%"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "dex.openSyncConfig",
+          "when": "view == dex.skillSources",
+          "group": "navigation"
+        },
+        {
+          "command": "dex.addDefaultSource",
+          "when": "view == dex.skillSources",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "check": "tsc --noEmit -p ./",
+    "test": "npm run compile && node --test out/test/*.test.js",
     "package": "vsce package",
     "publish": "vsce publish"
   },

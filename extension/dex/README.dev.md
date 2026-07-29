@@ -30,6 +30,7 @@ local dessa pasta.
 - `npm run compile`: compila `src` para `out` e gera source maps.
 - `npm run watch`: recompila automaticamente durante o desenvolvimento.
 - `npm run check`: valida os tipos sem gerar arquivos.
+- `npm test`: compila e executa os testes automatizados.
 - `npm run vscode:prepublish`: prepara a extensão para empacotamento.
 - `npm run package`: compila e gera o arquivo `.vsix` da versão atual.
 - `npm run publish`: publica a versão atual no Visual Studio Marketplace; exige
@@ -37,7 +38,17 @@ local dessa pasta.
 
 ## Estrutura
 
-- `src/extension.ts`: ativação, comandos, download e cópia das skills.
+- `src/extension.ts`: ativação e registro dos comandos.
+- `src/sync-types.ts`: contratos da configuração e dos estados de fontes.
+- `src/sync-config.ts`: parsing e validação de `.dex/sync.json`.
+- `src/workspace-config.ts`: inicialização e observação da configuração por
+  workspace.
+- `src/github-source.ts`: resolução e download de fontes públicas do GitHub.
+- `src/catalog-validator.ts`: validação das skills e de seus frontmatters.
+- `src/source-storage.ts`: armazenamento isolado e transacional por fonte.
+- `src/source-service.ts`: sincronização em lote e composição do workspace.
+- `src/sources-tree.ts`: provider da Tree View de fontes.
+- `src/test/`: testes executados pelo test runner nativo do Node.js.
 - `media/`: recursos visuais da extensão.
 - `package.json`: manifesto, comandos e scripts.
 - `package.nls.json`: textos padrão em inglês.
@@ -55,6 +66,11 @@ A última verificação automática de atualização é persistida em
 `context.globalState` pela chave `dex.skills.lastUpdateCheckAt`. A extensão é
 ativada em `onStartupFinished` e um timer avalia a cada hora se o intervalo de
 24 horas já foi atingido.
+
+A configuração declarativa fica em `.dex/sync.json`. A extensão cria a fonte
+`dex-ai` automaticamente quando o arquivo não existe e o workspace é confiável.
+Em Restricted Mode, mantém a configuração padrão apenas em memória até receber
+o evento `vscode.workspace.onDidGrantWorkspaceTrust`.
 
 ## Localização
 
