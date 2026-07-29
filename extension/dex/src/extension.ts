@@ -78,6 +78,26 @@ export function activate(context: vscode.ExtensionContext): void {
     },
   );
 
+  const syncSourceCommand = vscode.commands.registerCommand(
+    'dex.syncSource',
+    async (node: unknown) => {
+      if (!isSourceNode(node)) return;
+      try {
+        await sourceService.syncSource(node.folder, node.source.id);
+        sourcesTree.refresh();
+        void vscode.window.showInformationMessage(
+          `A fonte “${node.source.id}” foi sincronizada.`,
+        );
+      } catch (error) {
+        if (error instanceof vscode.CancellationError) return;
+        const message = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(
+          `Não foi possível sincronizar “${node.source.id}”: ${message}`,
+        );
+      }
+    },
+  );
+
   const removeSourceCommand = vscode.commands.registerCommand(
     'dex.removeSource',
     async (node: unknown) => {
@@ -351,6 +371,7 @@ export function activate(context: vscode.ExtensionContext): void {
     sourcesTree,
     sourcesView,
     openSourceRepositoryCommand,
+    syncSourceCommand,
     removeSourceCommand,
     openSyncConfigCommand,
     addSourceCommand,

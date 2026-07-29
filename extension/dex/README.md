@@ -47,7 +47,11 @@ item apenas o seleciona e não abre o navegador.
 
 No header da view, o botão `+` inicia um cadastro guiado com exemplos para ID,
 URL do GitHub, branch/tag/commit e pasta do catálogo. O botão com ícone de
-repositório inclui especificamente a fonte Dex padrão.
+repositório inclui especificamente a fonte Dex padrão. O botão de sincronização
+atualiza todas as fontes habilitadas.
+
+Cada item também possui um botão de sincronização, que baixa somente aquela
+fonte e recompõe o workspace usando as cópias locais das demais.
 
 ## Comandos
 

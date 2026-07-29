@@ -30,16 +30,9 @@ export class SourceService {
           for (const source of enabled) {
             progress.report({ message: source.id });
             try {
-              const catalog = await this.provider.download(source, controller.signal);
-              const validated = validateCatalog(source.id, catalog.files);
-              const metadata = await this.storage.install(
-                folder,
-                source,
-                catalog,
-                validated.skills.length,
-                validated.skillsVersion,
+              results.push(
+                await this.downloadAndInstall(folder, source, controller.signal),
               );
-              results.push({ sourceId: source.id, status: 'synced', metadata });
             } catch (error) {
               if (controller.signal.aborted) {
                 throw new vscode.CancellationError();
@@ -58,6 +51,45 @@ export class SourceService {
     );
     await this.compose(folder, enabled);
     return results;
+  }
+
+  async syncSource(
+    folder: vscode.WorkspaceFolder,
+    sourceId: string,
+  ): Promise<SourceSyncResult> {
+    const { config } = await this.configs.read(folder);
+    const source = config.sources.find((item) => item.id === sourceId);
+    if (!source) {
+      throw new Error(`a fonte “${sourceId}” não existe na configuração`);
+    }
+
+    const result = await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: `Dex: sincronizando ${source.id}`,
+        cancellable: true,
+      },
+      async (_progress, token) => {
+        const controller = new AbortController();
+        const cancellation = token.onCancellationRequested(() => controller.abort());
+        try {
+          return await this.downloadAndInstall(folder, source, controller.signal);
+        } catch (error) {
+          if (controller.signal.aborted) {
+            throw new vscode.CancellationError();
+          }
+          throw error;
+        } finally {
+          cancellation.dispose();
+        }
+      },
+    );
+
+    await this.compose(
+      folder,
+      config.sources.filter((item) => item.enabled),
+    );
+    return result;
   }
 
   async checkUpdates(folder: vscode.WorkspaceFolder): Promise<string[]> {
@@ -126,6 +158,23 @@ export class SourceService {
       await remove(temporary);
       throw error;
     }
+  }
+
+  private async downloadAndInstall(
+    folder: vscode.WorkspaceFolder,
+    source: SyncSource,
+    signal: AbortSignal,
+  ): Promise<SourceSyncResult> {
+    const catalog = await this.provider.download(source, signal);
+    const validated = validateCatalog(source.id, catalog.files);
+    const metadata = await this.storage.install(
+      folder,
+      source,
+      catalog,
+      validated.skills.length,
+      validated.skillsVersion,
+    );
+    return { sourceId: source.id, status: 'synced', metadata };
   }
 }
 

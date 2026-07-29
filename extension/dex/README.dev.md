@@ -83,6 +83,10 @@ As ações globais são declaradas em `view/title`. `dex.addSource` usa Quick Pi
 editáveis: o texto digitado tem prioridade sobre o exemplo selecionado e a
 configuração completa é normalizada e validada antes da escrita.
 
+`dex.downloadSkills` é a sincronização global usada no header da view.
+`dex.syncSource` recebe o item como argumento, atualiza somente seu cache e
+recompõe o destino com todas as fontes habilitadas.
+
 ## Localização
 
 Textos do manifesto usam chaves no formato `%chave%`. Ao adicionar ou alterar

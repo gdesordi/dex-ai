@@ -11,6 +11,7 @@
   "command.addSource.title": "Add skill source",
   "command.openSyncConfig.title": "Open source configuration",
   "command.openSourceRepository.title": "Open source repository",
+  "command.syncSource.title": "Sync skill source",
   "command.removeSource.title": "Remove skill source",
   "view.skillSources.name": "Dex Skill Sources"
 }

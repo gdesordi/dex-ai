@@ -13,6 +13,8 @@ Semântico.
 - Botão no header da Tree View com fluxo de Quick Picks para cadastrar fontes.
 - Detecção automática do Kiro para instalar skills em `.kiro/skills`, mantendo
   `.agents/skills` no Visual Studio Code.
+- Botões de sincronização no header da Tree View e em cada fonte, permitindo
+  atualizar todas as fontes ou somente a fonte selecionada.
 
 ### Modificado
 

@@ -11,6 +11,7 @@
   "command.addSource.title": "Adicionar fonte de skills",
   "command.openSyncConfig.title": "Abrir configuração de fontes",
   "command.openSourceRepository.title": "Abrir repositório da fonte",
+  "command.syncSource.title": "Sincronizar fonte de skills",
   "command.removeSource.title": "Remover fonte de skills",
   "view.skillSources.name": "Fontes de skills Dex"
 }
