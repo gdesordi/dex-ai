@@ -1,7 +1,6 @@
 import {
   SyncConfig,
   SyncSource,
-  createDefaultSyncConfig,
   defaultDexSource,
   syncConfigVersion,
 } from './sync-types';
@@ -52,19 +51,6 @@ export function parseSyncConfig(contents: string): SyncConfig {
 
 export function serializeSyncConfig(config: SyncConfig): string {
   return `${JSON.stringify(config, undefined, 2)}\n`;
-}
-
-export function parseOrCreateSyncConfig(
-  contents: string | undefined,
-): SyncConfig {
-  return contents === undefined ? createDefaultSyncConfig() : parseSyncConfig(contents);
-}
-
-export function shouldInitializeSyncConfig(
-  workspaceIsTrusted: boolean,
-  configExists: boolean,
-): boolean {
-  return workspaceIsTrusted && !configExists;
 }
 
 export type AddDefaultSourceResult =

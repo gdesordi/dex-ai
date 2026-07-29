@@ -3,16 +3,10 @@ import test from 'node:test';
 import {
   SyncConfigError,
   addDefaultSource,
-  parseOrCreateSyncConfig,
   parseSyncConfig,
   serializeSyncConfig,
-  shouldInitializeSyncConfig,
 } from '../sync-config';
 import { createDefaultSyncConfig } from '../sync-types';
-
-test('cria a configuração Dex padrão quando o conteúdo está ausente', () => {
-  assert.deepEqual(parseOrCreateSyncConfig(undefined), createDefaultSyncConfig());
-});
 
 test('aplica defaults e preserva campos desconhecidos', () => {
   const config = parseSyncConfig(
@@ -83,13 +77,6 @@ test('rejeita caminhos que podem escapar ou não são POSIX relativos', () => {
   for (const path of ['/skills', '../skills', 'skills/../private', 'a//b', 'a\\b']) {
     assertInvalidSource({ path }, /campo “path”/);
   }
-});
-
-test('inicializa somente quando o workspace é confiável e o arquivo não existe', () => {
-  assert.equal(shouldInitializeSyncConfig(true, false), true);
-  assert.equal(shouldInitializeSyncConfig(true, true), false);
-  assert.equal(shouldInitializeSyncConfig(false, false), false);
-  assert.equal(shouldInitializeSyncConfig(false, true), false);
 });
 
 test('adiciona a fonte padrão preservando a configuração', () => {

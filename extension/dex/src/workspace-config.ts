@@ -4,9 +4,8 @@ import {
   addDefaultSource,
   parseSyncConfig,
   serializeSyncConfig,
-  shouldInitializeSyncConfig,
 } from './sync-config';
-import { SyncConfig, SyncSource, createDefaultSyncConfig } from './sync-types';
+import { SyncConfig, SyncSource } from './sync-types';
 
 export const syncConfigRelativePath = '.dex/sync.json';
 
@@ -28,7 +27,7 @@ export class WorkspaceConfigManager implements vscode.Disposable {
 
   readonly onDidChange = this.changedEmitter.event;
 
-  constructor(private readonly outputChannel: vscode.OutputChannel) {
+  constructor() {
     this.disposables.push(this.changedEmitter);
   }
 
@@ -45,18 +44,8 @@ export class WorkspaceConfigManager implements vscode.Disposable {
         for (const folder of event.added) {
           this.watch(folder);
         }
-        if (vscode.workspace.isTrusted) {
-          void this.initializeFolders(event.added);
-        }
-      }),
-      vscode.workspace.onDidGrantWorkspaceTrust(() => {
-        void this.initializeFolders(vscode.workspace.workspaceFolders ?? []);
       }),
     );
-
-    if (vscode.workspace.isTrusted) {
-      await this.initializeFolders(vscode.workspace.workspaceFolders ?? []);
-    }
   }
 
   async read(folder: vscode.WorkspaceFolder): Promise<WorkspaceSyncConfig> {
@@ -69,8 +58,12 @@ export class WorkspaceConfigManager implements vscode.Disposable {
         virtual: false,
       };
     } catch (error) {
-      if (isFileNotFound(error) && !vscode.workspace.isTrusted) {
-        return { config: createDefaultSyncConfig(), uri, virtual: true };
+      if (isFileNotFound(error)) {
+        return {
+          config: { version: 1, sources: [] },
+          uri,
+          virtual: true,
+        };
       }
       throw error;
     }
@@ -147,32 +140,6 @@ export class WorkspaceConfigManager implements vscode.Disposable {
     }
   }
 
-  private async initializeFolders(
-    folders: readonly vscode.WorkspaceFolder[],
-  ): Promise<void> {
-    await Promise.all(
-      folders.map(async (folder) => {
-        const uri = this.getConfigUri(folder);
-        const exists = await uriExists(uri);
-        if (!shouldInitializeSyncConfig(vscode.workspace.isTrusted, exists)) {
-          return;
-        }
-
-        try {
-          await this.write(folder, createDefaultSyncConfig());
-          this.outputChannel.appendLine(
-            `[${new Date().toISOString()}] Configuração criada em ${uri.toString()}`,
-          );
-        } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
-          this.outputChannel.appendLine(
-            `[${new Date().toISOString()}] Falha ao criar ${uri.toString()}: ${message}`,
-          );
-        }
-      }),
-    );
-  }
-
   private watch(folder: vscode.WorkspaceFolder): void {
     const key = folder.uri.toString();
     if (this.watchers.has(key)) {
@@ -197,18 +164,6 @@ export class WorkspaceConfigManager implements vscode.Disposable {
 
   private getConfigUri(folder: vscode.WorkspaceFolder): vscode.Uri {
     return vscode.Uri.joinPath(folder.uri, '.dex', 'sync.json');
-  }
-}
-
-async function uriExists(uri: vscode.Uri): Promise<boolean> {
-  try {
-    await vscode.workspace.fs.stat(uri);
-    return true;
-  } catch (error) {
-    if (isFileNotFound(error)) {
-      return false;
-    }
-    throw error;
   }
 }
 

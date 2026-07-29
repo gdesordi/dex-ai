@@ -33,7 +33,7 @@ let isDownloadingSkills = false;
 
 export function activate(context: vscode.ExtensionContext): void {
   const outputChannel = vscode.window.createOutputChannel('Dex');
-  const workspaceConfigManager = new WorkspaceConfigManager(outputChannel);
+  const workspaceConfigManager = new WorkspaceConfigManager();
   const sourceService = new SourceService(context, workspaceConfigManager);
   const sourcesTree = new SourcesTreeProvider(
     workspaceConfigManager,
@@ -387,7 +387,7 @@ export function activate(context: vscode.ExtensionContext): void {
   void workspaceConfigManager.start().catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
     outputChannel.appendLine(
-      `[${new Date().toISOString()}] Falha ao inicializar configurações: ${message}`,
+      `[${new Date().toISOString()}] Falha ao observar configurações: ${message}`,
     );
   });
   periodicUpdateCheck();

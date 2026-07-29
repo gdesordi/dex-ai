@@ -34,8 +34,7 @@ do controle de versão.
 - Armazenamento isolado por fonte e composição em `.agents/skills`.
 - Validação da configuração, dos caminhos e das skills.
 - Detecção e rejeição de colisões entre fontes.
-- Inicialização automática de novos arquivos de configuração com a fonte Dex
-  padrão.
+- Criação de `.dex/sync.json` somente por iniciativa explícita do usuário.
 - Comando para incluir ou recriar a fonte Dex padrão.
 
 ### Excluído do MVP
@@ -97,33 +96,16 @@ workspaces com múltiplas pastas, cada pasta deve possuir configuração e estad
 de sincronização independentes, e os comandos devem solicitar a pasta quando a
 ação não estiver associada a um item da Tree View.
 
-### RF-02 — Inicialização com a fonte Dex padrão
+### RF-02 — Criação explícita da configuração
 
-Na primeira ativação da extensão em cada pasta de workspace confiável que ainda
-não possua `.dex/sync.json`, a extensão deve criar `.dex/`, criar o arquivo de
-configuração e incluir automaticamente esta fonte:
+A ativação da extensão não deve criar `.dex/sync.json` nem representar uma
+fonte implícita em memória. Enquanto o arquivo estiver ausente, a Tree View deve
+mostrar a pasta do workspace sem fontes.
 
-```json
-{
-  "id": "dex-ai",
-  "repository": "https://github.com/gdesordi/dex-ai",
-  "ref": "main",
-  "path": "skills",
-  "enabled": true
-}
-```
-
-A inicialização deve ocorrer por pasta em workspaces multi-root. Ela não deve
-iniciar download ou composição automaticamente e não deve modificar um
-`.dex/sync.json` preexistente, ainda que esse arquivo não contenha a fonte Dex.
-Assim, uma fonte removida intencionalmente não deve reaparecer em ativações
-posteriores.
-
-Enquanto o workspace não for confiável, a extensão não deve escrever a
-configuração. Deve representar a fonte Dex padrão somente em memória na Tree
-View e aguardar o evento de concessão de confiança. Quando o usuário conceder
-confiança, deve realizar a inicialização automaticamente se o arquivo continuar
-ausente.
+O arquivo e o diretório `.dex/` devem ser criados somente quando o usuário
+executar uma ação que cadastre uma fonte: `dex.addSource` ou
+`dex.addDefaultSource`. A primeira ação deve iniciar uma configuração
+`version: 1` e incluir apenas a fonte escolhida pelo usuário.
 
 ### RF-03 — Leitura e atualização da configuração
 
@@ -307,14 +289,13 @@ Dex.
   desde que use identificadores distintos e não produza colisões.
 - RN-08: alterações no arquivo de configuração não devem iniciar download ou
   composição automaticamente no MVP.
-- RN-09: a criação automática da configuração deve acontecer somente quando
-  `.dex/sync.json` estiver ausente; a extensão não deve usar apenas a ausência de
-  `dex-ai` como sinal para recriá-la.
+- RN-09: ausência de `.dex/sync.json` não deve provocar escrita durante ativação,
+  concessão de confiança ou abertura de uma pasta de workspace.
 - RN-10: a definição da fonte Dex padrão deve possuir uma única representação
   interna reutilizada pela inicialização e pelo comando
   `dex.addDefaultSource`.
-- RN-11: nenhuma criação automática de `.dex/sync.json` deve ocorrer enquanto o
-  workspace estiver em Restricted Mode.
+- RN-11: ações de cadastro devem continuar exigindo um workspace confiável para
+  escrever `.dex/sync.json`.
 - RN-12: uma fonte com falha na atualização somente pode participar da
   composição por meio de sua cópia anterior se essa cópia tiver sido concluída
   e validada com sucesso.
@@ -371,9 +352,8 @@ Dex.
   qualquer arquivo remoto.
 - CA-09: em workspace com múltiplas pastas, fontes, estado e composição de uma
   pasta não interferem nas demais.
-- CA-10: na primeira ativação em uma pasta confiável sem `.dex/sync.json`, a
-  extensão cria automaticamente uma configuração `version: 1` contendo a fonte
-  Dex padrão, sem iniciar download ou composição.
+- CA-10: ativar a extensão em uma pasta sem `.dex/sync.json` não cria arquivos e
+  apresenta uma Tree View sem fontes.
 - CA-11: adicionar, ativar, desativar e remover fontes pela Tree View atualiza o
   arquivo correto e preserva campos desconhecidos.
 - CA-12: a verificação manual compara o commit remoto com o commit sincronizado
@@ -392,12 +372,11 @@ Dex.
 - CA-18: executar `dex.addDefaultSource` quando a fonte padrão ou o mesmo
   catálogo já estiver configurado não cria duplicata; um `id` conflitante não é
   sobrescrito.
-- CA-19: em workspace multi-root, a inicialização cria configurações
-  independentes nas pastas que ainda não as possuem, e o comando solicita a
-  pasta de destino quando necessário.
-- CA-20: em Restricted Mode, a fonte Dex padrão aparece em memória na Tree View,
-  nenhum arquivo é criado e a inicialização ocorre automaticamente após a
-  concessão de confiança, caso `.dex/sync.json` continue ausente.
+- CA-19: em workspace multi-root, cadastrar uma fonte cria ou altera somente a
+  configuração da pasta escolhida, e o comando solicita a pasta quando
+  necessário.
+- CA-20: conceder confiança a um workspace sem `.dex/sync.json` não cria o
+  arquivo; uma ação explícita de cadastro continua necessária.
 - CA-21: na primeira composição de uma instalação legada, somente arquivos
   idênticos aos da cópia legada são assumidos como gerenciados; arquivos
   adicionais ou modificados são preservados como não gerenciados.
@@ -433,10 +412,9 @@ Dex.
 - Falha parcial na sincronização de múltiplas fontes.
 - Preservação de arquivos não gerenciados em `.agents/skills`.
 - Isolamento entre pastas de um workspace multi-root.
-- Criação automática da configuração com a fonte Dex padrão na primeira
-  ativação, sem sincronização implícita.
-- Inicialização adiada em Restricted Mode e retomada após concessão de
-  confiança.
+- Ausência de efeitos colaterais na ativação e após concessão de confiança.
+- Criação da primeira configuração pelas ações de cadastrar fonte genérica ou
+  fonte Dex padrão.
 - Recriação manual da fonte padrão, preservação das demais fontes e tratamento
   de configuração inválida.
 - Migração da instalação legada e geração do primeiro manifesto de composição.

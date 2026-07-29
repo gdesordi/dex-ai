@@ -41,7 +41,7 @@ local dessa pasta.
 - `src/extension.ts`: ativação e registro dos comandos.
 - `src/sync-types.ts`: contratos da configuração e dos estados de fontes.
 - `src/sync-config.ts`: parsing e validação de `.dex/sync.json`.
-- `src/workspace-config.ts`: inicialização e observação da configuração por
+- `src/workspace-config.ts`: leitura, escrita e observação da configuração por
   workspace.
 - `src/github-source.ts`: resolução e download de fontes públicas do GitHub.
 - `src/catalog-validator.ts`: validação das skills e de seus frontmatters.
@@ -70,10 +70,10 @@ A última verificação automática de atualização é persistida em
 ativada em `onStartupFinished` e um timer avalia a cada hora se o intervalo de
 24 horas já foi atingido.
 
-A configuração declarativa fica em `.dex/sync.json`. A extensão cria a fonte
-`dex-ai` automaticamente quando o arquivo não existe e o workspace é confiável.
-Em Restricted Mode, mantém a configuração padrão apenas em memória até receber
-o evento `vscode.workspace.onDidGrantWorkspaceTrust`.
+A configuração declarativa fica em `.dex/sync.json`. A ativação não cria o
+arquivo nem mantém uma fonte implícita em memória. `dex.addSource` e
+`dex.addDefaultSource` são os únicos fluxos que criam a primeira configuração e
+continuam exigindo um workspace confiável para escrita.
 
 As ações inline da Tree View são declaradas em `view/item/context`. A remoção
 atualiza primeiro `.dex/sync.json` e preserva o cache por padrão; a exclusão da

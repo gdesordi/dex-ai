@@ -7,44 +7,29 @@ Semântico.
 
 ## [Não publicado]
 
+## [1.1.2] - 2026-07-29
+
 ### Adicionado
 
-- Botões inline para abrir o repositório e remover fontes na Tree View.
-- Botão no header da Tree View com fluxo de Quick Picks para cadastrar fontes.
-- Detecção automática do Kiro para instalar skills em `.kiro/skills`, mantendo
+- Sincronização de múltiplas fontes públicas do GitHub, configuradas por
+  workspace em `.dex/sync.json`, com validação de catálogos, armazenamento
+  isolado e detecção de colisões entre skills.
+- Tree View no Explorer para cadastrar fontes por Quick Picks, sincronizar todas
+  ou apenas uma fonte, abrir repositórios e remover configurações.
+- Comando para restaurar a fonte Dex padrão sem criar duplicatas nem
+  sobrescrever conflitos.
+- Detecção automática do Kiro, que instala skills em `.kiro/skills`, mantendo
   `.agents/skills` no Visual Studio Code.
-- Botões de sincronização no header da Tree View e em cada fonte, permitindo
-  atualizar todas as fontes ou somente a fonte selecionada.
+- Testes automatizados para configuração, catálogo, ambiente e provedor GitHub.
 
 ### Modificado
 
-- Ícones nos comandos de adicionar a fonte Dex e abrir a configuração.
-- Ícone de repositório para diferenciar a inclusão da fonte Dex padrão do botão
-  de adicionar uma fonte genérica.
-- O clique no item da fonte não abre mais o navegador; essa ação fica restrita
-  ao botão inline correspondente.
-- As ações de incluir a fonte Dex padrão e abrir a configuração ficam somente
-  no menu de três pontos da Tree View.
-
-### Corrigido
-
-- Exibição dos botões inline de abrir repositório e remover fonte na Tree View.
-
-## [1.1.0] - 2026-07-29
-
-### Adicionado
-
-- Scripts npm para empacotar e publicar a extensão com `vsce`.
-- Configuração versionada `.dex/sync.json`, criada com a fonte Dex padrão em
-  workspaces confiáveis.
-- Comando `Dex: Adicionar fonte Dex padrão` para restaurar a fonte sem criar
-  duplicatas ou sobrescrever conflitos.
-- Contratos e fundações para fontes públicas do GitHub, validação de catálogos e
-  armazenamento isolado por workspace.
-- Testes automatizados para configuração, catálogo e provedor GitHub.
-- Tree View no Explorer para visualizar fontes configuradas.
-- Sincronização de múltiplas fontes públicas do GitHub com detecção de colisões
-  entre nomes de skills.
+- `.dex/sync.json` passa a ser criado somente quando o usuário cadastra uma
+  fonte, sem alterações automáticas durante a ativação.
+- Ações principais ficam em botões do header e dos itens, enquanto restaurar a
+  fonte Dex e abrir a configuração ficam no menu de três pontos.
+- A abertura do repositório passa a ocorrer apenas pelo botão inline, não pelo
+  clique no item da Tree View.
 
 ## [1.0.0] - 2026-06-19
 

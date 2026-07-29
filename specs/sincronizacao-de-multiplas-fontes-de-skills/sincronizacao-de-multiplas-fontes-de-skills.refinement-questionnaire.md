@@ -66,3 +66,13 @@ o cache. Independentemente da escolha, retirar as skills da fonte somente na
 próxima composição explícita.
 
 Resposta: manter sugestão
+
+## Atualizações posteriores
+
+### AT-01 — Criação de configuração somente por iniciativa do usuário
+
+- Decisão anterior: criar `.dex/sync.json` automaticamente após o workspace se
+  tornar confiável e manter a fonte Dex padrão em memória em Restricted Mode.
+- Decisão atual: não criar nem simular configuração na ativação; criar o arquivo
+  somente quando o usuário cadastrar uma fonte genérica ou a fonte Dex padrão.
+- Origem: decisão explícita do usuário.

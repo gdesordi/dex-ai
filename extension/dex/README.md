@@ -18,10 +18,9 @@ Extension Host.
 É necessário ter um workspace aberto e acesso à internet para realizar o
 download.
 
-Ao abrir uma pasta confiável pela primeira vez, a extensão cria
-`.dex/sync.json` com o catálogo Dex como fonte padrão. Em Restricted Mode, a
-criação é adiada até que o workspace receba confiança. Excluir a fonte do
-arquivo não faz com que ela reapareça automaticamente.
+Ao abrir uma pasta sem `.dex/sync.json`, a extensão não cria arquivos nem inclui
+fontes automaticamente. A configuração só é criada quando você adiciona uma
+fonte pelo botão `+` ou inclui a fonte Dex padrão pelo menu de três pontos.
 
 Outros catálogos públicos do GitHub podem ser adicionados a `sources`:
 
@@ -67,8 +66,8 @@ fonte e recompõe o workspace usando as cópias locais das demais.
 - `Dex: Abrir pasta das skills`: abre a cópia local no gerenciador de arquivos
   do sistema.
 - `Dex: Adicionar fonte Dex padrão`: inclui novamente o catálogo Dex em
-  `.dex/sync.json` caso ele tenha sido removido. O comando não cria duplicatas
-  nem sobrescreve uma fonte conflitante.
+  `.dex/sync.json`; se o arquivo não existir, cria a primeira configuração. O
+  comando não cria duplicatas nem sobrescreve uma fonte conflitante.
 - `Dex: Adicionar fonte de skills`: solicita os dados da nova fonte em Quick
   Picks e atualiza `.dex/sync.json`.
 - `Dex: Abrir configuração de fontes`: abre `.dex/sync.json` para edição.
