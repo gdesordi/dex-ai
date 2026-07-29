@@ -10,10 +10,13 @@ Semântico.
 ### Adicionado
 
 - Botões inline para abrir o repositório e remover fontes na Tree View.
+- Botão no header da Tree View com fluxo de Quick Picks para cadastrar fontes.
 
 ### Modificado
 
 - Ícones nos comandos de adicionar a fonte Dex e abrir a configuração.
+- Ícone de repositório para diferenciar a inclusão da fonte Dex padrão do botão
+  de adicionar uma fonte genérica.
 - O clique no item da fonte não abre mais o navegador; essa ação fica restrita
   ao botão inline correspondente.
 

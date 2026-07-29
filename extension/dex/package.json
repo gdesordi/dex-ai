@@ -51,6 +51,12 @@
         "command": "dex.addDefaultSource",
         "title": "%command.addDefaultSource.title%",
         "category": "%command.category%",
+        "icon": "$(repo)"
+      },
+      {
+        "command": "dex.addSource",
+        "title": "%command.addSource.title%",
+        "category": "%command.category%",
         "icon": "$(add)"
       },
       {
@@ -83,14 +89,19 @@
     "menus": {
       "view/title": [
         {
+          "command": "dex.addSource",
+          "when": "view == dex.skillSources",
+          "group": "navigation@1"
+        },
+        {
           "command": "dex.openSyncConfig",
           "when": "view == dex.skillSources",
-          "group": "navigation"
+          "group": "navigation@3"
         },
         {
           "command": "dex.addDefaultSource",
           "when": "view == dex.skillSources",
-          "group": "navigation"
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [

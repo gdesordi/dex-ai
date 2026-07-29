@@ -6,7 +6,7 @@ import {
   serializeSyncConfig,
   shouldInitializeSyncConfig,
 } from './sync-config';
-import { SyncConfig, createDefaultSyncConfig } from './sync-types';
+import { SyncConfig, SyncSource, createDefaultSyncConfig } from './sync-types';
 
 export const syncConfigRelativePath = '.dex/sync.json';
 
@@ -82,8 +82,8 @@ export class WorkspaceConfigManager implements vscode.Disposable {
     }
 
     // Valida também configurações construídas por comandos antes de persistir.
-    const serialized = serializeSyncConfig(config);
-    parseSyncConfig(serialized);
+    const normalized = parseSyncConfig(serializeSyncConfig(config));
+    const serialized = serializeSyncConfig(normalized);
     const uri = this.getConfigUri(folder);
     await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(folder.uri, '.dex'));
     await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(serialized));
@@ -124,6 +124,17 @@ export class WorkspaceConfigManager implements vscode.Disposable {
     }
     await this.write(folder, { ...config, sources });
     return true;
+  }
+
+  async addSource(
+    folder: vscode.WorkspaceFolder,
+    source: SyncSource,
+  ): Promise<void> {
+    const { config } = await this.read(folder);
+    await this.write(folder, {
+      ...config,
+      sources: [...config.sources, source],
+    });
   }
 
   dispose(): void {

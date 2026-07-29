@@ -39,6 +39,10 @@ sincronização rejeita skills de mesmo nome vindas de fontes diferentes. Use os
 botões inline de cada fonte para abrir seu repositório ou removê-la. Clicar no
 item apenas o seleciona e não abre o navegador.
 
+No header da view, o botão `+` inicia um cadastro guiado com exemplos para ID,
+URL do GitHub, branch/tag/commit e pasta do catálogo. O botão com ícone de
+repositório inclui especificamente a fonte Dex padrão.
+
 ## Comandos
 
 - `Dex: Configurar skills`: baixa ou atualiza as skills e as adiciona ao
@@ -55,6 +59,8 @@ item apenas o seleciona e não abre o navegador.
 - `Dex: Adicionar fonte Dex padrão`: inclui novamente o catálogo Dex em
   `.dex/sync.json` caso ele tenha sido removido. O comando não cria duplicatas
   nem sobrescreve uma fonte conflitante.
+- `Dex: Adicionar fonte de skills`: solicita os dados da nova fonte em Quick
+  Picks e atualiza `.dex/sync.json`.
 - `Dex: Abrir configuração de fontes`: abre `.dex/sync.json` para edição.
 - `Dex: Abrir repositório da fonte`: abre no navegador a origem selecionada na
   Tree View.

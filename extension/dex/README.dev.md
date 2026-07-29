@@ -76,6 +76,10 @@ As ações inline da Tree View são declaradas em `view/item/context`. A remoç�
 atualiza primeiro `.dex/sync.json` e preserva o cache por padrão; a exclusão da
 cópia local depende de uma segunda escolha explícita do usuário.
 
+As ações globais são declaradas em `view/title`. `dex.addSource` usa Quick Picks
+editáveis: o texto digitado tem prioridade sobre o exemplo selecionado e a
+configuração completa é normalizada e validada antes da escrita.
+
 ## Localização
 
 Textos do manifesto usam chaves no formato `%chave%`. Ao adicionar ou alterar

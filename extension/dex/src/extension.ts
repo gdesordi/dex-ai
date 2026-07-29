@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { WorkspaceConfigManager } from './workspace-config';
 import { SourceService } from './source-service';
 import { SourcesTreeProvider, isSourceNode } from './sources-tree';
+import { SyncSource } from './sync-types';
 
 const skillsTreeUrl =
   'https://api.github.com/repos/gdesordi/dex-ai/git/trees/main?recursive=1';
@@ -116,6 +117,69 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.Uri.joinPath(folder.uri, '.dex', 'sync.json'),
       );
       await vscode.window.showTextDocument(document);
+    },
+  );
+
+  const addSourceCommand = vscode.commands.registerCommand(
+    'dex.addSource',
+    async () => {
+      const folder = await selectWorkspaceFolder();
+      if (!folder) return;
+
+      const id = await promptQuickPickValue(
+        'Adicionar fonte — Identificador',
+        'Digite um ID único em kebab-case',
+        ['company-skills', 'team-skills'],
+      );
+      if (!id) return;
+      const repository = await promptQuickPickValue(
+        'Adicionar fonte — Repositório',
+        'Digite a URL pública do GitHub',
+        ['https://github.com/owner/skills-repository'],
+      );
+      if (!repository) return;
+      const ref = await promptQuickPickValue(
+        'Adicionar fonte — Referência',
+        'Digite uma branch, tag ou commit',
+        ['main', 'develop', 'v1.0.0'],
+      );
+      if (!ref) return;
+      const sourcePath = await promptQuickPickValue(
+        'Adicionar fonte — Pasta',
+        'Digite o caminho relativo do catálogo no repositório',
+        ['skills', '.agents/skills'],
+      );
+      if (!sourcePath) return;
+      const enabledChoice = await vscode.window.showQuickPick(
+        [
+          { label: 'Ativada', description: 'Participa das sincronizações' },
+          { label: 'Desativada', description: 'Fica salva sem sincronizar' },
+        ],
+        {
+          title: 'Adicionar fonte — Estado inicial',
+          placeHolder: 'Escolha se a fonte deve iniciar ativada',
+        },
+      );
+      if (!enabledChoice) return;
+
+      try {
+        await workspaceConfigManager.addSource(folder, {
+          id,
+          repository,
+          ref,
+          path: sourcePath,
+          enabled: enabledChoice.label === 'Ativada',
+        } as SyncSource);
+        sourcesTree.refresh();
+        void vscode.window.showInformationMessage(
+          `A fonte “${id}” foi adicionada a ${folder.name}/.dex/sync.json.`,
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(
+          `Não foi possível adicionar a fonte: ${message}`,
+        );
+      }
     },
   );
 
@@ -278,6 +342,7 @@ export function activate(context: vscode.ExtensionContext): void {
     openSourceRepositoryCommand,
     removeSourceCommand,
     openSyncConfigCommand,
+    addSourceCommand,
     addDefaultSourceCommand,
     downloadSkillsCommand,
     openSkillsFolderCommand,
@@ -726,4 +791,36 @@ function throwIfCancelled(token: vscode.CancellationToken): void {
   if (token.isCancellationRequested) {
     throw new vscode.CancellationError();
   }
+}
+
+async function promptQuickPickValue(
+  title: string,
+  placeHolder: string,
+  examples: string[],
+): Promise<string | undefined> {
+  const picker = vscode.window.createQuickPick();
+  picker.title = title;
+  picker.placeholder = placeHolder;
+  picker.items = examples.map((example) => ({
+    label: example,
+    description: 'Exemplo',
+  }));
+  picker.matchOnDescription = true;
+
+  return new Promise<string | undefined>((resolve) => {
+    let settled = false;
+    const finish = (value: string | undefined): void => {
+      if (settled) return;
+      settled = true;
+      picker.dispose();
+      resolve(value);
+    };
+    picker.onDidAccept(() => {
+      const typed = picker.value.trim();
+      const selected = picker.activeItems[0]?.label;
+      finish(typed || selected);
+    });
+    picker.onDidHide(() => finish(undefined));
+    picker.show();
+  });
 }
