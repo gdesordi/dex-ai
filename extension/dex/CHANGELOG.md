@@ -7,6 +7,20 @@ Semântico.
 
 ## [Não publicado]
 
+### Adicionado
+
+- Botões inline para abrir o repositório e remover fontes na Tree View.
+
+### Modificado
+
+- Ícones nos comandos de adicionar a fonte Dex e abrir a configuração.
+- O clique no item da fonte não abre mais o navegador; essa ação fica restrita
+  ao botão inline correspondente.
+
+### Corrigido
+
+- Exibição dos botões inline de abrir repositório e remover fonte na Tree View.
+
 ## [1.1.0] - 2026-07-29
 
 ### Adicionado

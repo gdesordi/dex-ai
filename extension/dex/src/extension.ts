@@ -35,7 +35,6 @@ export function activate(context: vscode.ExtensionContext): void {
   const sourceService = new SourceService(context, workspaceConfigManager);
   const sourcesTree = new SourcesTreeProvider(
     workspaceConfigManager,
-    sourceService.storage,
   );
   const sourcesView = vscode.window.createTreeView('dex.skillSources', {
     treeDataProvider: sourcesTree,
@@ -73,6 +72,37 @@ export function activate(context: vscode.ExtensionContext): void {
     async (node: unknown) => {
       if (isSourceNode(node)) {
         await vscode.env.openExternal(vscode.Uri.parse(node.source.repository));
+      }
+    },
+  );
+
+  const removeSourceCommand = vscode.commands.registerCommand(
+    'dex.removeSource',
+    async (node: unknown) => {
+      if (!isSourceNode(node)) return;
+      const confirmation = await vscode.window.showWarningMessage(
+        `Remover a fonte “${node.source.id}” da configuração?`,
+        { modal: true },
+        'Remover fonte',
+      );
+      if (confirmation !== 'Remover fonte') return;
+
+      try {
+        await workspaceConfigManager.removeSource(node.folder, node.source.id);
+        sourcesTree.refresh();
+        const cacheChoice = await vscode.window.showInformationMessage(
+          `A fonte “${node.source.id}” foi removida. Deseja apagar também sua cópia local?`,
+          'Preservar cache',
+          'Apagar cache',
+        );
+        if (cacheChoice === 'Apagar cache') {
+          await sourceService.storage.deleteSource(node.folder, node.source.id);
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(
+          `Não foi possível remover a fonte: ${message}`,
+        );
       }
     },
   );
@@ -246,6 +276,7 @@ export function activate(context: vscode.ExtensionContext): void {
     sourcesTree,
     sourcesView,
     openSourceRepositoryCommand,
+    removeSourceCommand,
     openSyncConfigCommand,
     addDefaultSourceCommand,
     downloadSkillsCommand,

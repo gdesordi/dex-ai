@@ -97,6 +97,13 @@ export class SourceStorage {
     );
   }
 
+  async deleteSource(
+    workspaceFolder: vscode.WorkspaceFolder,
+    sourceId: string,
+  ): Promise<void> {
+    await deleteIfPresent(this.getSourceRoot(workspaceFolder, sourceId));
+  }
+
   private getSourceRoot(
     workspaceFolder: vscode.WorkspaceFolder,
     sourceId: string,

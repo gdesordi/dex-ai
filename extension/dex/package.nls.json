@@ -10,5 +10,6 @@
   "command.addDefaultSource.title": "Add default Dex source",
   "command.openSyncConfig.title": "Open source configuration",
   "command.openSourceRepository.title": "Open source repository",
+  "command.removeSource.title": "Remove skill source",
   "view.skillSources.name": "Dex Skill Sources"
 }

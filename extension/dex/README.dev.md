@@ -72,6 +72,10 @@ A configuração declarativa fica em `.dex/sync.json`. A extensão cria a fonte
 Em Restricted Mode, mantém a configuração padrão apenas em memória até receber
 o evento `vscode.workspace.onDidGrantWorkspaceTrust`.
 
+As ações inline da Tree View são declaradas em `view/item/context`. A remoção
+atualiza primeiro `.dex/sync.json` e preserva o cache por padrão; a exclusão da
+cópia local depende de uma segunda escolha explícita do usuário.
+
 ## Localização
 
 Textos do manifesto usam chaves no formato `%chave%`. Ao adicionar ou alterar

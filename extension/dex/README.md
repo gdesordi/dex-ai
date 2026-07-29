@@ -35,7 +35,9 @@ Outros catálogos públicos do GitHub podem ser adicionados a `sources`:
 ```
 
 A seção **Fontes de skills Dex** do Explorer lista as fontes configuradas. A
-sincronização rejeita skills de mesmo nome vindas de fontes diferentes.
+sincronização rejeita skills de mesmo nome vindas de fontes diferentes. Use os
+botões inline de cada fonte para abrir seu repositório ou removê-la. Clicar no
+item apenas o seleciona e não abre o navegador.
 
 ## Comandos
 

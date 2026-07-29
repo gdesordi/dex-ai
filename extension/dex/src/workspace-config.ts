@@ -113,6 +113,19 @@ export class WorkspaceConfigManager implements vscode.Disposable {
     return result;
   }
 
+  async removeSource(
+    folder: vscode.WorkspaceFolder,
+    sourceId: string,
+  ): Promise<boolean> {
+    const { config } = await this.read(folder);
+    const sources = config.sources.filter((source) => source.id !== sourceId);
+    if (sources.length === config.sources.length) {
+      return false;
+    }
+    await this.write(folder, { ...config, sources });
+    return true;
+  }
+
   dispose(): void {
     for (const watcher of this.watchers.values()) {
       watcher.dispose();
