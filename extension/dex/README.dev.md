@@ -83,6 +83,10 @@ As ações globais são declaradas em `view/title`. `dex.addSource` usa Quick Pi
 editáveis: o texto digitado tem prioridade sobre o exemplo selecionado e a
 configuração completa é normalizada e validada antes da escrita.
 
+Somente comandos no grupo `navigation` aparecem diretamente no header. As
+ações `dex.addDefaultSource` e `dex.openSyncConfig` usam o grupo
+`1_configuration` para permanecer no menu de três pontos.
+
 `dex.downloadSkills` é a sincronização global usada no header da view.
 `dex.syncSource` recebe o item como argumento, atualiza somente seu cache e
 recompõe o destino com todas as fontes habilitadas.

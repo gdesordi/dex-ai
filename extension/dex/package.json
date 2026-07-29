@@ -108,12 +108,12 @@
         {
           "command": "dex.openSyncConfig",
           "when": "view == dex.skillSources",
-          "group": "navigation@3"
+          "group": "1_configuration@2"
         },
         {
           "command": "dex.addDefaultSource",
           "when": "view == dex.skillSources",
-          "group": "navigation@2"
+          "group": "1_configuration@1"
         }
       ],
       "view/item/context": [

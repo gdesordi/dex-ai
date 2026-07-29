@@ -23,6 +23,8 @@ Semântico.
   de adicionar uma fonte genérica.
 - O clique no item da fonte não abre mais o navegador; essa ação fica restrita
   ao botão inline correspondente.
+- As ações de incluir a fonte Dex padrão e abrir a configuração ficam somente
+  no menu de três pontos da Tree View.
 
 ### Corrigido
 
