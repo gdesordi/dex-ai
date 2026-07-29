@@ -1,74 +1,41 @@
 # Dex AI
 
-Dex AI é um catálogo versionado de skills para agentes de desenvolvimento,
-acompanhado por uma extensão do Visual Studio Code que baixa, atualiza e
-adiciona essas skills aos workspaces.
+Dex AI é uma extensão compatível com Visual Studio Code e Kiro que sincroniza
+skills de múltiplos repositórios públicos do GitHub para o workspace atual.
 
-## Estrutura do projeto
+## Como usar
 
-```text
-.
-├── extension/dex/       Extensão Dex para Visual Studio Code
-├── skills/              Catálogo distribuído pela extensão
-│   ├── dex.json         Versão oficial do catálogo
-│   └── changelog.md     Histórico de mudanças das skills
-└── .vscode/             Configuração de build e debug da extensão
-```
+Abra a Paleta de Comandos e execute `Dex: Configurar skills`. A extensão baixa
+as fontes habilitadas e instala as skills no diretório correto:
 
-## Extensão Dex
+- Visual Studio Code: `.agents/skills`;
+- Kiro: `.kiro/skills`.
 
-A extensão disponibiliza comandos para:
+O arquivo `.dex/sync.json` só é criado quando você adiciona uma fonte pelo botão
+`+` ou inclui a fonte Dex padrão pelo menu de três pontos.
 
-- baixar ou atualizar o catálogo remoto de skills;
-- abrir a pasta local usada pela extensão;
-- copiar as skills para `.agents/skills` no workspace;
-- configurar o workspace completo em uma única operação.
+## Gerenciar fontes
 
-Para informações de uso, consulte o
-[README da extensão](extension/dex/README.md). Para contribuir com o código,
-consulte o [guia de desenvolvimento](extension/dex/README.dev.md).
+A view **Fontes de skills Dex**, no Explorer, permite:
 
-### Executar em desenvolvimento
+- adicionar uma fonte pelo botão `+`;
+- sincronizar todas as fontes pelo botão do header;
+- sincronizar somente uma fonte pelo botão inline do item;
+- abrir o repositório de uma fonte no navegador;
+- remover uma fonte;
+- restaurar a fonte Dex padrão ou abrir `.dex/sync.json` pelo menu de três
+  pontos.
 
-Instale as dependências:
+Uma fonte possui um identificador, a URL pública do GitHub, uma branch, tag ou
+commit e o caminho da pasta de skills no repositório. O cadastro guiado solicita
+essas informações e atualiza a Tree View automaticamente.
 
-```sh
-cd extension/dex
-npm install
-```
+Em workspaces com várias raízes, cada pasta mantém fontes e sincronização
+independentes. A extensão também detecta conflitos quando duas fontes fornecem
+uma skill com o mesmo nome.
 
-Depois, abra a raiz deste repositório no Visual Studio Code e pressione `F5`.
-Uma janela Extension Development Host será iniciada com a extensão carregada.
+Para a lista completa de comandos e opções, consulte o
+[README da extensão](extension/dex/README.md).
 
-## Catálogo de skills
-
-As skills ficam em subdiretórios de `skills/`. Cada uma possui um arquivo
-`SKILL.md` com metadados e instruções para o agente. O catálogo atual inclui:
-
-- `node-version-bump`: atualiza versões SemVer em projetos Node.js;
-- `spec-create`: inicia a documentação de uma feature;
-- `spec-manage`: refina, consolida e mantém especificações funcionais;
-- `spec-plan`: divide a implementação de uma feature especificada em fases;
-
-Ao executar `Dex: Configurar skills`, a extensão baixa o catálogo e o copia para
-`.agents/skills` no workspace selecionado.
-
-## Versionamento das skills
-
-O catálogo segue Versionamento Semântico. A propriedade `skillsVersion` em
-[skills/dex.json](skills/dex.json) é a fonte oficial da versão publicada. Toda
-mudança relevante deve ser registrada em
-[skills/changelog.md](skills/changelog.md), seguindo o padrão Keep a Changelog.
-
-## Validação
-
-Os comandos abaixo verificam a extensão:
-
-```sh
-cd extension/dex
-npm run compile
-npm run check
-```
-
-As convenções para manutenção automatizada do repositório estão descritas em
-[AGENTS.md](AGENTS.md).
+Para contribuir com o projeto, consulte o
+[guia de desenvolvimento](README.dev.md).

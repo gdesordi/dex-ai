@@ -1,4 +1,9 @@
 import * as vscode from 'vscode';
+import { WorkspaceConfigManager } from './workspace-config';
+import { SourceService } from './source-service';
+import { SourcesTreeProvider, isSourceNode } from './sources-tree';
+import { SyncSource } from './sync-types';
+import { resolveSkillsDestination } from './environment';
 
 const skillsTreeUrl =
   'https://api.github.com/repos/gdesordi/dex-ai/git/trees/main?recursive=1';
@@ -28,9 +33,220 @@ let isDownloadingSkills = false;
 
 export function activate(context: vscode.ExtensionContext): void {
   const outputChannel = vscode.window.createOutputChannel('Dex');
+  const workspaceConfigManager = new WorkspaceConfigManager();
+  const sourceService = new SourceService(context, workspaceConfigManager);
+  const sourcesTree = new SourcesTreeProvider(
+    workspaceConfigManager,
+  );
+  const sourcesView = vscode.window.createTreeView('dex.skillSources', {
+    treeDataProvider: sourcesTree,
+    showCollapseAll: true,
+  });
   const downloadSkillsCommand = vscode.commands.registerCommand(
     'dex.downloadSkills',
-    async () => runSkillsDownload(context, true),
+    async () => {
+      const folder = await selectWorkspaceFolder();
+      if (!folder) return false;
+      try {
+        const results = await sourceService.syncAll(folder);
+        sourcesTree.refresh();
+        const failures = results.filter((result) => result.status === 'error');
+        if (failures.length) {
+          void vscode.window.showWarningMessage(
+            `Sincronização concluída com ${failures.length} falha(s): ${failures.map((item) => item.sourceId).join(', ')}.`,
+          );
+        } else {
+          void vscode.window.showInformationMessage(
+            `${results.length} fonte(s) sincronizada(s) em ${folder.name}.`,
+          );
+        }
+        return failures.length === 0;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(`Não foi possível sincronizar: ${message}`);
+        return false;
+      }
+    },
+  );
+
+  const openSourceRepositoryCommand = vscode.commands.registerCommand(
+    'dex.openSourceRepository',
+    async (node: unknown) => {
+      if (isSourceNode(node)) {
+        await vscode.env.openExternal(vscode.Uri.parse(node.source.repository));
+      }
+    },
+  );
+
+  const syncSourceCommand = vscode.commands.registerCommand(
+    'dex.syncSource',
+    async (node: unknown) => {
+      if (!isSourceNode(node)) return;
+      try {
+        await sourceService.syncSource(node.folder, node.source.id);
+        sourcesTree.refresh();
+        void vscode.window.showInformationMessage(
+          `A fonte “${node.source.id}” foi sincronizada.`,
+        );
+      } catch (error) {
+        if (error instanceof vscode.CancellationError) return;
+        const message = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(
+          `Não foi possível sincronizar “${node.source.id}”: ${message}`,
+        );
+      }
+    },
+  );
+
+  const removeSourceCommand = vscode.commands.registerCommand(
+    'dex.removeSource',
+    async (node: unknown) => {
+      if (!isSourceNode(node)) return;
+      const confirmation = await vscode.window.showWarningMessage(
+        `Remover a fonte “${node.source.id}” da configuração?`,
+        { modal: true },
+        'Remover fonte',
+      );
+      if (confirmation !== 'Remover fonte') return;
+
+      try {
+        await workspaceConfigManager.removeSource(node.folder, node.source.id);
+        sourcesTree.refresh();
+        const cacheChoice = await vscode.window.showInformationMessage(
+          `A fonte “${node.source.id}” foi removida. Deseja apagar também sua cópia local?`,
+          'Preservar cache',
+          'Apagar cache',
+        );
+        if (cacheChoice === 'Apagar cache') {
+          await sourceService.storage.deleteSource(node.folder, node.source.id);
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(
+          `Não foi possível remover a fonte: ${message}`,
+        );
+      }
+    },
+  );
+
+  const openSyncConfigCommand = vscode.commands.registerCommand(
+    'dex.openSyncConfig',
+    async () => {
+      const folder = await selectWorkspaceFolder();
+      if (!folder) return;
+      const document = await vscode.workspace.openTextDocument(
+        vscode.Uri.joinPath(folder.uri, '.dex', 'sync.json'),
+      );
+      await vscode.window.showTextDocument(document);
+    },
+  );
+
+  const addSourceCommand = vscode.commands.registerCommand(
+    'dex.addSource',
+    async () => {
+      const folder = await selectWorkspaceFolder();
+      if (!folder) return;
+
+      const id = await promptQuickPickValue(
+        'Adicionar fonte — Identificador',
+        'Digite um ID único em kebab-case',
+        ['company-skills', 'team-skills'],
+      );
+      if (!id) return;
+      const repository = await promptQuickPickValue(
+        'Adicionar fonte — Repositório',
+        'Digite a URL pública do GitHub',
+        ['https://github.com/owner/skills-repository'],
+      );
+      if (!repository) return;
+      const ref = await promptQuickPickValue(
+        'Adicionar fonte — Referência',
+        'Digite uma branch, tag ou commit',
+        ['main', 'develop', 'v1.0.0'],
+      );
+      if (!ref) return;
+      const sourcePath = await promptQuickPickValue(
+        'Adicionar fonte — Pasta',
+        'Digite o caminho relativo do catálogo no repositório',
+        ['skills', 'catalog/skills'],
+      );
+      if (!sourcePath) return;
+      const enabledChoice = await vscode.window.showQuickPick(
+        [
+          { label: 'Ativada', description: 'Participa das sincronizações' },
+          { label: 'Desativada', description: 'Fica salva sem sincronizar' },
+        ],
+        {
+          title: 'Adicionar fonte — Estado inicial',
+          placeHolder: 'Escolha se a fonte deve iniciar ativada',
+        },
+      );
+      if (!enabledChoice) return;
+
+      try {
+        await workspaceConfigManager.addSource(folder, {
+          id,
+          repository,
+          ref,
+          path: sourcePath,
+          enabled: enabledChoice.label === 'Ativada',
+        } as SyncSource);
+        sourcesTree.refresh();
+        void vscode.window.showInformationMessage(
+          `A fonte “${id}” foi adicionada a ${folder.name}/.dex/sync.json.`,
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(
+          `Não foi possível adicionar a fonte: ${message}`,
+        );
+      }
+    },
+  );
+
+  const addDefaultSourceCommand = vscode.commands.registerCommand(
+    'dex.addDefaultSource',
+    async () => {
+      const workspaceFolder = await selectWorkspaceFolder();
+      if (!workspaceFolder) {
+        void vscode.window.showErrorMessage(
+          'Abra uma pasta ou workspace antes de incluir a fonte Dex.',
+        );
+        return;
+      }
+
+      try {
+        const result = await workspaceConfigManager.addDefaultSource(
+          workspaceFolder,
+        );
+        if (result.status === 'added') {
+          void vscode.window.showInformationMessage(
+            `A fonte dex-ai foi adicionada a ${workspaceFolder.name}/.dex/sync.json.`,
+          );
+          return;
+        }
+        if (result.status === 'already-configured') {
+          void vscode.window.showInformationMessage(
+            'A fonte dex-ai já está configurada.',
+          );
+          return;
+        }
+        if (result.status === 'catalog-already-configured') {
+          void vscode.window.showInformationMessage(
+            `O catálogo Dex já está configurado pela fonte “${result.sourceId}”.`,
+          );
+          return;
+        }
+        void vscode.window.showErrorMessage(
+          'O identificador dex-ai já pertence a uma fonte com outros valores.',
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        void vscode.window.showErrorMessage(
+          `Não foi possível incluir a fonte Dex: ${message}`,
+        );
+      }
+    },
   );
 
   const openSkillsFolderCommand = vscode.commands.registerCommand(
@@ -63,8 +279,18 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
 
-      const agentsUri = vscode.Uri.joinPath(workspaceFolder.uri, '.agents');
-      const destinationUri = vscode.Uri.joinPath(agentsUri, 'skills');
+      const target = resolveSkillsDestination(
+        vscode.env.appName,
+        vscode.env.uriScheme,
+      );
+      const environmentRootUri = vscode.Uri.joinPath(
+        workspaceFolder.uri,
+        target.rootDirectory,
+      );
+      const destinationUri = vscode.Uri.joinPath(
+        environmentRootUri,
+        target.skillsDirectory,
+      );
 
       const copiedFiles = await vscode.window.withProgress(
         {
@@ -72,7 +298,7 @@ export function activate(context: vscode.ExtensionContext): void {
           title: 'Dex: adicionando skills ao workspace',
         },
         async (progress) => {
-          await vscode.workspace.fs.createDirectory(agentsUri);
+          await vscode.workspace.fs.createDirectory(environmentRootUri);
           return copyDirectory(sourceUri, destinationUri, (relativePath) => {
             progress.report({ message: relativePath });
           });
@@ -87,7 +313,7 @@ export function activate(context: vscode.ExtensionContext): void {
       }
 
       void vscode.window.showInformationMessage(
-        `${copiedFiles} arquivo(s) de skills adicionado(s) a ${workspaceFolder.name}/.agents/skills.`,
+        `${copiedFiles} arquivo(s) de skills adicionado(s) a ${workspaceFolder.name}/${target.relativePath}.`,
       );
     },
   );
@@ -102,14 +328,7 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
 
-      const downloaded = await vscode.commands.executeCommand<boolean>(
-        'dex.downloadSkills',
-      );
-      if (!downloaded) {
-        return;
-      }
-
-      await vscode.commands.executeCommand('dex.addSkillsToWorkspace');
+      await vscode.commands.executeCommand<boolean>('dex.downloadSkills');
     },
   );
 
@@ -117,8 +336,15 @@ export function activate(context: vscode.ExtensionContext): void {
     'dex.checkSkillsUpdates',
     async () => {
       try {
-        await checkSkillsUpdates(context, true);
+        const folder = await selectWorkspaceFolder();
+        if (!folder) return;
+        const updates = await sourceService.checkUpdates(folder);
         await context.globalState.update(lastUpdateCheckKey, Date.now());
+        void vscode.window.showInformationMessage(
+          updates.length
+            ? `Atualizações disponíveis para: ${updates.join(', ')}.`
+            : 'Todas as fontes de skills estão atualizadas.',
+        );
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         void vscode.window.showErrorMessage(
@@ -141,6 +367,15 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     outputChannel,
+    workspaceConfigManager,
+    sourcesTree,
+    sourcesView,
+    openSourceRepositoryCommand,
+    syncSourceCommand,
+    removeSourceCommand,
+    openSyncConfigCommand,
+    addSourceCommand,
+    addDefaultSourceCommand,
     downloadSkillsCommand,
     openSkillsFolderCommand,
     addSkillsToWorkspaceCommand,
@@ -149,6 +384,12 @@ export function activate(context: vscode.ExtensionContext): void {
     updateCheckTimerDisposable,
   );
 
+  void workspaceConfigManager.start().catch((error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error);
+    outputChannel.appendLine(
+      `[${new Date().toISOString()}] Falha ao observar configurações: ${message}`,
+    );
+  });
   periodicUpdateCheck();
 }
 
@@ -582,4 +823,36 @@ function throwIfCancelled(token: vscode.CancellationToken): void {
   if (token.isCancellationRequested) {
     throw new vscode.CancellationError();
   }
+}
+
+async function promptQuickPickValue(
+  title: string,
+  placeHolder: string,
+  examples: string[],
+): Promise<string | undefined> {
+  const picker = vscode.window.createQuickPick();
+  picker.title = title;
+  picker.placeholder = placeHolder;
+  picker.items = examples.map((example) => ({
+    label: example,
+    description: 'Exemplo',
+  }));
+  picker.matchOnDescription = true;
+
+  return new Promise<string | undefined>((resolve) => {
+    let settled = false;
+    const finish = (value: string | undefined): void => {
+      if (settled) return;
+      settled = true;
+      picker.dispose();
+      resolve(value);
+    };
+    picker.onDidAccept(() => {
+      const typed = picker.value.trim();
+      const selected = picker.activeItems[0]?.label;
+      finish(typed || selected);
+    });
+    picker.onDidHide(() => finish(undefined));
+    picker.show();
+  });
 }

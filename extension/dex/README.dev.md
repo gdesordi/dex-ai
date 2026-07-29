@@ -30,6 +30,7 @@ local dessa pasta.
 - `npm run compile`: compila `src` para `out` e gera source maps.
 - `npm run watch`: recompila automaticamente durante o desenvolvimento.
 - `npm run check`: valida os tipos sem gerar arquivos.
+- `npm test`: compila e executa os testes automatizados.
 - `npm run vscode:prepublish`: prepara a extensão para empacotamento.
 - `npm run package`: compila e gera o arquivo `.vsix` da versão atual.
 - `npm run publish`: publica a versão atual no Visual Studio Marketplace; exige
@@ -37,7 +38,17 @@ local dessa pasta.
 
 ## Estrutura
 
-- `src/extension.ts`: ativação, comandos, download e cópia das skills.
+- `src/extension.ts`: ativação e registro dos comandos.
+- `src/sync-types.ts`: contratos da configuração e dos estados de fontes.
+- `src/sync-config.ts`: parsing e validação de `.dex/sync.json`.
+- `src/workspace-config.ts`: leitura, escrita e observação da configuração por
+  workspace.
+- `src/github-source.ts`: resolução e download de fontes públicas do GitHub.
+- `src/catalog-validator.ts`: validação das skills e de seus frontmatters.
+- `src/source-storage.ts`: armazenamento isolado e transacional por fonte.
+- `src/source-service.ts`: sincronização em lote e composição do workspace.
+- `src/sources-tree.ts`: provider da Tree View de fontes.
+- `src/test/`: testes executados pelo test runner nativo do Node.js.
 - `media/`: recursos visuais da extensão.
 - `package.json`: manifesto, comandos e scripts.
 - `package.nls.json`: textos padrão em inglês.
@@ -49,12 +60,36 @@ local dessa pasta.
 
 O comando de download grava os arquivos em
 `context.globalStorageUri/skills`. A cópia para o workspace é feita de forma
-recursiva em `.agents/skills`, preservando os demais arquivos do workspace.
+recursiva em `.agents/skills` no VS Code ou `.kiro/skills` no Kiro, preservando
+os demais arquivos do workspace. A decisão fica centralizada em
+`src/environment.ts` e considera `vscode.env.appName` e
+`vscode.env.uriScheme`.
 
 A última verificação automática de atualização é persistida em
 `context.globalState` pela chave `dex.skills.lastUpdateCheckAt`. A extensão é
 ativada em `onStartupFinished` e um timer avalia a cada hora se o intervalo de
 24 horas já foi atingido.
+
+A configuração declarativa fica em `.dex/sync.json`. A ativação não cria o
+arquivo nem mantém uma fonte implícita em memória. `dex.addSource` e
+`dex.addDefaultSource` são os únicos fluxos que criam a primeira configuração e
+continuam exigindo um workspace confiável para escrita.
+
+As ações inline da Tree View são declaradas em `view/item/context`. A remoção
+atualiza primeiro `.dex/sync.json` e preserva o cache por padrão; a exclusão da
+cópia local depende de uma segunda escolha explícita do usuário.
+
+As ações globais são declaradas em `view/title`. `dex.addSource` usa Quick Picks
+editáveis: o texto digitado tem prioridade sobre o exemplo selecionado e a
+configuração completa é normalizada e validada antes da escrita.
+
+Somente comandos no grupo `navigation` aparecem diretamente no header. As
+ações `dex.addDefaultSource` e `dex.openSyncConfig` usam o grupo
+`1_configuration` para permanecer no menu de três pontos.
+
+`dex.downloadSkills` é a sincronização global usada no header da view.
+`dex.syncSource` recebe o item como argumento, atualiza somente seu cache e
+recompõe o destino com todas as fontes habilitadas.
 
 ## Localização
 
@@ -67,6 +102,7 @@ um comando, mantenha a mesma chave nos dois catálogos `package.nls.json` e
 1. Inicie o Extension Development Host com `F5`.
 2. Abra um workspace de teste.
 3. Execute `Dex: Configurar skills`.
-4. Confirme que `.agents/skills` contém os arquivos baixados.
+4. Confirme que `.agents/skills` no VS Code ou `.kiro/skills` no Kiro contém os
+   arquivos baixados.
 5. Execute `Dex: Abrir pasta das skills` e confirme que o diretório correto foi
    aberto no sistema.

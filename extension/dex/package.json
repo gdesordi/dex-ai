@@ -2,7 +2,7 @@
   "name": "dex",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "1.0.0",
+  "version": "1.1.2",
   "publisher": "sordi",
   "license": "SEE LICENSE IN license.MD",
   "repository": {
@@ -25,7 +25,8 @@
       {
         "command": "dex.downloadSkills",
         "title": "%command.downloadSkills.title%",
-        "category": "%command.category%"
+        "category": "%command.category%",
+        "icon": "$(sync)"
       },
       {
         "command": "dex.openSkillsFolder",
@@ -46,14 +47,100 @@
         "command": "dex.checkSkillsUpdates",
         "title": "%command.checkSkillsUpdates.title%",
         "category": "%command.category%"
+      },
+      {
+        "command": "dex.addDefaultSource",
+        "title": "%command.addDefaultSource.title%",
+        "category": "%command.category%",
+        "icon": "$(repo)"
+      },
+      {
+        "command": "dex.addSource",
+        "title": "%command.addSource.title%",
+        "category": "%command.category%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "dex.openSyncConfig",
+        "title": "%command.openSyncConfig.title%",
+        "category": "%command.category%",
+        "icon": "$(json)"
+      },
+      {
+        "command": "dex.openSourceRepository",
+        "title": "%command.openSourceRepository.title%",
+        "category": "%command.category%",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "dex.syncSource",
+        "title": "%command.syncSource.title%",
+        "category": "%command.category%",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "dex.removeSource",
+        "title": "%command.removeSource.title%",
+        "category": "%command.category%",
+        "icon": "$(trash)"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "dex.skillSources",
+          "name": "%view.skillSources.name%"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "dex.downloadSkills",
+          "when": "view == dex.skillSources",
+          "group": "navigation@0"
+        },
+        {
+          "command": "dex.addSource",
+          "when": "view == dex.skillSources",
+          "group": "navigation@1"
+        },
+        {
+          "command": "dex.openSyncConfig",
+          "when": "view == dex.skillSources",
+          "group": "1_configuration@2"
+        },
+        {
+          "command": "dex.addDefaultSource",
+          "when": "view == dex.skillSources",
+          "group": "1_configuration@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "dex.syncSource",
+          "when": "view == dex.skillSources && viewItem == dexSource",
+          "group": "inline@0"
+        },
+        {
+          "command": "dex.openSourceRepository",
+          "when": "view == dex.skillSources && viewItem == dexSource",
+          "group": "inline@1"
+        },
+        {
+          "command": "dex.removeSource",
+          "when": "view == dex.skillSources && viewItem == dexSource",
+          "group": "inline@2"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "check": "tsc --noEmit -p ./",
+    "test": "npm run compile && node --test out/test/*.test.js",
     "package": "vsce package",
     "publish": "vsce publish"
   },
