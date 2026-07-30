@@ -7,6 +7,8 @@ Semântico.
 
 ## [Não publicado]
 
+## [2.0.0] - 2026-07-30
+
 ### Modificado
 
 - A ativação passa a inicializar somente a Tree View e seus observadores, sem
