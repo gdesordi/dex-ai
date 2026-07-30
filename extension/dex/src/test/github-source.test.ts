@@ -55,17 +55,56 @@ test('distingue rate limit e árvore truncada', async () => {
       error instanceof GitHubSourceError && error.code === 'rate-limit',
   );
 
-  let call = 0;
-  const truncated = new GitHubSourceProvider(async () => {
-    call += 1;
-    return call === 1
-      ? jsonResponse({ sha: 'b'.repeat(40) })
-      : jsonResponse({ truncated: true, tree: [] });
+  const truncated = new GitHubSourceProvider(async (input) => {
+    const url = String(input);
+    if (url.includes('/commits/')) {
+      return jsonResponse({ sha: 'b'.repeat(40) });
+    }
+    if (url.includes('/git/trees/')) {
+      return jsonResponse({ truncated: true, tree: [] });
+    }
+    return jsonResponse({ id: 1 });
   });
   await assert.rejects(
     () => truncated.download(source),
     (error: unknown) =>
       error instanceof GitHubSourceError && error.code === 'truncated',
+  );
+});
+
+test('distingue repositório, referência e pasta não encontrados', async () => {
+  const missingRepository = new GitHubSourceProvider(async () =>
+    new Response('', { status: 404 }),
+  );
+  await assert.rejects(
+    () => missingRepository.resolveCommit(source),
+    (error: unknown) =>
+      error instanceof GitHubSourceError &&
+      error.code === 'repository-not-found' &&
+      /repositório example\/skills/.test(error.message),
+  );
+
+  const missingRef = new GitHubSourceProvider(async (input) =>
+    String(input).includes('/commits/')
+      ? new Response('', { status: 404 })
+      : jsonResponse({ id: 1 }),
+  );
+  await assert.rejects(
+    () => missingRef.resolveCommit(source),
+    (error: unknown) =>
+      error instanceof GitHubSourceError && error.code === 'ref-not-found',
+  );
+
+  const missingPath = new GitHubSourceProvider(async (input) => {
+    const url = String(input);
+    if (url.includes('/commits/')) return jsonResponse({ sha: 'c'.repeat(40) });
+    if (url.includes('/git/trees/')) return jsonResponse({ tree: [] });
+    return jsonResponse({ id: 1 });
+  });
+  await assert.rejects(
+    () => missingPath.download(source),
+    (error: unknown) =>
+      error instanceof GitHubSourceError && error.code === 'path-not-found',
   );
 });
 

@@ -2,7 +2,7 @@
   "name": "dex",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "1.1.2",
+  "version": "2.0.0",
   "publisher": "sordi",
   "license": "SEE LICENSE IN license.MD",
   "repository": {
@@ -23,25 +23,10 @@
   "contributes": {
     "commands": [
       {
-        "command": "dex.downloadSkills",
-        "title": "%command.downloadSkills.title%",
+        "command": "dex.syncSources",
+        "title": "%command.syncSources.title%",
         "category": "%command.category%",
         "icon": "$(sync)"
-      },
-      {
-        "command": "dex.openSkillsFolder",
-        "title": "%command.openSkillsFolder.title%",
-        "category": "%command.category%"
-      },
-      {
-        "command": "dex.addSkillsToWorkspace",
-        "title": "%command.addSkillsToWorkspace.title%",
-        "category": "%command.category%"
-      },
-      {
-        "command": "dex.configureSkills",
-        "title": "%command.configureSkills.title%",
-        "category": "%command.category%"
       },
       {
         "command": "dex.checkSkillsUpdates",
@@ -96,7 +81,7 @@
     "menus": {
       "view/title": [
         {
-          "command": "dex.downloadSkills",
+          "command": "dex.syncSources",
           "when": "view == dex.skillSources",
           "group": "navigation@0"
         },
@@ -109,6 +94,11 @@
           "command": "dex.openSyncConfig",
           "when": "view == dex.skillSources",
           "group": "1_configuration@2"
+        },
+        {
+          "command": "dex.checkSkillsUpdates",
+          "when": "view == dex.skillSources",
+          "group": "1_configuration@3"
         },
         {
           "command": "dex.addDefaultSource",
@@ -142,12 +132,13 @@
     "check": "tsc --noEmit -p ./",
     "test": "npm run compile && node --test out/test/*.test.js",
     "package": "vsce package",
-    "publish": "vsce publish"
+    "publish": "vsce publish && ovsx publish"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "@types/vscode": "^1.95.0",
     "@vscode/vsce": "^3.9.2",
+    "ovsx": "^1.0.2",
     "typescript": "^5.7.2"
   }
 }

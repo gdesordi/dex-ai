@@ -28,9 +28,11 @@ export class GitHubSourceError extends Error {
   constructor(
     readonly code:
       | 'rate-limit'
-      | 'not-found'
+      | 'repository-not-found'
+      | 'ref-not-found'
+      | 'path-not-found'
+      | 'file-not-found'
       | 'truncated'
-      | 'empty'
       | 'http'
       | 'unsafe-path',
     message: string,
@@ -49,7 +51,26 @@ export class GitHubSourceProvider {
       `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/commits/${encodeURIComponent(source.ref)}`,
       { headers: githubHeaders(), signal },
     );
-    await requireSuccessfulResponse(response, source, 'resolver a referência');
+    if (response.status === 404) {
+      const repositoryResponse = await this.fetcher(
+        `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}`,
+        { headers: githubHeaders(), signal },
+      );
+      await requireSuccessfulResponse(
+        repositoryResponse,
+        source,
+        'consultar o repositório',
+        'repository-not-found',
+        `o repositório ${owner}/${repository} não foi encontrado ou não é público`,
+      );
+    }
+    await requireSuccessfulResponse(
+      response,
+      source,
+      'resolver a referência',
+      'ref-not-found',
+      `a referência “${source.ref}” não existe em ${owner}/${repository}`,
+    );
     const body = (await response.json()) as GitHubCommitResponse;
     if (typeof body.sha !== 'string' || !/^[0-9a-f]{40}$/i.test(body.sha)) {
       throw new GitHubSourceError(
@@ -86,8 +107,8 @@ export class GitHubSourceProvider {
     );
     if (entries.length === 0) {
       throw new GitHubSourceError(
-        'empty',
-        `${source.id}: nenhuma skill foi encontrada em ${source.path}`,
+        'path-not-found',
+        `${source.id}: a pasta “${source.path}” não existe ou não contém arquivos no commit ${resolvedCommit.slice(0, 12)}`,
       );
     }
 
@@ -104,7 +125,13 @@ export class GitHubSourceProvider {
           `https://raw.githubusercontent.com/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/${resolvedCommit}/${encodedPath}`,
           { headers: { 'User-Agent': 'dex-vscode-extension' }, signal },
         );
-        await requireSuccessfulResponse(response, source, `baixar ${entry.path}`);
+        await requireSuccessfulResponse(
+          response,
+          source,
+          `baixar ${entry.path}`,
+          'file-not-found',
+          `o arquivo “${entry.path}” não foi encontrado no commit resolvido`,
+        );
         files.set(relativePath, new Uint8Array(await response.arrayBuffer()));
         completed += 1;
         onProgress?.(completed, entries.length, relativePath);
@@ -152,6 +179,8 @@ async function requireSuccessfulResponse(
   response: Response,
   source: SyncSource,
   operation: string,
+  notFoundCode: GitHubSourceError['code'] = 'http',
+  notFoundMessage?: string,
 ): Promise<void> {
   if (response.ok) {
     return;
@@ -164,8 +193,8 @@ async function requireSuccessfulResponse(
   }
   if (response.status === 404) {
     throw new GitHubSourceError(
-      'not-found',
-      `${source.id}: referência, repositório ou caminho não encontrado ao ${operation}`,
+      notFoundCode,
+      `${source.id}: ${notFoundMessage ?? `recurso não encontrado ao ${operation}`}`,
     );
   }
   throw new GitHubSourceError(

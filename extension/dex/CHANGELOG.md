@@ -7,6 +7,28 @@ Semântico.
 
 ## [Não publicado]
 
+## [2.0.0] - 2026-07-30
+
+### Modificado
+
+- A ativação passa a inicializar somente a Tree View e seus observadores, sem
+  consultar automaticamente o catálogo Dex no GitHub.
+- O comando global da Tree View passa a se chamar `dex.syncSources`.
+- Sincronizações e verificações passam a registrar no canal `Dex` cada etapa,
+  commits resolvidos e causas específicas de falha no GitHub.
+
+### Removido
+
+- Fluxo legado de download global, cópia manual para o workspace, configuração
+  em etapa única e verificação periódica do catálogo Dex.
+
+## [1.1.3] - 2026-07-30
+
+### Modificado
+
+- O script `npm run publish` passa a publicar a extensão no Visual Studio
+  Marketplace e no Open VSX Registry.
+
 ## [1.1.2] - 2026-07-29
 
 ### Adicionado
