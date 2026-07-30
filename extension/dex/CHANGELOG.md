@@ -7,6 +7,8 @@ Semântico.
 
 ## [Não publicado]
 
+## [1.1.3] - 2026-07-30
+
 ### Modificado
 
 - O script `npm run publish` passa a publicar a extensão no Visual Studio
