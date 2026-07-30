@@ -59,17 +59,15 @@ local dessa pasta.
 
 ## Armazenamento das skills
 
-O comando de download grava os arquivos em
-`context.globalStorageUri/skills`. A cópia para o workspace é feita de forma
-recursiva em `.agents/skills` no VS Code ou `.kiro/skills` no Kiro, preservando
-os demais arquivos do workspace. A decisão fica centralizada em
-`src/environment.ts` e considera `vscode.env.appName` e
-`vscode.env.uriScheme`.
+Cada fonte sincronizada mantém uma cópia isolada em `context.globalStorageUri`,
+separada por workspace e identificador. O `SourceService` compõe as fontes
+habilitadas em `.agents/skills` no VS Code ou `.kiro/skills` no Kiro. A decisão
+do destino fica centralizada em `src/environment.ts` e considera
+`vscode.env.appName` e `vscode.env.uriScheme`.
 
-A última verificação automática de atualização é persistida em
-`context.globalState` pela chave `dex.skills.lastUpdateCheckAt`. A extensão é
-ativada em `onStartupFinished` e um timer avalia a cada hora se o intervalo de
-24 horas já foi atingido.
+A extensão é ativada em `onStartupFinished` para registrar comandos, criar a
+Tree View e observar as configurações dos workspaces. Nenhuma fonte é consultada
+ou sincronizada automaticamente durante a ativação.
 
 A configuração declarativa fica em `.dex/sync.json`. A ativação não cria o
 arquivo nem mantém uma fonte implícita em memória. `dex.addSource` e
@@ -85,12 +83,17 @@ editáveis: o texto digitado tem prioridade sobre o exemplo selecionado e a
 configuração completa é normalizada e validada antes da escrita.
 
 Somente comandos no grupo `navigation` aparecem diretamente no header. As
-ações `dex.addDefaultSource` e `dex.openSyncConfig` usam o grupo
-`1_configuration` para permanecer no menu de três pontos.
+ações `dex.addDefaultSource`, `dex.openSyncConfig` e `dex.checkSkillsUpdates`
+usam o grupo `1_configuration` para permanecer no menu de três pontos.
 
-`dex.downloadSkills` é a sincronização global usada no header da view.
+`dex.syncSources` é a sincronização global usada no header da view.
 `dex.syncSource` recebe o item como argumento, atualiza somente seu cache e
 recompõe o destino com todas as fontes habilitadas.
+
+O canal de saída `Dex` registra as etapas de consulta, download, validação,
+atualização do cache e composição. Erros do GitHub distinguem repositório,
+referência, pasta ou arquivo ausente, limite de API e respostas inválidas; o
+canal é exibido automaticamente quando uma sincronização falha.
 
 ## Localização
 
@@ -102,8 +105,8 @@ um comando, mantenha a mesma chave nos dois catálogos `package.nls.json` e
 
 1. Inicie o Extension Development Host com `F5`.
 2. Abra um workspace de teste.
-3. Execute `Dex: Configurar skills`.
-4. Confirme que `.agents/skills` no VS Code ou `.kiro/skills` no Kiro contém os
-   arquivos baixados.
-5. Execute `Dex: Abrir pasta das skills` e confirme que o diretório correto foi
-   aberto no sistema.
+3. Adicione uma fonte pelo botão `+` ou inclua a fonte Dex padrão pelo menu de
+   três pontos.
+4. Execute `Dex: Sincronizar fontes de skills` pelo header da Tree View.
+5. Confirme que `.agents/skills` no VS Code ou `.kiro/skills` no Kiro contém os
+   arquivos sincronizados.

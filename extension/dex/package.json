@@ -23,25 +23,10 @@
   "contributes": {
     "commands": [
       {
-        "command": "dex.downloadSkills",
-        "title": "%command.downloadSkills.title%",
+        "command": "dex.syncSources",
+        "title": "%command.syncSources.title%",
         "category": "%command.category%",
         "icon": "$(sync)"
-      },
-      {
-        "command": "dex.openSkillsFolder",
-        "title": "%command.openSkillsFolder.title%",
-        "category": "%command.category%"
-      },
-      {
-        "command": "dex.addSkillsToWorkspace",
-        "title": "%command.addSkillsToWorkspace.title%",
-        "category": "%command.category%"
-      },
-      {
-        "command": "dex.configureSkills",
-        "title": "%command.configureSkills.title%",
-        "category": "%command.category%"
       },
       {
         "command": "dex.checkSkillsUpdates",
@@ -96,7 +81,7 @@
     "menus": {
       "view/title": [
         {
-          "command": "dex.downloadSkills",
+          "command": "dex.syncSources",
           "when": "view == dex.skillSources",
           "group": "navigation@0"
         },
@@ -109,6 +94,11 @@
           "command": "dex.openSyncConfig",
           "when": "view == dex.skillSources",
           "group": "1_configuration@2"
+        },
+        {
+          "command": "dex.checkSkillsUpdates",
+          "when": "view == dex.skillSources",
+          "group": "1_configuration@3"
         },
         {
           "command": "dex.addDefaultSource",

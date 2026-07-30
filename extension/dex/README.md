@@ -1,13 +1,14 @@
 # Dex
 
-Dex mantém uma coleção de skills disponível no Visual Studio Code e permite
-adicioná-la ao workspace atual com poucos comandos.
+Dex gerencia fontes de skills públicas do GitHub e sincroniza seus catálogos
+com o workspace atual pelo Visual Studio Code.
 
 ## Como usar
 
-Abra a Paleta de Comandos (`Ctrl+Shift+P` ou `Cmd+Shift+P`) e execute
-`Dex: Configurar skills`. A extensão baixa a versão mais recente das skills e
-copia os arquivos para o diretório correspondente ao editor:
+Abra a seção **Fontes de skills Dex** no Explorer. Adicione uma fonte pelo botão
+`+` ou inclua a fonte Dex padrão pelo menu de três pontos e use o botão de
+sincronização para baixar as fontes habilitadas. Os catálogos são compostos no
+diretório correspondente ao editor:
 
 - Visual Studio Code: `.agents/skills`;
 - Kiro: `.kiro/skills`.
@@ -15,8 +16,8 @@ copia os arquivos para o diretório correspondente ao editor:
 O ambiente é identificado automaticamente pelo nome e pelo URI scheme do
 Extension Host.
 
-É necessário ter um workspace aberto e acesso à internet para realizar o
-download.
+É necessário ter um workspace aberto e acesso à internet para sincronizar as
+fontes.
 
 Ao abrir uma pasta sem `.dex/sync.json`, a extensão não cria arquivos nem inclui
 fontes automaticamente. A configuração só é criada quando você adiciona uma
@@ -47,24 +48,17 @@ item apenas o seleciona e não abre o navegador.
 No header da view, o botão `+` inicia um cadastro guiado com exemplos para ID,
 URL do GitHub, branch/tag/commit e pasta do catálogo. O botão de sincronização
 atualiza todas as fontes habilitadas. As ações de incluir a fonte Dex padrão e
-abrir `.dex/sync.json` ficam no menu de três pontos.
+abrir `.dex/sync.json` e verificar atualizações ficam no menu de três pontos.
 
 Cada item também possui um botão de sincronização, que baixa somente aquela
 fonte e recompõe o workspace usando as cópias locais das demais.
 
 ## Comandos
 
-- `Dex: Configurar skills`: baixa ou atualiza as skills e as adiciona ao
-  workspace. Este é o comando recomendado para a configuração completa.
-- `Dex: Verificar atualizações das skills`: compara a versão local com a versão
-  publicada, permite consultar o changelog e oferece a atualização das skills e
-  do workspace.
-- `Dex: Baixar skills`: atualiza a cópia de skills armazenada localmente pela
-  extensão.
-- `Dex: Adicionar Skills ao Workspace`: copia as skills já baixadas para
-  `.agents/skills` no VS Code ou `.kiro/skills` no Kiro.
-- `Dex: Abrir pasta das skills`: abre a cópia local no gerenciador de arquivos
-  do sistema.
+- `Dex: Sincronizar fontes de skills`: baixa todas as fontes habilitadas e
+  recompõe `.agents/skills` no VS Code ou `.kiro/skills` no Kiro.
+- `Dex: Verificar atualizações das fontes`: compara os commits locais com as
+  referências remotas das fontes habilitadas.
 - `Dex: Adicionar fonte Dex padrão`: inclui novamente o catálogo Dex em
   `.dex/sync.json`; se o arquivo não existir, cria a primeira configuração. O
   comando não cria duplicatas nem sobrescreve uma fonte conflitante.
@@ -73,11 +67,14 @@ fonte e recompõe o workspace usando as cópias locais das demais.
 - `Dex: Abrir configuração de fontes`: abre `.dex/sync.json` para edição.
 - `Dex: Abrir repositório da fonte`: abre no navegador a origem selecionada na
   Tree View.
+- `Dex: Sincronizar fonte de skills`: atualiza somente a fonte selecionada e
+  recompõe o destino com as demais cópias locais habilitadas.
+- `Dex: Remover fonte de skills`: remove a fonte da configuração e permite
+  apagar também sua cópia local.
 
 Em workspaces com várias raízes, a extensão solicita qual pasta deve receber as
 skills. Os comandos acompanham o idioma do VS Code em inglês ou português do
 Brasil.
 
-A extensão verifica novas versões automaticamente uma vez ao dia. A verificação
-é silenciosa quando o catálogo já está atualizado e mostra as opções de
-atualização somente quando uma versão mais recente estiver disponível.
+A extensão não consulta nem sincroniza fontes automaticamente durante a
+ativação.

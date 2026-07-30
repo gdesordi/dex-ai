@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { validateCatalog } from './catalog-validator';
-import { GitHubSourceProvider } from './github-source';
+import { GitHubSourceError, GitHubSourceProvider } from './github-source';
 import { SourceStorage } from './source-storage';
 import { SyncSource, SourceSyncResult } from './sync-types';
 import { WorkspaceConfigManager } from './workspace-config';
@@ -13,6 +13,7 @@ export class SourceService {
   constructor(
     context: vscode.ExtensionContext,
     private readonly configs: WorkspaceConfigManager,
+    private readonly output: vscode.OutputChannel,
   ) {
     this.storage = new SourceStorage(context.globalStorageUri);
   }
@@ -20,6 +21,9 @@ export class SourceService {
   async syncAll(folder: vscode.WorkspaceFolder): Promise<SourceSyncResult[]> {
     const { config } = await this.configs.read(folder);
     const enabled = config.sources.filter((source) => source.enabled);
+    this.log(
+      `Sincronização iniciada para “${folder.name}”: ${enabled.length} de ${config.sources.length} fonte(s) habilitada(s).`,
+    );
     const results: SourceSyncResult[] = [];
     await vscode.window.withProgress(
       { location: vscode.ProgressLocation.Notification, title: 'Dex: sincronizando fontes', cancellable: true },
@@ -37,6 +41,7 @@ export class SourceService {
               if (controller.signal.aborted) {
                 throw new vscode.CancellationError();
               }
+              this.logError(source, error);
               results.push({
                 sourceId: source.id,
                 status: 'error',
@@ -49,7 +54,14 @@ export class SourceService {
         }
       },
     );
-    await this.compose(folder, enabled);
+    this.log(`Compondo o destino de “${folder.name}” com ${enabled.length} fonte(s).`);
+    try {
+      await this.compose(folder, enabled);
+    } catch (error) {
+      this.log(`Falha ao compor o destino: ${errorMessage(error)}`);
+      throw error;
+    }
+    this.log(`Sincronização de “${folder.name}” concluída.`);
     return results;
   }
 
@@ -62,6 +74,8 @@ export class SourceService {
     if (!source) {
       throw new Error(`a fonte “${sourceId}” não existe na configuração`);
     }
+
+    this.log(`Sincronização individual iniciada para a fonte “${source.id}”.`);
 
     const result = await vscode.window.withProgress(
       {
@@ -78,6 +92,7 @@ export class SourceService {
           if (controller.signal.aborted) {
             throw new vscode.CancellationError();
           }
+          this.logError(source, error);
           throw error;
         } finally {
           cancellation.dispose();
@@ -85,25 +100,45 @@ export class SourceService {
       },
     );
 
-    await this.compose(
-      folder,
-      config.sources.filter((item) => item.enabled),
-    );
+    try {
+      await this.compose(
+        folder,
+        config.sources.filter((item) => item.enabled),
+      );
+    } catch (error) {
+      this.log(`Falha ao compor o destino: ${errorMessage(error)}`);
+      throw error;
+    }
+    this.log(`Sincronização individual de “${source.id}” concluída.`);
     return result;
   }
 
   async checkUpdates(folder: vscode.WorkspaceFolder): Promise<string[]> {
     const { config } = await this.configs.read(folder);
     const updates: string[] = [];
+    this.log(`Verificando atualizações das fontes de “${folder.name}”.`);
     for (const source of config.sources.filter((item) => item.enabled)) {
-      const [commit, metadata] = await Promise.all([
-        this.provider.resolveCommit(source),
-        this.storage.readMetadata(folder, source.id),
-      ]);
-      if (!metadata || metadata.resolvedCommit !== commit) {
-        updates.push(source.id);
+      try {
+        this.log(`Fonte “${source.id}”: resolvendo ${source.repository}@${source.ref}.`);
+        const [commit, metadata] = await Promise.all([
+          this.provider.resolveCommit(source),
+          this.storage.readMetadata(folder, source.id),
+        ]);
+        if (!metadata || metadata.resolvedCommit !== commit) {
+          updates.push(source.id);
+        }
+        this.log(
+          `Fonte “${source.id}”: commit remoto ${commit.slice(0, 12)}; ` +
+            (metadata
+              ? `commit local ${metadata.resolvedCommit.slice(0, 12)}${metadata.resolvedCommit === commit ? ' (atual).' : ' (atualização disponível).'}`
+              : 'sem cache local.'),
+        );
+      } catch (error) {
+        this.logError(source, error);
+        throw error;
       }
     }
+    this.log(`Verificação concluída: ${updates.length} fonte(s) com atualização.`);
     return updates;
   }
 
@@ -165,8 +200,17 @@ export class SourceService {
     source: SyncSource,
     signal: AbortSignal,
   ): Promise<SourceSyncResult> {
+    this.log(
+      `Fonte “${source.id}”: consultando ${source.repository}, referência “${source.ref}”, pasta “${source.path}”.`,
+    );
     const catalog = await this.provider.download(source, signal);
+    this.log(
+      `Fonte “${source.id}”: commit ${catalog.resolvedCommit.slice(0, 12)} resolvido; ${catalog.files.size} arquivo(s) baixado(s).`,
+    );
     const validated = validateCatalog(source.id, catalog.files);
+    this.log(
+      `Fonte “${source.id}”: catálogo válido com ${validated.skills.length} skill(s).`,
+    );
     const metadata = await this.storage.install(
       folder,
       source,
@@ -174,8 +218,23 @@ export class SourceService {
       validated.skills.length,
       validated.skillsVersion,
     );
+    this.log(`Fonte “${source.id}”: cache local atualizado.`);
     return { sourceId: source.id, status: 'synced', metadata };
   }
+
+  private log(message: string): void {
+    this.output.appendLine(`[${new Date().toISOString()}] ${message}`);
+  }
+
+  private logError(source: SyncSource, error: unknown): void {
+    const code = error instanceof GitHubSourceError ? ` [${error.code}]` : '';
+    const message = error instanceof Error ? error.message : String(error);
+    this.log(`Fonte “${source.id}”: falha${code}: ${message}`);
+  }
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 async function copyDirectory(source: vscode.Uri, destination: vscode.Uri): Promise<void> {
