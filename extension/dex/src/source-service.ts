@@ -5,6 +5,7 @@ import { SourceStorage } from './source-storage';
 import { SyncSource, SourceSyncResult } from './sync-types';
 import { WorkspaceConfigManager } from './workspace-config';
 import { resolveSkillsDestination } from './environment';
+import { managedEntriesToReplace } from './source-composition';
 
 export class SourceService {
   private readonly provider = new GitHubSourceProvider();
@@ -21,6 +22,10 @@ export class SourceService {
   async syncAll(folder: vscode.WorkspaceFolder): Promise<SourceSyncResult[]> {
     const { config } = await this.configs.read(folder);
     const enabled = config.sources.filter((source) => source.enabled);
+    const previouslyManaged = await this.collectManagedSkillNames(
+      folder,
+      config.sources,
+    );
     this.log(
       `Sincronização iniciada para “${folder.name}”: ${enabled.length} de ${config.sources.length} fonte(s) habilitada(s).`,
     );
@@ -56,7 +61,7 @@ export class SourceService {
     );
     this.log(`Compondo o destino de “${folder.name}” com ${enabled.length} fonte(s).`);
     try {
-      await this.compose(folder, enabled);
+      await this.compose(folder, enabled, previouslyManaged);
     } catch (error) {
       this.log(`Falha ao compor o destino: ${errorMessage(error)}`);
       throw error;
@@ -76,6 +81,10 @@ export class SourceService {
     }
 
     this.log(`Sincronização individual iniciada para a fonte “${source.id}”.`);
+    const previouslyManaged = await this.collectManagedSkillNames(
+      folder,
+      config.sources,
+    );
 
     const result = await vscode.window.withProgress(
       {
@@ -104,6 +113,7 @@ export class SourceService {
       await this.compose(
         folder,
         config.sources.filter((item) => item.enabled),
+        previouslyManaged,
       );
     } catch (error) {
       this.log(`Falha ao compor o destino: ${errorMessage(error)}`);
@@ -145,6 +155,7 @@ export class SourceService {
   private async compose(
     folder: vscode.WorkspaceFolder,
     sources: SyncSource[],
+    previouslyManaged: ReadonlySet<string>,
   ): Promise<void> {
     const owners = new Map<string, string>();
     for (const source of sources) {
@@ -178,21 +189,44 @@ export class SourceService {
     await remove(backup);
     await vscode.workspace.fs.createDirectory(temporary);
     try {
+      if (await exists(destination)) {
+        await copyDirectory(destination, temporary);
+      }
+      for (const name of managedEntriesToReplace(previouslyManaged, owners.keys())) {
+        await remove(vscode.Uri.joinPath(temporary, name));
+      }
       for (const source of sources) {
         await copyDirectory(this.storage.getActiveUri(folder, source.id), temporary);
       }
-      if (await exists(destination)) await vscode.workspace.fs.rename(destination, backup);
+      await vscode.workspace.fs.createDirectory(backup);
+      if (await exists(destination)) await copyDirectory(destination, backup);
       try {
-        await vscode.workspace.fs.rename(temporary, destination);
+        await replaceDirectoryContents(destination, temporary);
       } catch (error) {
-        if (await exists(backup)) await vscode.workspace.fs.rename(backup, destination);
+        await replaceDirectoryContents(destination, backup);
         throw error;
       }
+      await remove(temporary);
       await remove(backup);
     } catch (error) {
       await remove(temporary);
       throw error;
     }
+  }
+
+  private async collectManagedSkillNames(
+    folder: vscode.WorkspaceFolder,
+    sources: SyncSource[],
+  ): Promise<Set<string>> {
+    const names = new Set<string>();
+    for (const source of sources) {
+      const active = this.storage.getActiveUri(folder, source.id);
+      if (!(await exists(active))) continue;
+      for (const [name, type] of await vscode.workspace.fs.readDirectory(active)) {
+        if (type & vscode.FileType.Directory) names.add(name);
+      }
+    }
+    return names;
   }
 
   private async downloadAndInstall(
@@ -245,6 +279,19 @@ async function copyDirectory(source: vscode.Uri, destination: vscode.Uri): Promi
     if (type & vscode.FileType.Directory) await copyDirectory(from, to);
     else if (type & vscode.FileType.File) await vscode.workspace.fs.writeFile(to, await vscode.workspace.fs.readFile(from));
   }
+}
+
+async function replaceDirectoryContents(
+  destination: vscode.Uri,
+  source: vscode.Uri,
+): Promise<void> {
+  await vscode.workspace.fs.createDirectory(destination);
+  for (const [name] of await vscode.workspace.fs.readDirectory(destination)) {
+    await vscode.workspace.fs.delete(vscode.Uri.joinPath(destination, name), {
+      recursive: true,
+    });
+  }
+  await copyDirectory(source, destination);
 }
 
 async function exists(uri: vscode.Uri): Promise<boolean> {

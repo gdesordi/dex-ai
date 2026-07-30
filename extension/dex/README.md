@@ -1,29 +1,33 @@
 # Dex
 
-Dex gerencia fontes de skills públicas do GitHub e sincroniza seus catálogos
-com o workspace atual pelo Visual Studio Code.
+Dex gerencia fontes públicas de skills hospedadas no GitHub e compõe os
+catálogos habilitados em cada workspace pelo Visual Studio Code ou pelo Kiro.
 
 ## Como usar
 
-Abra a seção **Fontes de skills Dex** no Explorer. Adicione uma fonte pelo botão
-`+` ou inclua a fonte Dex padrão pelo menu de três pontos e use o botão de
-sincronização para baixar as fontes habilitadas. Os catálogos são compostos no
-diretório correspondente ao editor:
+1. Abra uma pasta ou workspace confiável.
+2. No Explorer, localize a seção **Fontes de skills Dex**.
+3. Use o botão `+` para cadastrar uma fonte ou, no menu de três pontos, escolha
+   **Dex: Adicionar fonte Dex padrão**.
+4. Use o botão de sincronização no cabeçalho para atualizar todas as fontes
+   habilitadas.
+
+A extensão identifica o editor automaticamente e grava a composição em:
 
 - Visual Studio Code: `.agents/skills`;
 - Kiro: `.kiro/skills`.
 
-O ambiente é identificado automaticamente pelo nome e pelo URI scheme do
-Extension Host.
+É necessário ter acesso à internet durante a sincronização e a verificação de
+atualizações.
 
-É necessário ter um workspace aberto e acesso à internet para sincronizar as
-fontes.
+## Configuração por workspace
 
-Ao abrir uma pasta sem `.dex/sync.json`, a extensão não cria arquivos nem inclui
-fontes automaticamente. A configuração só é criada quando você adiciona uma
-fonte pelo botão `+` ou inclui a fonte Dex padrão pelo menu de três pontos.
+As fontes ficam declaradas em `.dex/sync.json` na raiz selecionada. Abrir uma
+pasta sem esse arquivo não cria configuração, adiciona fontes, consulta o GitHub
+ou sincroniza skills automaticamente. O arquivo é criado somente quando uma
+fonte é adicionada pela extensão.
 
-Outros catálogos públicos do GitHub podem ser adicionados a `sources`:
+Exemplo de configuração:
 
 ```json
 {
@@ -40,41 +44,65 @@ Outros catálogos públicos do GitHub podem ser adicionados a `sources`:
 }
 ```
 
-A seção **Fontes de skills Dex** do Explorer lista as fontes configuradas. A
-sincronização rejeita skills de mesmo nome vindas de fontes diferentes. Use os
-botões inline de cada fonte para abrir seu repositório ou removê-la. Clicar no
-item apenas o seleciona e não abre o navegador.
+Cada fonte define um identificador único, a URL pública do GitHub, uma branch,
+tag ou commit, o caminho do catálogo no repositório e se participa das
+sincronizações. Em workspaces com várias raízes, os comandos globais solicitam
+qual pasta deve ser usada.
 
-No header da view, o botão `+` inicia um cadastro guiado com exemplos para ID,
-URL do GitHub, branch/tag/commit e pasta do catálogo. O botão de sincronização
-atualiza todas as fontes habilitadas. As ações de incluir a fonte Dex padrão e
-abrir `.dex/sync.json` e verificar atualizações ficam no menu de três pontos.
+## Sincronização
 
-Cada item também possui um botão de sincronização, que baixa somente aquela
-fonte e recompõe o workspace usando as cópias locais das demais.
+O botão de sincronização no cabeçalho baixa todas as fontes habilitadas, valida
+seus catálogos, atualiza a cópia local isolada de cada fonte e recompõe o destino
+do workspace. Skills de mesmo nome em fontes diferentes são rejeitadas.
+
+O botão de sincronização de uma fonte atualiza somente a fonte selecionada. O
+destino é recomposto com sua nova cópia e com as cópias locais das demais fontes
+habilitadas.
+
+Durante a composição, a pasta `.agents/skills` ou `.kiro/skills` permanece no
+lugar e somente seu conteúdo é substituído. A extensão mantém uma cópia
+temporária do conteúdo anterior para restauração em caso de falha. Como o
+destino inteiro é gerenciado pela Dex, arquivos e skills adicionados manualmente
+dentro dele são removidos na próxima composição.
+
+Se o download de uma fonte falhar durante a sincronização global, a extensão
+registra a falha e usa sua última cópia local válida, quando disponível, para
+compor o destino. Os detalhes ficam no canal de saída **Dex**.
+
+A verificação de atualizações é manual. Ela compara o commit armazenado de cada
+fonte habilitada com o commit atual da referência configurada, sem sincronizar o
+catálogo.
+
+## Tree View
+
+A seção **Fontes de skills Dex** lista as fontes de cada raiz do workspace.
+
+- O botão `+` abre o cadastro guiado de uma nova fonte.
+- O botão de sincronização do cabeçalho atualiza todas as fontes habilitadas.
+- Os botões de cada fonte permitem sincronizá-la, abrir seu repositório ou
+  removê-la.
+- O menu de três pontos permite adicionar a fonte Dex padrão, abrir
+  `.dex/sync.json` e verificar atualizações.
+
+Clicar em uma fonte apenas a seleciona; o repositório é aberto pelo botão
+correspondente. Ao remover uma fonte, é possível preservar ou apagar sua cópia
+local isolada.
 
 ## Comandos
 
-- `Dex: Sincronizar fontes de skills`: baixa todas as fontes habilitadas e
-  recompõe `.agents/skills` no VS Code ou `.kiro/skills` no Kiro.
+- `Dex: Sincronizar fontes de skills`: sincroniza todas as fontes habilitadas e
+  recompõe o destino.
+- `Dex: Sincronizar fonte de skills`: sincroniza a fonte selecionada e recompõe
+  o destino com todas as fontes habilitadas.
 - `Dex: Verificar atualizações das fontes`: compara os commits locais com as
-  referências remotas das fontes habilitadas.
-- `Dex: Adicionar fonte Dex padrão`: inclui novamente o catálogo Dex em
-  `.dex/sync.json`; se o arquivo não existir, cria a primeira configuração. O
-  comando não cria duplicatas nem sobrescreve uma fonte conflitante.
-- `Dex: Adicionar fonte de skills`: solicita os dados da nova fonte em Quick
-  Picks e atualiza `.dex/sync.json`.
+  referências remotas configuradas.
+- `Dex: Adicionar fonte de skills`: cadastra uma fonte em `.dex/sync.json`.
+- `Dex: Adicionar fonte Dex padrão`: inclui o catálogo Dex sem criar duplicatas
+  ou sobrescrever uma fonte conflitante.
 - `Dex: Abrir configuração de fontes`: abre `.dex/sync.json` para edição.
-- `Dex: Abrir repositório da fonte`: abre no navegador a origem selecionada na
-  Tree View.
-- `Dex: Sincronizar fonte de skills`: atualiza somente a fonte selecionada e
-  recompõe o destino com as demais cópias locais habilitadas.
-- `Dex: Remover fonte de skills`: remove a fonte da configuração e permite
-  apagar também sua cópia local.
+- `Dex: Abrir repositório da fonte`: abre no navegador a origem selecionada.
+- `Dex: Remover fonte de skills`: remove a fonte da configuração e oferece a
+  opção de apagar sua cópia local.
 
-Em workspaces com várias raízes, a extensão solicita qual pasta deve receber as
-skills. Os comandos acompanham o idioma do VS Code em inglês ou português do
-Brasil.
-
-A extensão não consulta nem sincroniza fontes automaticamente durante a
-ativação.
+Os comandos acompanham o idioma do editor em inglês ou português do Brasil.
+Nenhuma fonte é consultada ou sincronizada automaticamente durante a ativação.

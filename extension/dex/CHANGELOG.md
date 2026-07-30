@@ -7,6 +7,27 @@ Semântico.
 
 ## [Não publicado]
 
+## [2.0.2] - 2026-07-30
+
+### Corrigido
+
+- A composição das skills passa a substituir somente diretórios gerenciados
+  pelas fontes configuradas, preservando skills locais ou instaladas por outros
+  meios na pasta de destino.
+
+## [2.0.1] - 2026-07-30
+
+### Modificado
+
+- O README da extensão passa a documentar o fluxo atual pela Tree View, a
+  configuração por workspace, o cache por fonte e a composição do conteúdo da
+  pasta `skills`, sem instruções do fluxo legado.
+
+### Corrigido
+
+- A sincronização no Kiro agora mantém `.kiro/skills` no lugar e atualiza apenas
+  seu conteúdo, evitando falhas `EPERM` ao tentar renomear a pasta observada.
+
 ## [2.0.0] - 2026-07-30
 
 ### Modificado

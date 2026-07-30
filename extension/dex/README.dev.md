@@ -65,6 +65,11 @@ habilitadas em `.agents/skills` no VS Code ou `.kiro/skills` no Kiro. A decisão
 do destino fica centralizada em `src/environment.ts` e considera
 `vscode.env.appName` e `vscode.env.uriScheme`.
 
+Durante a composição, a extensão mantém a pasta `skills` no lugar e substitui
+somente seus arquivos e subdiretórios. Uma cópia temporária do conteúdo anterior
+permite restaurá-lo se a atualização falhar. Isso evita renomear a pasta
+observada pelo editor, operação que pode falhar com `EPERM` no Kiro.
+
 A extensão é ativada em `onStartupFinished` para registrar comandos, criar a
 Tree View e observar as configurações dos workspaces. Nenhuma fonte é consultada
 ou sincronizada automaticamente durante a ativação.
