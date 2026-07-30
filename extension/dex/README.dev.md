@@ -33,8 +33,9 @@ local dessa pasta.
 - `npm test`: compila e executa os testes automatizados.
 - `npm run vscode:prepublish`: prepara a extensão para empacotamento.
 - `npm run package`: compila e gera o arquivo `.vsix` da versão atual.
-- `npm run publish`: publica a versão atual no Visual Studio Marketplace; exige
-  autenticação prévia com `vsce login <publisher>` ou a variável `VSCE_PAT`.
+- `npm run publish`: publica a versão atual no Visual Studio Marketplace e, em
+  seguida, no Open VSX Registry; exige autenticação com `vsce login <publisher>`
+  ou `VSCE_PAT` para o Marketplace e `OVSX_PAT` para o Open VSX.
 
 ## Estrutura
 

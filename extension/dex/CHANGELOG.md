@@ -7,6 +7,11 @@ Semântico.
 
 ## [Não publicado]
 
+### Modificado
+
+- O script `npm run publish` passa a publicar a extensão no Visual Studio
+  Marketplace e no Open VSX Registry.
+
 ## [1.1.2] - 2026-07-29
 
 ### Adicionado
