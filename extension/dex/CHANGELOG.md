@@ -7,6 +7,12 @@ Semântico.
 
 ## [Não publicado]
 
+### Adicionado
+
+- Comando `Dex: Responder questionário de especificação`, com descoberta em
+  `.specs/dex/`, respostas e revisão por Quick Picks, persistência incremental,
+  status derivado e proteção contra contratos inválidos ou incompatíveis.
+
 ## [2.0.2] - 2026-07-30
 
 ### Corrigido

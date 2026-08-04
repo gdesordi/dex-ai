@@ -103,6 +103,24 @@ local isolada.
 - `Dex: Abrir repositório da fonte`: abre no navegador a origem selecionada.
 - `Dex: Remover fonte de skills`: remove a fonte da configuração e oferece a
   opção de apagar sua cópia local.
+- `Dex: Responder questionário de especificação`: localiza questionários JSON
+  mantidos pela `dex-spec-manage` em `.specs/dex/`, permite aceitar a sugestão
+  ou escrever outra resposta e grava cada decisão imediatamente.
+
+## Questionários de especificação
+
+A skill `dex-spec-manage` mantém cada questionário em Markdown e no arquivo
+`<feature>.refinement-questionnaire.json`. Ao executar o comando de resposta, a
+extensão procura esses arquivos em todas as pastas do workspace, apresenta os
+pendentes primeiro e também permite revisar questionários já respondidos.
+
+O estado exibido pode ser **Pendente**, **Respondido parcialmente** ou
+**Respondido**. Cancelar o fluxo preserva as respostas confirmadas até aquele
+momento. Arquivos inválidos ou com versão de schema incompatível não são
+alterados; os detalhes ficam no canal de saída **Dex**.
+
+Depois de responder, solicite à `dex-spec-manage` que sincronize ou consolide a
+spec para transportar as respostas do JSON ao questionário Markdown.
 
 Os comandos acompanham o idioma do editor em inglês ou português do Brasil.
 Nenhuma fonte é consultada ou sincronizada automaticamente durante a ativação.

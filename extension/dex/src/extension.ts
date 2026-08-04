@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { WorkspaceConfigManager } from './workspace-config';
 import { SourceService } from './source-service';
 import { SourcesTreeProvider, isSourceNode } from './sources-tree';
+import { answerSpecQuestionnaire } from './spec-questionnaire-command';
 import { SyncSource } from './sync-types';
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -251,6 +252,11 @@ export function activate(context: vscode.ExtensionContext): void {
     },
   );
 
+  const answerSpecQuestionnaireCommand = vscode.commands.registerCommand(
+    'dex.answerSpecQuestionnaire',
+    () => answerSpecQuestionnaire(outputChannel),
+  );
+
   context.subscriptions.push(
     outputChannel,
     workspaceConfigManager,
@@ -264,6 +270,7 @@ export function activate(context: vscode.ExtensionContext): void {
     addDefaultSourceCommand,
     syncSourcesCommand,
     checkSkillsUpdatesCommand,
+    answerSpecQuestionnaireCommand,
   );
 
   void workspaceConfigManager.start().catch((error: unknown) => {

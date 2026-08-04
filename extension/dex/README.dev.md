@@ -49,6 +49,10 @@ local dessa pasta.
 - `src/source-storage.ts`: armazenamento isolado e transacional por fonte.
 - `src/source-service.ts`: sincronização em lote e composição do workspace.
 - `src/sources-tree.ts`: provider da Tree View de fontes.
+- `src/spec-questionnaire.ts`: contrato, parsing, serialização, status e
+  ordenação dos questionários de especificação.
+- `src/spec-questionnaire-command.ts`: descoberta no workspace, Quick Picks e
+  persistência incremental das respostas.
 - `src/test/`: testes executados pelo test runner nativo do Node.js.
 - `media/`: recursos visuais da extensão.
 - `package.json`: manifesto, comandos e scripts.
@@ -95,6 +99,12 @@ usam o grupo `1_configuration` para permanecer no menu de três pontos.
 `dex.syncSource` recebe o item como argumento, atualiza somente seu cache e
 recompõe o destino com todas as fontes habilitadas.
 
+`dex.answerSpecQuestionnaire` procura exclusivamente por
+`.specs/dex/*/*.refinement-questionnaire.json` em todas as raízes abertas. O
+parser exige `schemaVersion: 1`, campos obrigatórios, IDs únicos e status
+coerente com as respostas. Cada resposta é gravada por substituição segura antes
+de o fluxo avançar; questionários rejeitados nunca são sobrescritos.
+
 O canal de saída `Dex` registra as etapas de consulta, download, validação,
 atualização do cache e composição. Erros do GitHub distinguem repositório,
 referência, pasta ou arquivo ausente, limite de API e respostas inválidas; o
@@ -115,3 +125,7 @@ um comando, mantenha a mesma chave nos dois catálogos `package.nls.json` e
 4. Execute `Dex: Sincronizar fontes de skills` pelo header da Tree View.
 5. Confirme que `.agents/skills` no VS Code ou `.kiro/skills` no Kiro contém os
    arquivos sincronizados.
+6. Para validar questionários, crie um JSON conforme o contrato em
+   `.specs/dex/<feature>/`, execute **Dex: Responder questionário de
+   especificação** e confirme respostas, revisão, cancelamento e atualização do
+   status.

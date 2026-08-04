@@ -13,6 +13,7 @@ Cada feature possui uma subpasta própria em `.specs/dex/<feature>/`.
     └── <feature>/
         ├── <feature>.briefing.md
         ├── <feature>.refinement-questionnaire.md
+        ├── <feature>.refinement-questionnaire.json
         ├── <feature>.spec.md
         └── <feature>.plan.md
 ```
@@ -35,6 +36,12 @@ posteriores.
 `<feature>.refinement-questionnaire.md` registra ambiguidades, sugestões e
 respostas. Perguntas marcadas como **Essencial** precisam ser respondidas antes
 da consolidação da especificação.
+
+`<feature>.refinement-questionnaire.json` espelha a estrutura do questionário,
+mantém as respostas usadas pela integração com a extensão Dex e registra o
+estado `pending`, `partially-answered` ou `answered`. A `dex-spec-manage` mantém
+as duas representações sincronizadas e trata divergências antes de consolidar a
+especificação.
 
 ### Especificação
 

@@ -19,6 +19,7 @@ Usar uma pasta por feature:
     └── <feature>/
         ├── <feature>.briefing.md
         ├── <feature>.refinement-questionnaire.md
+        ├── <feature>.refinement-questionnaire.json
         ├── <feature>.spec.md
         └── <feature>.plan.md
 ```
@@ -27,6 +28,11 @@ Preservar nomes já estabelecidos em `.specs/dex/`. Tratar o briefing como fonte
 original, o questionário como registro de decisões e a especificação como
 descrição consolidada do comportamento atual aprovado. Não usar a especificação
 como changelog.
+
+O questionário possui duas representações coordenadas: o Markdown é a fonte de
+estrutura e texto das perguntas; o JSON é o contrato interativo e a fonte das
+respostas gravadas pela extensão Dex. Sempre criar ou atualizar as duas
+representações na mesma operação da skill.
 
 Não criar nem atualizar o plano de implementação; esse artefato pertence a
 `dex-spec-plan`.
@@ -110,7 +116,8 @@ Antes de escrever:
 3. Se `.specs/dex/readme.md` não existir, copiar integralmente
    `assets/specs-readme.md` para esse caminho.
 4. Preservar `.specs/dex/readme.md` sem alterações quando ele já existir e lê-lo.
-5. Ler integralmente briefing, questionário, especificação e plano existentes.
+5. Ler integralmente briefing, questionário Markdown, questionário JSON,
+   especificação e plano existentes.
 6. Ler a fonte da mudança indicada pelo usuário, quando houver.
 7. Inspecionar código, manifests, contratos, traduções, testes e documentação
    relacionados à feature.
@@ -142,8 +149,10 @@ resposta, ou quando uma mudança posterior introduzir ambiguidade material.
 1. Extrair fatos confirmados, contradições, lacunas e termos vagos.
 2. Confrontar as fontes com o comportamento e as convenções do projeto.
 3. Criar ou atualizar `<feature>.refinement-questionnaire.md`.
-4. Não criar nem alterar a especificação como se a decisão estivesse fechada.
-5. Informar quais respostas essenciais impedem a consolidação.
+4. Criar ou atualizar o JSON correspondente conforme **Manter o questionário
+   JSON**.
+5. Não criar nem alterar a especificação como se a decisão estivesse fechada.
+6. Informar quais respostas essenciais impedem a consolidação.
 
 ### 2. Consolidar a primeira especificação
 
@@ -151,11 +160,14 @@ Usar quando não existir `.spec.md` e todas as perguntas essenciais estiverem
 respondidas. Um pedido para “atualizar a spec” depois de responder o questionário
 deve entrar nesta operação, mesmo que a especificação ainda não exista.
 
-1. Resolver cada requisito conforme as respostas, inclusive `manter sugestão`.
-2. Criar `<feature>.spec.md`.
-3. Remover pendências resolvidas.
-4. Preservar o questionário respondido como registro das decisões.
-5. Manter como pendência apenas questão nova e realmente bloqueante, explicando
+1. Sincronizar primeiro as respostas do JSON para o Markdown conforme
+   **Importar respostas do JSON**.
+2. Resolver cada requisito conforme as respostas, inclusive `manter sugestão`.
+3. Criar `<feature>.spec.md`.
+4. Remover pendências resolvidas.
+5. Preservar as duas representações do questionário respondido como registro
+   das decisões.
+6. Manter como pendência apenas questão nova e realmente bloqueante, explicando
    por que surgiu.
 
 ### 3. Atualizar uma especificação consolidada
@@ -169,12 +181,14 @@ correção editorial.
 
 Para cada mudança confirmada:
 
-1. localizar todas as seções afetadas;
-2. substituir requisitos obsoletos em vez de apenas acrescentar exceções;
-3. revisar escopo, requisitos, regras, erros e falhas parciais;
-4. atualizar critérios de aceitação e testes esperados;
-5. revisar decisões técnicas somente quando necessário;
-6. remover contradições e pendências resolvidas.
+1. sincronizar primeiro as respostas do JSON para o Markdown quando o pedido
+   envolver atualização, sincronização ou consolidação;
+2. localizar todas as seções afetadas;
+3. substituir requisitos obsoletos em vez de apenas acrescentar exceções;
+4. revisar escopo, requisitos, regras, erros e falhas parciais;
+5. atualizar critérios de aceitação e testes esperados;
+6. revisar decisões técnicas somente quando necessário;
+7. remover contradições e pendências resolvidas.
 
 Preservar estrutura e terminologia existentes quando continuarem corretas.
 Renumerar critérios de aceitação somente para evitar duplicidade ou referências
@@ -206,6 +220,87 @@ Agrupar perguntas por assunto e numerá-las hierarquicamente. Para cada pergunta
 Evitar perguntas respondidas pelas fontes ou pelo código. Preferir poucas
 perguntas de alto impacto. Fazer inferências somente para detalhes reversíveis e
 de baixo impacto, identificando-as como decisões técnicas na especificação.
+
+Depois de criar ou alterar o Markdown, executar **Manter o questionário JSON**
+antes de concluir a operação.
+
+## Manter o questionário JSON
+
+Usar o caminho
+`.specs/dex/<feature>/<feature>.refinement-questionnaire.json`, ao lado do
+Markdown correspondente. O contrato inicial é:
+
+```json
+{
+  "schemaVersion": 1,
+  "feature": "nome-da-feature",
+  "title": "Questionário de Refinamento — nome-da-feature",
+  "status": "pending",
+  "questions": [
+    {
+      "id": "1.1",
+      "section": "Assunto",
+      "text": "Texto da pergunta",
+      "essential": true,
+      "suggestion": "Sugestão objetiva",
+      "answer": null
+    }
+  ]
+}
+```
+
+Regras do contrato:
+
+- usar `schemaVersion` numérico igual a `1`;
+- usar em `feature` o nome normalizado da pasta;
+- preservar no array `questions` a ordem do Markdown;
+- representar `id`, `section`, `text`, `essential` e `suggestion` conforme o
+  Markdown;
+- usar `answer: null` para questão sem resposta e uma string não vazia para
+  questão respondida;
+- aceitar `manter sugestão` como resposta e resolvê-la conforme a sugestão da
+  mesma questão durante a consolidação;
+- correlacionar respostas por `id`, nunca somente pela posição no array;
+- ao atualizar a estrutura, preservar a resposta existente de todo `id` que
+  continuar presente, inclusive quando texto, seção ou sugestão mudarem;
+- quando o JSON ainda não existir, copiar para `answer` a resposta não vazia já
+  registrada no Markdown e usar `null` somente nas questões sem resposta;
+- iniciar questões novas com `answer: null` e remover do JSON questões que não
+  existirem mais no Markdown;
+- recusar atualização de JSON inválido ou com `schemaVersion` diferente de `1`,
+  explicar a pendência e nunca sobrescrever o arquivo incompatível.
+
+Calcular `status` considerando todas as questões, essenciais ou não:
+
+- `pending`: nenhuma questão possui resposta;
+- `partially-answered`: pelo menos uma, mas não todas, possui resposta;
+- `answered`: todas as questões possuem resposta.
+
+O status é sempre derivado das respostas. Não preservar manualmente um status
+que contradiga o conteúdo de `questions`.
+
+## Importar respostas do JSON
+
+Quando o usuário pedir para atualizar, sincronizar ou consolidar a spec, ler o
+JSON correspondente antes de avaliar pendências ou escrever a especificação.
+
+Validar `schemaVersion`, campos obrigatórios, tipos, valores de `status`, IDs
+únicos e o status derivado. Diante de JSON inválido ou incompatível, informar o
+problema sem alterar o JSON nem o Markdown.
+
+Para cada questão correlacionada por `id`:
+
+- se somente o JSON possuir resposta, copiá-la para a linha `Resposta:` do
+  Markdown;
+- se JSON e Markdown possuírem a mesma resposta, preservar o valor;
+- se ambos possuírem respostas diferentes e não vazias, apresentar o conflito
+  e solicitar qual resposta deve prevalecer antes de sobrescrever qualquer uma;
+- se a decisão do usuário escolher a resposta do Markdown, atualizar também o
+  JSON para restabelecer a equivalência;
+- depois de importar ou resolver conflitos, recalcular e persistir o status.
+
+Não consolidar a especificação enquanto existir conflito não resolvido em uma
+pergunta essencial.
 
 ## Avaliar mudanças posteriores
 
@@ -261,7 +356,7 @@ referenciar caminhos e contratos reais quando isso ajudar a implementação.
 ## Preservar rastreabilidade
 
 - Não modificar `<feature>.briefing.md` retroativamente.
-- Preservar respostas existentes no questionário.
+- Preservar respostas existentes nas duas representações do questionário.
 - Não criar changelog dentro da pasta da feature.
 - Não copiar grandes trechos de código para a especificação.
 - Diferenciar comportamento aprovado de detalhe de implementação.

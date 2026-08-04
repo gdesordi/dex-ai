@@ -68,6 +68,12 @@
         "title": "%command.removeSource.title%",
         "category": "%command.category%",
         "icon": "$(trash)"
+      },
+      {
+        "command": "dex.answerSpecQuestionnaire",
+        "title": "%command.answerSpecQuestionnaire.title%",
+        "category": "%command.category%",
+        "icon": "$(question)"
       }
     ],
     "views": {

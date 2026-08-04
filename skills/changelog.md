@@ -12,6 +12,15 @@ recente deste changelog.
 
 Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
 
+## [3.1.0] - 2026-08-04
+
+### Adicionado
+
+- `dex-spec-manage` passa a manter uma representação JSON versionada dos
+  questionários, preservar respostas por ID, calcular o estado do preenchimento
+  e importar respostas da extensão Dex para o Markdown com detecção de
+  conflitos.
+
 ## [3.0.0] - 2026-08-04
 
 ### Modificado
