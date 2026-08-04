@@ -1,9 +1,9 @@
 ---
-name: spec-plan
-description: Cria e atualiza planos de implementação divididos em fases a partir de especificações consolidadas, gravando o resultado em `specs/nome-da-feature/nome-da-feature.plan.md`. Usar quando Codex precisar decompor uma feature especificada em etapas executáveis, ordenar dependências, indicar arquivos e componentes afetados, planejar testes e validações ou preparar um roteiro técnico antes de iniciar a implementação.
+name: dex-spec-plan
+description: Cria e atualiza planos de implementação divididos em fases a partir de especificações Dex consolidadas, gravando o resultado exclusivamente em `.specs/dex/nome-da-feature/nome-da-feature.plan.md`. Usar quando Codex precisar decompor uma feature especificada em etapas executáveis, ordenar dependências, indicar arquivos e componentes afetados, planejar testes e validações ou preparar um roteiro técnico antes de iniciar a implementação.
 ---
 
-# Spec Plan
+# Dex Spec Plan
 
 Transformar uma especificação consolidada em um roteiro técnico executável,
 dividido em fases verificáveis. Produzir o plano em português do Brasil.
@@ -13,27 +13,35 @@ dividido em fases verificáveis. Produzir o plano em português do Brasil.
 Usar esta skill somente quando existir:
 
 ```text
-specs/<feature>/<feature>.spec.md
+.specs/dex/<feature>/<feature>.spec.md
 ```
 
-Se a feature ainda não tiver estrutura, encaminhar para `spec-create`. Se
+Se a feature ainda não tiver estrutura, encaminhar para `dex-spec-create`. Se
 existirem apenas briefing ou questionário, ou se a especificação tiver uma
 pendência material capaz de mudar a implementação, encaminhar para
-`spec-manage` antes de planejar.
+`dex-spec-manage` antes de planejar.
 
 Quando mais de uma feature puder corresponder ao pedido, listar as candidatas e
 solicitar a escolha antes de editar arquivos.
+
+## Limite de propriedade
+
+Ler e escrever artefatos de especificação somente em `.specs/dex/`. Não
+procurar, abrir, importar, alterar nem usar como contexto specs localizadas em
+`specs/`, outras subpastas de `.specs/`, `docs/` ou qualquer outro caminho;
+essas specs pertencem a outras skills. Inspecionar código, manifests, testes e
+documentação comum fora desse diretório continua permitido.
 
 ## Preparar o contexto
 
 Antes de escrever:
 
 1. Ler o `AGENTS.md` aplicável e os arquivos indicados por ele.
-2. Criar `specs/` quando ainda não existir.
-3. Se `specs/readme.md` não existir, copiar integralmente o arquivo
+2. Criar `.specs/dex/` quando ainda não existir.
+3. Se `.specs/dex/readme.md` não existir, copiar integralmente o arquivo
    `assets/specs-readme.md` desta skill para esse caminho.
-4. Preservar `specs/readme.md` sem alterações quando ele já existir.
-5. Ler `specs/readme.md` antes de continuar.
+4. Preservar `.specs/dex/readme.md` sem alterações quando ele já existir.
+5. Ler `.specs/dex/readme.md` antes de continuar.
 6. Ler integralmente briefing, questionário e especificação da feature.
 7. Ler o plano existente, quando houver, preservando tarefas já concluídas.
 8. Inspecionar código, manifests, contratos, traduções, migrações, testes e
@@ -71,7 +79,7 @@ mesmos contratos ou arquivos e não dependerem do resultado uma da outra.
 Gravar o resultado em:
 
 ```text
-specs/<feature>/<feature>.plan.md
+.specs/dex/<feature>/<feature>.plan.md
 ```
 
 Preservar o nome de diretório já usado pela feature. Não criar outros artefatos

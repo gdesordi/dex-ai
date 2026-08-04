@@ -1,18 +1,20 @@
-# Especificações
+# Especificações Dex
 
-Esta pasta é a fonte canônica das especificações funcionais do projeto. Cada
-feature possui uma subpasta própria em `specs/<feature>/`.
+Esta pasta é de uso exclusivo das skills `dex-spec-create`, `dex-spec-manage` e
+`dex-spec-plan`. Apenas essas skills devem ler ou escrever specs neste caminho.
+Cada feature possui uma subpasta própria em `.specs/dex/<feature>/`.
 
 ## Estrutura
 
 ```text
-specs/
-├── readme.md
-└── <feature>/
-    ├── <feature>.briefing.md
-    ├── <feature>.refinement-questionnaire.md
-    ├── <feature>.spec.md
-    └── <feature>.plan.md
+.specs/
+└── dex/
+    ├── readme.md
+    └── <feature>/
+        ├── <feature>.briefing.md
+        ├── <feature>.refinement-questionnaire.md
+        ├── <feature>.spec.md
+        └── <feature>.plan.md
 ```
 
 O nome da feature deve usar kebab-case, com letras minúsculas, números e hífens.
@@ -48,10 +50,10 @@ especificação consolidada e não substitui requisitos nem decisões de produto
 
 ## Fluxo
 
-1. `spec-create` solicita o nome e o briefing e cria o arquivo inicial.
-2. `spec-manage` cria o questionário, consolida a primeira especificação e a
+1. `dex-spec-create` solicita o nome e o briefing e cria o arquivo inicial.
+2. `dex-spec-manage` cria o questionário, consolida a primeira especificação e a
    mantém sincronizada com mudanças posteriores já aprovadas.
-3. `spec-plan` cria ou atualiza o plano de implementação dividido em fases.
+3. `dex-spec-plan` cria ou atualiza o plano de implementação dividido em fases.
 
 ## Regras
 
@@ -62,4 +64,5 @@ especificação consolidada e não substitui requisitos nem decisões de produto
 - Manter uma única pasta por feature.
 - Atualizar critérios de aceitação e testes esperados junto com mudanças
   funcionais.
-- Não manter cópias concorrentes em `.spec`, `.specs` ou `docs/spec`.
+- Não ler, importar nem alterar specs mantidas fora de `.specs/dex/`.
+- Não permitir que outras skills leiam ou escrevam specs nesta pasta.

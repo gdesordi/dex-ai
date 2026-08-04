@@ -1,9 +1,9 @@
 ---
-name: spec-manage
-description: Refina briefings em questionários, consolida respostas em especificações implementáveis e mantém especificações existentes sincronizadas com decisões, correções ou mudanças aprovadas. Usar quando Codex precisar esclarecer requisitos ambíguos, concluir um questionário respondido, criar a primeira `.spec.md`, atualizar requisitos ou critérios de aceitação, reconciliar especificação e código ou registrar decisões posteriores em `specs/nome-da-feature/`.
+name: dex-spec-manage
+description: Refina briefings em questionários, consolida respostas em especificações implementáveis e mantém especificações Dex sincronizadas com decisões, correções ou mudanças aprovadas, exclusivamente em `.specs/dex/nome-da-feature/`. Usar quando Codex precisar esclarecer requisitos ambíguos, concluir um questionário respondido, criar a primeira `.spec.md`, atualizar requisitos ou critérios de aceitação, reconciliar especificação e código ou registrar decisões posteriores nas specs gerenciadas pelo Dex.
 ---
 
-# Spec Manage
+# Dex Spec Manage
 
 Gerenciar o ciclo de vida da especificação funcional, desde o refinamento do
 briefing até mudanças posteriores. Produzir os artefatos em português do Brasil.
@@ -13,31 +13,42 @@ briefing até mudanças posteriores. Produzir os artefatos em português do Bras
 Usar uma pasta por feature:
 
 ```text
-specs/
-└── <feature>/
-    ├── <feature>.briefing.md
-    ├── <feature>.refinement-questionnaire.md
-    ├── <feature>.spec.md
-    └── <feature>.plan.md
+.specs/
+└── dex/
+    ├── readme.md
+    └── <feature>/
+        ├── <feature>.briefing.md
+        ├── <feature>.refinement-questionnaire.md
+        ├── <feature>.spec.md
+        └── <feature>.plan.md
 ```
 
-Preservar nomes já estabelecidos em `specs/`. Tratar o briefing como fonte
+Preservar nomes já estabelecidos em `.specs/dex/`. Tratar o briefing como fonte
 original, o questionário como registro de decisões e a especificação como
 descrição consolidada do comportamento atual aprovado. Não usar a especificação
 como changelog.
 
-Se a feature ainda não tiver estrutura, encaminhar para `spec-create`. Não criar
-nem atualizar o plano de implementação; esse artefato pertence a `spec-plan`.
+Se a feature ainda não tiver estrutura, encaminhar para `dex-spec-create`. Não
+criar nem atualizar o plano de implementação; esse artefato pertence a
+`dex-spec-plan`.
+
+## Limite de propriedade
+
+Ler e escrever artefatos de especificação somente em `.specs/dex/`. Não
+procurar, abrir, importar, alterar nem usar como contexto specs localizadas em
+`specs/`, outras subpastas de `.specs/`, `docs/` ou qualquer outro caminho;
+essas specs pertencem a outras skills. Inspecionar código, manifests, testes e
+documentação comum fora desse diretório continua permitido.
 
 ## Preparar o contexto
 
 Antes de escrever:
 
 1. Ler o `AGENTS.md` aplicável e os arquivos diretamente indicados por ele.
-2. Criar `specs/` quando ainda não existir.
-3. Se `specs/readme.md` não existir, copiar integralmente
+2. Criar `.specs/dex/` quando ainda não existir.
+3. Se `.specs/dex/readme.md` não existir, copiar integralmente
    `assets/specs-readme.md` para esse caminho.
-4. Preservar `specs/readme.md` sem alterações quando ele já existir e lê-lo.
+4. Preservar `.specs/dex/readme.md` sem alterações quando ele já existir e lê-lo.
 5. Ler integralmente briefing, questionário, especificação e plano existentes.
 6. Ler a fonte da mudança indicada pelo usuário, quando houver.
 7. Inspecionar código, manifests, contratos, traduções, testes e documentação
@@ -49,9 +60,11 @@ Usar `rg` e `rg --files` para descoberta. Não transformar detalhes incidentais
 do código em requisitos de produto nem assumir que o código é a fonte de verdade
 apenas por ser o estado mais recente.
 
-Quando a fonte inicial estiver fora de `specs/`, copiar seu conteúdo sem
-alterações para `<feature>.briefing.md`. Não remover nem modificar a fonte
-original, salvo pedido explícito.
+Quando a fonte inicial for um briefing comum fora de `.specs/dex/`, copiar seu
+conteúdo sem alterações para `<feature>.briefing.md`. Não remover nem modificar
+a fonte original, salvo pedido explícito. Se a fonte for uma spec mantida em
+outro caminho, não a ler nem importar; informar que ela está fora do limite de
+propriedade desta skill.
 
 ## Escolher a operação pelo estado
 
@@ -195,7 +208,7 @@ referenciar caminhos e contratos reais quando isso ajudar a implementação.
 
 Depois de criar ou alterar `<feature>.spec.md`, verificar se
 `<feature>.plan.md` existe. Se existir, informar que o plano pode estar
-desatualizado e sugerir `spec-plan` para reconciliá-lo. Não editar o plano
+desatualizado e sugerir `dex-spec-plan` para reconciliá-lo. Não editar o plano
 automaticamente.
 
 ## Validar e concluir

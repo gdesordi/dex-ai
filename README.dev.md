@@ -11,7 +11,8 @@ documentação prática para usuários está no [README.md](README.md).
 ├── skills/              Catálogo distribuído pela extensão
 │   ├── dex.json         Versão oficial do catálogo
 │   └── changelog.md     Histórico de mudanças das skills
-├── specs/               Briefings, especificações e planos de implementação
+├── .specs/dex/          Specs gerenciadas exclusivamente pelas skills Dex
+├── specs/               Especificações gerenciadas por outros fluxos
 └── .vscode/             Configuração de build e debug da extensão
 ```
 
@@ -65,9 +66,9 @@ Cada skill fica em `skills/<nome>/SKILL.md`. O frontmatter deve conter `name` e
 O catálogo atual inclui:
 
 - `node-version-bump`: atualiza versões SemVer em projetos Node.js;
-- `spec-create`: inicia a documentação de uma feature;
-- `spec-manage`: refina e mantém especificações funcionais;
-- `spec-plan`: cria planos de implementação a partir das especificações.
+- `dex-spec-create`: inicia a documentação de uma feature em `.specs/dex/`;
+- `dex-spec-manage`: refina e mantém especificações funcionais do Dex;
+- `dex-spec-plan`: cria planos a partir das especificações do Dex.
 
 ## Versionamento
 

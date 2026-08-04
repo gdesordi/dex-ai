@@ -12,6 +12,17 @@ recente deste changelog.
 
 Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
 
+## [2.0.0] - 2026-08-04
+
+### Modificado
+
+- As skills `spec-create`, `spec-manage` e `spec-plan` passam a se chamar,
+  respectivamente, `dex-spec-create`, `dex-spec-manage` e `dex-spec-plan`.
+- As três skills passam a gerenciar specs exclusivamente em `.specs/dex/`, sem
+  ler nem escrever artefatos de especificação mantidos em outros caminhos.
+- `.specs/dex/readme.md` passa a declarar a propriedade exclusiva desse
+  diretório e é criado automaticamente quando estiver ausente.
+
 ## [1.3.0] - 2026-06-20
 
 ### Modificado

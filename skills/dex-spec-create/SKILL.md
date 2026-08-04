@@ -1,13 +1,21 @@
 ---
-name: spec-create
-description: Cria a estrutura inicial de uma nova feature em `specs/nome-da-feature/`, solicitando primeiro o nome da feature e depois o briefing, que é preservado no arquivo de briefing correspondente. Usar quando Codex precisar registrar uma nova ideia, demanda ou feature antes do refinamento, iniciar uma especificação a partir de texto fornecido pelo usuário ou preparar os artefatos que serão posteriormente processados pela skill spec-manage.
+name: dex-spec-create
+description: Cria a estrutura inicial de uma nova feature exclusivamente em `.specs/dex/nome-da-feature/`, solicitando primeiro o nome da feature e depois o briefing, que é preservado no arquivo correspondente. Usar quando Codex precisar registrar uma nova ideia, demanda ou feature antes do refinamento, iniciar uma especificação Dex a partir de texto fornecido pelo usuário ou preparar os artefatos que serão posteriormente processados pela skill dex-spec-manage.
 ---
 
-# Spec Create
+# Dex Spec Create
 
 Iniciar uma nova feature coletando seu nome e briefing em etapas separadas.
 Produzir os artefatos em português do Brasil e seguir a estrutura consumida por
-`spec-manage`.
+`dex-spec-manage`.
+
+## Limite de propriedade
+
+Ler e escrever artefatos de especificação somente em `.specs/dex/`. Não
+procurar, abrir, importar, alterar nem usar como contexto specs localizadas em
+`specs/`, outras subpastas de `.specs/`, `docs/` ou qualquer outro caminho;
+essas specs pertencem a outras skills. Arquivos de código e documentação comum
+fora de `.specs/dex/` continuam disponíveis quando necessários ao trabalho.
 
 ## Fluxo obrigatório
 
@@ -71,13 +79,13 @@ original no conteúdo quando ele for usado como título pelo próprio usuário.
 Antes de criar arquivos:
 
 1. Ler o `AGENTS.md` aplicável e os arquivos diretamente indicados por ele.
-2. Criar `specs/` quando ainda não existir.
-3. Se `specs/readme.md` não existir, copiar integralmente o arquivo
+2. Criar `.specs/dex/` quando ainda não existir.
+3. Se `.specs/dex/readme.md` não existir, copiar integralmente o arquivo
    `assets/specs-readme.md` desta skill para esse caminho.
-4. Preservar `specs/readme.md` sem alterações quando ele já existir.
-5. Ler `specs/readme.md` antes de continuar.
-6. Inspecionar `specs/` para identificar colisões e convenções existentes.
-7. Verificar se `specs/<feature>/` já existe.
+4. Preservar `.specs/dex/readme.md` sem alterações quando ele já existir.
+5. Ler `.specs/dex/readme.md` antes de continuar.
+6. Inspecionar somente `.specs/dex/` para identificar colisões e convenções.
+7. Verificar se `.specs/dex/<feature>/` já existe.
 
 Se a feature já existir, não sobrescrever arquivos. Informar os caminhos
 encontrados e perguntar se o usuário deseja atualizar o briefing existente ou
@@ -88,9 +96,11 @@ usar outro nome.
 Criar somente:
 
 ```text
-specs/
-└── <feature>/
-    └── <feature>.briefing.md
+.specs/
+└── dex/
+    ├── readme.md
+    └── <feature>/
+        └── <feature>.briefing.md
 ```
 
 Não criar antecipadamente:
@@ -99,7 +109,7 @@ Não criar antecipadamente:
 - `<feature>.spec.md`.
 
 Esses arquivos pertencem, respectivamente, às etapas de questionário e
-consolidação da skill `spec-manage`.
+consolidação da skill `dex-spec-manage`.
 
 ## Gravar o briefing
 
@@ -130,6 +140,6 @@ Depois de criar o briefing:
 2. verificar se o conteúdo não ficou vazio;
 3. executar `git diff --check` para detectar problemas básicos de formatação;
 4. informar ao usuário o arquivo criado;
-5. sugerir `spec-manage` como próximo passo, sem executá-la automaticamente.
+5. sugerir `dex-spec-manage` como próximo passo, sem executá-la automaticamente.
 
 Não executar testes de código para essa mudança exclusivamente documental.
