@@ -150,6 +150,15 @@ criação inicial do briefing não impede iniciar uma delas no mesmo turno. Não
 escolher a operação apenas pelo verbo usado no pedido; inspecionar os artefatos
 existentes.
 
+Antes de avaliar se o questionário está respondido, executar **Importar
+respostas do JSON** sempre que o pedido depender das decisões do questionário.
+Isso inclui consolidar ou atualizar a especificação, gerar ou atualizar plano ou
+tarefas, e implementar a feature. Fazer essa sincronização automaticamente,
+mesmo que o usuário não tenha pedido para atualizar o questionário: não declarar
+que faltam respostas com base apenas no Markdown quando o JSON correspondente
+existir. Depois da sincronização, escolher a operação pelo estado atualizado dos
+artefatos e somente então executar ou encaminhar os próximos passos solicitados.
+
 ### 1. Refinar decisões abertas
 
 Usar quando não existir `.spec.md` e ainda houver decisões essenciais sem
@@ -290,8 +299,12 @@ que contradiga o conteúdo de `questions`.
 
 ## Importar respostas do JSON
 
-Quando o usuário pedir para atualizar, sincronizar ou consolidar a spec, ler o
-JSON correspondente antes de avaliar pendências ou escrever a especificação.
+Quando o pedido depender das decisões do questionário, ler o JSON correspondente
+e sincronizá-lo com o Markdown antes de avaliar pendências, escrever a
+especificação, planejar tarefas ou iniciar a implementação. Considerar como
+dependentes, no mínimo, pedidos para atualizar, sincronizar ou consolidar a spec,
+gerar ou atualizar plano ou tarefas, e implementar a feature. Não exigir um
+pedido explícito de sincronização.
 
 Validar `schemaVersion`, campos obrigatórios, tipos, valores de `status`, IDs
 únicos e o status derivado. Diante de JSON inválido ou incompatível, informar o
@@ -307,6 +320,11 @@ Para cada questão correlacionada por `id`:
 - se a decisão do usuário escolher a resposta do Markdown, atualizar também o
   JSON para restabelecer a equivalência;
 - depois de importar ou resolver conflitos, recalcular e persistir o status.
+
+Se o JSON válido contiver todas as respostas e o Markdown ainda estiver vazio ou
+incompleto, atualizar o Markdown automaticamente e continuar o fluxo solicitado
+no mesmo turno. Não informar que o questionário está pendente com base no estado
+anterior do Markdown.
 
 Não consolidar a especificação enquanto existir conflito não resolvido em uma
 pergunta essencial.

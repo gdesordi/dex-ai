@@ -12,6 +12,14 @@ recente deste changelog.
 
 Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
 
+## [3.1.2] - 2026-08-04
+
+### Corrigido
+
+- `dex-spec-manage` passa a importar automaticamente para o Markdown as
+  respostas existentes no JSON antes de avaliar pendências ou prosseguir com
+  consolidação, planejamento de tarefas ou implementação.
+
 ## [3.1.1] - 2026-08-04
 
 ### Corrigido
