@@ -5,9 +5,15 @@ import { SourcesTreeProvider, isSourceNode } from './sources-tree';
 import { answerSpecQuestionnaire } from './spec-questionnaire-command';
 import { SyncSource } from './sync-types';
 import { newlyDisabledSourceIds } from './source-composition';
+import {
+  calculateWorkdayProgress,
+  formatWorkdayProgress,
+  millisecondsUntilNextLocalMidnight,
+} from './time-progress';
 
 export function activate(context: vscode.ExtensionContext): void {
   const outputChannel = vscode.window.createOutputChannel('Dex');
+  createTimeStatusBar(context);
   const workspaceConfigManager = new WorkspaceConfigManager();
   const sourceService = new SourceService(
     context,
@@ -339,6 +345,39 @@ async function handleConfigChange(
 }
 
 export function deactivate(): void {}
+
+function createTimeStatusBar(context: vscode.ExtensionContext): void {
+  const item = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    -100,
+  );
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let disposed = false;
+
+  const update = (): void => {
+    if (disposed) return;
+    const now = new Date();
+    const progress = calculateWorkdayProgress(now);
+    const display = formatWorkdayProgress(progress);
+    item.text = display.text;
+    item.tooltip = display.tooltip;
+    item.show();
+
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(update, millisecondsUntilNextLocalMidnight(now));
+  };
+
+  context.subscriptions.push(
+    item,
+    {
+      dispose: () => {
+        disposed = true;
+        if (timer) clearTimeout(timer);
+      },
+    },
+  );
+  update();
+}
 
 async function selectWorkspaceFolder(): Promise<
   vscode.WorkspaceFolder | undefined

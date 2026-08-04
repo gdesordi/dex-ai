@@ -20,6 +20,14 @@ A extensão identifica o editor automaticamente e grava a composição em:
 É necessário ter acesso à internet durante a sincronização e a verificação de
 atualizações.
 
+## Tempo do mês
+
+No lado direito da barra de status, a Dex mostra um ícone de relógio e o
+percentual de dias úteis já transcorridos no mês atual. O cálculo considera
+segunda a sexta-feira, inclui o dia útil atual e não desconta feriados. Passe o
+mouse sobre o indicador para ver a quantidade de dias úteis transcorridos e o
+total do mês. O valor é atualizado na virada de cada dia local.
+
 ## Configuração por workspace
 
 As fontes ficam declaradas em `.dex/sync.json` na raiz selecionada. Abrir uma

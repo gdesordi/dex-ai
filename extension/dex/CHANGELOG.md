@@ -7,6 +7,15 @@ Semântico.
 
 ## [Não publicado]
 
+## [2.2.0] - 2026-08-04
+
+### Adicionado
+
+- Indicador na barra de status com o percentual de dias úteis transcorridos no
+  mês atual, atualizado diariamente e sem desconto de feriados.
+
+## [2.1.0] - 2026-08-04
+
 ### Modificado
 
 - Ao desativar uma fonte em `.dex/sync.json`, suas skills são removidas

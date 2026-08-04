@@ -53,6 +53,8 @@ local dessa pasta.
   ordenação dos questionários de especificação.
 - `src/spec-questionnaire-command.ts`: descoberta no workspace, Quick Picks e
   persistência incremental das respostas.
+- `src/time-progress.ts`: cálculo e formatação do indicador de dias úteis do
+  mês na barra de status.
 - `src/test/`: testes executados pelo test runner nativo do Node.js.
 - `media/`: recursos visuais da extensão.
 - `package.json`: manifesto, comandos e scripts.
