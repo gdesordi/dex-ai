@@ -20,6 +20,14 @@ A extensão identifica o editor automaticamente e grava a composição em:
 É necessário ter acesso à internet durante a sincronização e a verificação de
 atualizações.
 
+## Tempo do mês
+
+No lado direito da barra de status, a Dex mostra um ícone de relógio e o
+percentual de dias úteis já transcorridos no mês atual. O cálculo considera
+segunda a sexta-feira, inclui o dia útil atual e não desconta feriados. Passe o
+mouse sobre o indicador para ver a quantidade de dias úteis transcorridos e o
+total do mês. O valor é atualizado na virada de cada dia local.
+
 ## Configuração por workspace
 
 As fontes ficam declaradas em `.dex/sync.json` na raiz selecionada. Abrir uma
@@ -73,6 +81,10 @@ A verificação de atualizações é manual. Ela compara o commit armazenado de 
 fonte habilitada com o commit atual da referência configurada, sem sincronizar o
 catálogo.
 
+Ao alterar uma fonte de `enabled: true` para `enabled: false`, a extensão remove
+imediatamente do workspace as skills fornecidas por ela e informa quantas foram
+removidas. A cópia local isolada da fonte é preservada.
+
 ## Tree View
 
 A seção **Fontes de skills Dex** lista as fontes de cada raiz do workspace.
@@ -103,6 +115,24 @@ local isolada.
 - `Dex: Abrir repositório da fonte`: abre no navegador a origem selecionada.
 - `Dex: Remover fonte de skills`: remove a fonte da configuração e oferece a
   opção de apagar sua cópia local.
+- `Dex: Responder questionário de especificação`: localiza questionários JSON
+  mantidos pela `dex-spec-manage` em `.specs/dex/`, permite aceitar a sugestão
+  ou escrever outra resposta e grava cada decisão imediatamente.
+
+## Questionários de especificação
+
+A skill `dex-spec-manage` mantém cada questionário em Markdown e no arquivo
+`<feature>.refinement-questionnaire.json`. Ao executar o comando de resposta, a
+extensão procura esses arquivos em todas as pastas do workspace, apresenta os
+pendentes primeiro e também permite revisar questionários já respondidos.
+
+O estado exibido pode ser **Pendente**, **Respondido parcialmente** ou
+**Respondido**. Cancelar o fluxo preserva as respostas confirmadas até aquele
+momento. Arquivos inválidos ou com versão de schema incompatível não são
+alterados; os detalhes ficam no canal de saída **Dex**.
+
+Depois de responder, solicite à `dex-spec-manage` que sincronize ou consolide a
+spec para transportar as respostas do JSON ao questionário Markdown.
 
 Os comandos acompanham o idioma do editor em inglês ou português do Brasil.
 Nenhuma fonte é consultada ou sincronizada automaticamente durante a ativação.

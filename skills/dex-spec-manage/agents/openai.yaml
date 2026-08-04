@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dex Spec Manage"
+  short_description: "Criar e manter especificações do Dex"
+  default_prompt: "Use $dex-spec-manage para criar, refinar ou atualizar a especificação Dex de uma feature em .specs/dex/."

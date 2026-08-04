@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dex Spec Plan"
+  short_description: "Planejar implementação de uma feature Dex"
+  default_prompt: "Use $dex-spec-plan para criar um plano em fases a partir de uma especificação consolidada em .specs/dex/."

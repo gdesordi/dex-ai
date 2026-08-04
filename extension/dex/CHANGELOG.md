@@ -7,6 +7,26 @@ Semântico.
 
 ## [Não publicado]
 
+## [2.2.0] - 2026-08-04
+
+### Adicionado
+
+- Indicador na barra de status com o percentual de dias úteis transcorridos no
+  mês atual, atualizado diariamente e sem desconto de feriados.
+
+## [2.1.0] - 2026-08-04
+
+### Modificado
+
+- Ao desativar uma fonte em `.dex/sync.json`, suas skills são removidas
+  imediatamente do workspace e uma notificação informa a quantidade removida.
+
+### Adicionado
+
+- Comando `Dex: Responder questionário de especificação`, com descoberta em
+  `.specs/dex/`, respostas e revisão por Quick Picks, persistência incremental,
+  status derivado e proteção contra contratos inválidos ou incompatíveis.
+
 ## [2.0.2] - 2026-07-30
 
 ### Corrigido

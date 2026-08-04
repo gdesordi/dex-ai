@@ -152,6 +152,42 @@ export class SourceService {
     return updates;
   }
 
+  async removeSourceSkills(
+    folder: vscode.WorkspaceFolder,
+    sourceIds: readonly string[],
+  ): Promise<number> {
+    const { config } = await this.configs.read(folder);
+    const protectedNames = await this.collectManagedSkillNames(
+      folder,
+      config.sources.filter((source) => source.enabled),
+    );
+    const names = await this.collectManagedSkillNames(
+      folder,
+      config.sources.filter((source) => sourceIds.includes(source.id)),
+    );
+    const target = resolveSkillsDestination(
+      vscode.env.appName,
+      vscode.env.uriScheme,
+    );
+    const destination = vscode.Uri.joinPath(
+      folder.uri,
+      target.rootDirectory,
+      target.skillsDirectory,
+    );
+    let removed = 0;
+    for (const name of names) {
+      if (protectedNames.has(name)) continue;
+      const skill = vscode.Uri.joinPath(destination, name);
+      if (!(await exists(skill))) continue;
+      await vscode.workspace.fs.delete(skill, { recursive: true });
+      removed += 1;
+    }
+    this.log(
+      `${removed} skill(s) removida(s) de “${folder.name}” após desativar ${sourceIds.length} fonte(s).`,
+    );
+    return removed;
+  }
+
   private async compose(
     folder: vscode.WorkspaceFolder,
     sources: SyncSource[],

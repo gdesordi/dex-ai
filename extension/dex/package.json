@@ -2,7 +2,7 @@
   "name": "dex",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "2.0.2",
+  "version": "2.2.0",
   "publisher": "sordi",
   "license": "SEE LICENSE IN license.MD",
   "repository": {
@@ -68,6 +68,12 @@
         "title": "%command.removeSource.title%",
         "category": "%command.category%",
         "icon": "$(trash)"
+      },
+      {
+        "command": "dex.answerSpecQuestionnaire",
+        "title": "%command.answerSpecQuestionnaire.title%",
+        "category": "%command.category%",
+        "icon": "$(question)"
       }
     ],
     "views": {
