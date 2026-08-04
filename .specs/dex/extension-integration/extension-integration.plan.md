@@ -2,7 +2,8 @@
 
 ## Referências
 
-- Especificação: `specs/extension-integration/extension-integration.spec.md`
+- Especificação:
+  `.specs/dex/extension-integration/extension-integration.spec.md`
 - Skill distribuída: `skills/dex-spec-manage/SKILL.md`
 - Contrato de comandos: `extension/dex/package.json`
 - Ativação da extensão: `extension/dex/src/extension.ts`

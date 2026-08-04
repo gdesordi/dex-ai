@@ -20,6 +20,11 @@ Se a feature ainda não tiver estrutura, se existirem apenas briefing ou
 questionário, ou se a especificação tiver uma pendência material capaz de mudar
 a implementação, encaminhar para `dex-spec-manage` antes de planejar.
 
+Não aceitar uma `.spec.md` equivalente localizada em `specs/`, outra subpasta de
+`.specs/`, `docs/` ou qualquer caminho externo como entrada alternativa. Nesse
+caso, informar que a `dex-spec-manage` deve criar ou consolidar a feature em
+`.specs/dex/`, sem abrir nem importar a spec externa.
+
 Quando mais de uma feature puder corresponder ao pedido, listar as candidatas e
 solicitar a escolha antes de editar arquivos.
 
@@ -30,6 +35,10 @@ procurar, abrir, importar, alterar nem usar como contexto specs localizadas em
 `specs/`, outras subpastas de `.specs/`, `docs/` ou qualquer outro caminho;
 essas specs pertencem a outras skills. Inspecionar código, manifests, testes e
 documentação comum fora desse diretório continua permitido.
+
+Ao descobrir features e artefatos, pesquisar diretamente dentro de
+`.specs/dex/`; não executar buscas globais por briefings, questionários, specs
+ou planos que possam incluir diretórios externos.
 
 ## Preparar o contexto
 

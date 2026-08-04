@@ -12,6 +12,15 @@ recente deste changelog.
 
 Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
 
+## [3.1.1] - 2026-08-04
+
+### Corrigido
+
+- `dex-spec-manage` e `dex-spec-plan` passam a rejeitar explicitamente qualquer
+  artefato de especificação fora de `.specs/dex/`, inclusive briefings indicados
+  por caminho, evitando importação ou descoberta acidental em `specs/` e outros
+  diretórios.
+
 ## [3.1.0] - 2026-08-04
 
 ### Adicionado

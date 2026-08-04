@@ -45,6 +45,13 @@ procurar, abrir, importar, alterar nem usar como contexto specs localizadas em
 essas specs pertencem a outras skills. Inspecionar código, manifests, testes e
 documentação comum fora desse diretório continua permitido.
 
+Aplicar esse limite também quando o usuário fornecer diretamente um caminho
+fora de `.specs/dex/`. Um arquivo `*.briefing.md`, `*.refinement-questionnaire.*`,
+`*.spec.md` ou `*.plan.md` externo continua sendo uma spec alheia e não deve ser
+lido nem importado. Nesse caso, informar o limite e solicitar o briefing como
+texto na conversa ou iniciar uma nova feature somente com informações já
+fornecidas pelo usuário.
+
 ## Iniciar uma feature
 
 Quando a feature ainda não possuir estrutura, coletar nesta ordem:
@@ -118,7 +125,8 @@ Antes de escrever:
 4. Preservar `.specs/dex/readme.md` sem alterações quando ele já existir e lê-lo.
 5. Ler integralmente briefing, questionário Markdown, questionário JSON,
    especificação e plano existentes.
-6. Ler a fonte da mudança indicada pelo usuário, quando houver.
+6. Ler a fonte da mudança indicada pelo usuário somente quando ela não for um
+   artefato de especificação fora de `.specs/dex/`.
 7. Inspecionar código, manifests, contratos, traduções, testes e documentação
    relacionados à feature.
 8. Consultar histórico ou diff quando ajudarem a distinguir decisão aprovada de
@@ -128,11 +136,12 @@ Usar `rg` e `rg --files` para descoberta. Não transformar detalhes incidentais
 do código em requisitos de produto nem assumir que o código é a fonte de verdade
 apenas por ser o estado mais recente.
 
-Quando a fonte inicial for um briefing comum fora de `.specs/dex/`, copiar seu
-conteúdo sem alterações para `<feature>.briefing.md`. Não remover nem modificar
-a fonte original, salvo pedido explícito. Se a fonte for uma spec mantida em
-outro caminho, não a ler nem importar; informar que ela está fora do limite de
-propriedade desta skill.
+Quando a fonte inicial for um documento comum que não seja artefato de
+especificação, copiar seu conteúdo sem alterações para `<feature>.briefing.md`.
+Não remover nem modificar a fonte original, salvo pedido explícito. Nunca tratar
+um arquivo localizado em `specs/`, outra subpasta de `.specs/`, `docs/spec/` ou
+caminho equivalente como briefing importável; informar que ele está fora do
+limite de propriedade desta skill sem abri-lo.
 
 ## Escolher a operação pelo estado
 

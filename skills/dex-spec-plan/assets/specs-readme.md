@@ -73,4 +73,6 @@ especificação consolidada e não substitui requisitos nem decisões de produto
 - Atualizar critérios de aceitação e testes esperados junto com mudanças
   funcionais.
 - Não ler, importar nem alterar specs mantidas fora de `.specs/dex/`.
+- Não usar `specs/`, outras subpastas de `.specs/`, `docs/` ou caminhos
+  equivalentes como origem alternativa de artefatos.
 - Não permitir que outras skills leiam ou escrevam specs nesta pasta.

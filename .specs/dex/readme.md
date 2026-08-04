@@ -1,7 +1,7 @@
 # Especificações Dex
 
-Esta pasta é de uso exclusivo das skills `dex-spec-create`, `dex-spec-manage` e
-`dex-spec-plan`. Apenas essas skills devem ler ou escrever specs neste caminho.
+Esta pasta é de uso exclusivo das skills `dex-spec-manage` e `dex-spec-plan`.
+Apenas essas skills devem ler ou escrever specs neste caminho.
 Cada feature possui uma subpasta própria em `.specs/dex/<feature>/`.
 
 ## Estrutura
@@ -13,6 +13,7 @@ Cada feature possui uma subpasta própria em `.specs/dex/<feature>/`.
     └── <feature>/
         ├── <feature>.briefing.md
         ├── <feature>.refinement-questionnaire.md
+        ├── <feature>.refinement-questionnaire.json
         ├── <feature>.spec.md
         └── <feature>.plan.md
 ```
@@ -36,6 +37,12 @@ posteriores.
 respostas. Perguntas marcadas como **Essencial** precisam ser respondidas antes
 da consolidação da especificação.
 
+`<feature>.refinement-questionnaire.json` espelha a estrutura do questionário,
+mantém as respostas usadas pela integração com a extensão Dex e registra o
+estado `pending`, `partially-answered` ou `answered`. A `dex-spec-manage` mantém
+as duas representações sincronizadas e trata divergências antes de consolidar a
+especificação.
+
 ### Especificação
 
 `<feature>.spec.md` descreve o comportamento atual e aprovado. Deve explicitar
@@ -50,10 +57,11 @@ especificação consolidada e não substitui requisitos nem decisões de produto
 
 ## Fluxo
 
-1. `dex-spec-create` solicita o nome e o briefing e cria o arquivo inicial.
-2. `dex-spec-manage` cria o questionário, consolida a primeira especificação e a
-   mantém sincronizada com mudanças posteriores já aprovadas.
-3. `dex-spec-plan` cria ou atualiza o plano de implementação dividido em fases.
+1. `dex-spec-manage` coleta e preserva o briefing, cria o questionário, consolida
+   a primeira especificação e a mantém sincronizada com mudanças posteriores já
+   aprovadas. Quando o briefing já está definido, o refinamento começa no mesmo
+   turno.
+2. `dex-spec-plan` cria ou atualiza o plano de implementação dividido em fases.
 
 ## Regras
 
@@ -65,4 +73,6 @@ especificação consolidada e não substitui requisitos nem decisões de produto
 - Atualizar critérios de aceitação e testes esperados junto com mudanças
   funcionais.
 - Não ler, importar nem alterar specs mantidas fora de `.specs/dex/`.
+- Não usar `specs/`, outras subpastas de `.specs/`, `docs/` ou caminhos
+  equivalentes como origem alternativa de artefatos.
 - Não permitir que outras skills leiam ou escrevam specs nesta pasta.

@@ -14,9 +14,10 @@ consolidação da especificação.
 
 ## Referências
 
-- Briefing: `specs/extension-integration/extension-integration.briefing.md`.
+- Briefing:
+  `.specs/dex/extension-integration/extension-integration.briefing.md`.
 - Questionário respondido:
-  `specs/extension-integration/extension-integration.refinement-questionnaire.md`.
+  `.specs/dex/extension-integration/extension-integration.refinement-questionnaire.md`.
 - Skill distribuída: `skills/dex-spec-manage/SKILL.md`.
 - Extensão: `extension/dex/src/extension.ts` e `extension/dex/package.json`.
 - Artefatos Dex gerenciados pela skill: `.specs/dex/<feature>/` no workspace do
