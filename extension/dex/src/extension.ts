@@ -4,6 +4,7 @@ import { SourceService } from './source-service';
 import { SourcesTreeProvider, isSourceNode } from './sources-tree';
 import { answerSpecQuestionnaire } from './spec-questionnaire-command';
 import { SyncSource } from './sync-types';
+import { newlyDisabledSourceIds } from './source-composition';
 
 export function activate(context: vscode.ExtensionContext): void {
   const outputChannel = vscode.window.createOutputChannel('Dex');
@@ -15,6 +16,18 @@ export function activate(context: vscode.ExtensionContext): void {
   );
   const sourcesTree = new SourcesTreeProvider(
     workspaceConfigManager,
+  );
+  const sourceStates = new Map<string, SyncSource[]>();
+  const configChangeSubscription = workspaceConfigManager.onDidChange(
+    ({ folder }) => {
+      void handleConfigChange(
+        folder,
+        workspaceConfigManager,
+        sourceService,
+        sourceStates,
+        outputChannel,
+      );
+    },
   );
   const sourcesView = vscode.window.createTreeView('dex.skillSources', {
     treeDataProvider: sourcesTree,
@@ -271,14 +284,58 @@ export function activate(context: vscode.ExtensionContext): void {
     syncSourcesCommand,
     checkSkillsUpdatesCommand,
     answerSpecQuestionnaireCommand,
+    configChangeSubscription,
   );
 
-  void workspaceConfigManager.start().catch((error: unknown) => {
+  void initializeConfigObservation(
+    workspaceConfigManager,
+    sourceStates,
+  ).catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
     outputChannel.appendLine(
       `[${new Date().toISOString()}] Falha ao observar configurações: ${message}`,
     );
   });
+}
+
+async function initializeConfigObservation(
+  configs: WorkspaceConfigManager,
+  states: Map<string, SyncSource[]>,
+): Promise<void> {
+  for (const folder of vscode.workspace.workspaceFolders ?? []) {
+    states.set(folder.uri.toString(), (await configs.read(folder)).config.sources);
+  }
+  await configs.start();
+}
+
+async function handleConfigChange(
+  folder: vscode.WorkspaceFolder,
+  configs: WorkspaceConfigManager,
+  sourceService: SourceService,
+  states: Map<string, SyncSource[]>,
+  output: vscode.OutputChannel,
+): Promise<void> {
+  try {
+    const current = (await configs.read(folder)).config.sources;
+    const key = folder.uri.toString();
+    const previous = states.get(key);
+    states.set(key, current);
+    if (!previous) return;
+    const disabledIds = newlyDisabledSourceIds(previous, current);
+    if (disabledIds.length === 0) return;
+    const removed = await sourceService.removeSourceSkills(folder, disabledIds);
+    void vscode.window.showInformationMessage(
+      `${removed} skill(s) removida(s) do workspace após desativar ${disabledIds.length} fonte(s).`,
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    output.appendLine(
+      `[${new Date().toISOString()}] Falha ao remover skills desativadas: ${message}`,
+    );
+    void vscode.window.showErrorMessage(
+      `Não foi possível remover as skills desativadas: ${message}`,
+    );
+  }
 }
 
 export function deactivate(): void {}

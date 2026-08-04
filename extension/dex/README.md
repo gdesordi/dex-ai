@@ -73,6 +73,10 @@ A verificação de atualizações é manual. Ela compara o commit armazenado de 
 fonte habilitada com o commit atual da referência configurada, sem sincronizar o
 catálogo.
 
+Ao alterar uma fonte de `enabled: true` para `enabled: false`, a extensão remove
+imediatamente do workspace as skills fornecidas por ela e informa quantas foram
+removidas. A cópia local isolada da fonte é preservada.
+
 ## Tree View
 
 A seção **Fontes de skills Dex** lista as fontes de cada raiz do workspace.

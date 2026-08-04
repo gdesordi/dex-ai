@@ -7,6 +7,11 @@ Semântico.
 
 ## [Não publicado]
 
+### Modificado
+
+- Ao desativar uma fonte em `.dex/sync.json`, suas skills são removidas
+  imediatamente do workspace e uma notificação informa a quantidade removida.
+
 ### Adicionado
 
 - Comando `Dex: Responder questionário de especificação`, com descoberta em
