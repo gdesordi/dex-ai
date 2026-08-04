@@ -66,8 +66,7 @@ Cada skill fica em `skills/<nome>/SKILL.md`. O frontmatter deve conter `name` e
 O catálogo atual inclui:
 
 - `node-version-bump`: atualiza versões SemVer em projetos Node.js;
-- `dex-spec-create`: inicia a documentação de uma feature em `.specs/dex/`;
-- `dex-spec-manage`: refina e mantém especificações funcionais do Dex;
+- `dex-spec-manage`: cria, refina e mantém especificações funcionais do Dex;
 - `dex-spec-plan`: cria planos a partir das especificações do Dex.
 
 ## Versionamento

@@ -1,11 +1,11 @@
 ---
 name: dex-spec-manage
-description: Refina briefings em questionários, consolida respostas em especificações implementáveis e mantém especificações Dex sincronizadas com decisões, correções ou mudanças aprovadas, exclusivamente em `.specs/dex/nome-da-feature/`. Usar quando Codex precisar esclarecer requisitos ambíguos, concluir um questionário respondido, criar a primeira `.spec.md`, atualizar requisitos ou critérios de aceitação, reconciliar especificação e código ou registrar decisões posteriores nas specs gerenciadas pelo Dex.
+description: Cria e preserva briefings, refina requisitos em questionários, consolida respostas em especificações implementáveis e mantém especificações Dex sincronizadas com decisões, correções ou mudanças aprovadas, exclusivamente em `.specs/dex/nome-da-feature/`. Usar quando Codex precisar iniciar a documentação de uma feature, esclarecer requisitos ambíguos, concluir um questionário respondido, criar a primeira `.spec.md`, atualizar requisitos ou critérios de aceitação, reconciliar especificação e código ou registrar decisões posteriores nas specs gerenciadas pelo Dex.
 ---
 
 # Dex Spec Manage
 
-Gerenciar o ciclo de vida da especificação funcional, desde o refinamento do
+Gerenciar todo o ciclo de vida da especificação funcional, desde a captura do
 briefing até mudanças posteriores. Produzir os artefatos em português do Brasil.
 
 ## Estrutura dos artefatos
@@ -28,8 +28,7 @@ original, o questionário como registro de decisões e a especificação como
 descrição consolidada do comportamento atual aprovado. Não usar a especificação
 como changelog.
 
-Se a feature ainda não tiver estrutura, encaminhar para `dex-spec-create`. Não
-criar nem atualizar o plano de implementação; esse artefato pertence a
+Não criar nem atualizar o plano de implementação; esse artefato pertence a
 `dex-spec-plan`.
 
 ## Limite de propriedade
@@ -39,6 +38,68 @@ procurar, abrir, importar, alterar nem usar como contexto specs localizadas em
 `specs/`, outras subpastas de `.specs/`, `docs/` ou qualquer outro caminho;
 essas specs pertencem a outras skills. Inspecionar código, manifests, testes e
 documentação comum fora desse diretório continua permitido.
+
+## Iniciar uma feature
+
+Quando a feature ainda não possuir estrutura, coletar nesta ordem:
+
+1. nome da feature;
+2. briefing.
+
+Executar **Preparar o contexto** antes de criar qualquer arquivo.
+
+Não solicitar os dois campos na mesma mensagem quando ambos estiverem ausentes.
+Se o nome estiver ausente, perguntar somente:
+
+```text
+Qual é o nome da feature?
+```
+
+Se o nome estiver definido, mas o briefing estiver ausente, perguntar:
+
+```text
+Descreva o briefing da feature <nome da feature>. Inclua o objetivo, o comportamento esperado e qualquer restrição já conhecida.
+```
+
+Encerrar o turno somente quando faltar uma dessas entradas. Aceitar briefing em
+texto livre, lista, documento anexado ou arquivo indicado pelo usuário. Quando
+nome e briefing já estiverem disponíveis, criar o briefing e iniciar o
+refinamento no mesmo turno, sem solicitar confirmação nem aguardar uma nova
+interação.
+
+### Normalizar o nome
+
+Converter o nome para kebab-case ao formar caminhos e nomes de arquivo:
+
+- usar letras minúsculas;
+- remover acentos;
+- substituir espaços e separadores por `-`;
+- remover caracteres que não sejam letras ASCII, números ou `-`;
+- consolidar hífens consecutivos;
+- remover hífens no início e no fim.
+
+Se a normalização resultar em nome vazio, solicitar outro nome. Preservar o nome
+original quando ele for usado como título.
+
+### Criar e preservar o briefing
+
+Antes da criação, inspecionar `.specs/dex/` e verificar se a pasta normalizada
+da feature já existe. Se existir, não sobrescrever artefatos; escolher a próxima
+operação pelo estado encontrado.
+
+Criar somente a pasta da feature e `<feature>.briefing.md` nesta etapa. Preservar
+o briefing fornecido sem inventar requisitos, resolver ambiguidades ou
+transformá-lo em especificação:
+
+- manter títulos, listas, exemplos e blocos de código;
+- fazer somente ajustes mínimos para produzir Markdown válido;
+- não corrigir decisões de produto silenciosamente;
+- não adicionar perguntas de refinamento ao briefing;
+- ao receber um arquivo, copiar seu conteúdo integralmente sem alterar a fonte.
+
+Não adicionar título automático quando o briefing já tiver título. Caso
+contrário, iniciar com `# <Nome original da feature>`. Depois de gravar e validar
+que o briefing não está vazio, continuar em **Escolher a operação pelo estado**.
 
 ## Preparar o contexto
 
@@ -68,8 +129,10 @@ propriedade desta skill.
 
 ## Escolher a operação pelo estado
 
-Executar somente uma operação por vez. Não escolher a operação apenas pelo verbo
-usado no pedido; inspecionar os artefatos existentes.
+Depois que o briefing existir, executar somente uma das operações abaixo. A
+criação inicial do briefing não impede iniciar uma delas no mesmo turno. Não
+escolher a operação apenas pelo verbo usado no pedido; inspecionar os artefatos
+existentes.
 
 ### 1. Refinar decisões abertas
 

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Dex Spec Create"
-  short_description: "Criar briefing inicial de uma feature Dex"
-  default_prompt: "Use $dex-spec-create para solicitar o nome e o briefing de uma feature e criar sua estrutura inicial em .specs/dex/."

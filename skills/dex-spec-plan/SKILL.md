@@ -16,10 +16,9 @@ Usar esta skill somente quando existir:
 .specs/dex/<feature>/<feature>.spec.md
 ```
 
-Se a feature ainda não tiver estrutura, encaminhar para `dex-spec-create`. Se
-existirem apenas briefing ou questionário, ou se a especificação tiver uma
-pendência material capaz de mudar a implementação, encaminhar para
-`dex-spec-manage` antes de planejar.
+Se a feature ainda não tiver estrutura, se existirem apenas briefing ou
+questionário, ou se a especificação tiver uma pendência material capaz de mudar
+a implementação, encaminhar para `dex-spec-manage` antes de planejar.
 
 Quando mais de uma feature puder corresponder ao pedido, listar as candidatas e
 solicitar a escolha antes de editar arquivos.

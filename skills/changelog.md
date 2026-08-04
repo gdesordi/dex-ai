@@ -12,6 +12,21 @@ recente deste changelog.
 
 Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
 
+## [3.0.0] - 2026-08-04
+
+### Modificado
+
+- `dex-spec-manage` passa a criar e preservar o briefing inicial antes de
+  selecionar a operação adequada ao estado da feature.
+- Quando nome e briefing já estão definidos, `dex-spec-manage` cria a estrutura
+  inicial e começa o refinamento no mesmo turno, sem aguardar nova interação.
+- `dex-spec-plan` passa a encaminhar também features ainda não iniciadas para
+  `dex-spec-manage`.
+
+### Removido
+
+- `dex-spec-create`, incorporada integralmente a `dex-spec-manage`.
+
 ## [2.0.0] - 2026-08-04
 
 ### Modificado

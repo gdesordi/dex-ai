@@ -1,7 +1,7 @@
 # Especificações Dex
 
-Esta pasta é de uso exclusivo das skills `dex-spec-create`, `dex-spec-manage` e
-`dex-spec-plan`. Apenas essas skills devem ler ou escrever specs neste caminho.
+Esta pasta é de uso exclusivo das skills `dex-spec-manage` e `dex-spec-plan`.
+Apenas essas skills devem ler ou escrever specs neste caminho.
 Cada feature possui uma subpasta própria em `.specs/dex/<feature>/`.
 
 ## Estrutura
@@ -50,10 +50,11 @@ especificação consolidada e não substitui requisitos nem decisões de produto
 
 ## Fluxo
 
-1. `dex-spec-create` solicita o nome e o briefing e cria o arquivo inicial.
-2. `dex-spec-manage` cria o questionário, consolida a primeira especificação e a
-   mantém sincronizada com mudanças posteriores já aprovadas.
-3. `dex-spec-plan` cria ou atualiza o plano de implementação dividido em fases.
+1. `dex-spec-manage` coleta e preserva o briefing, cria o questionário, consolida
+   a primeira especificação e a mantém sincronizada com mudanças posteriores já
+   aprovadas. Quando o briefing já está definido, o refinamento começa no mesmo
+   turno.
+2. `dex-spec-plan` cria ou atualiza o plano de implementação dividido em fases.
 
 ## Regras
 
