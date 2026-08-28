@@ -5,6 +5,7 @@ export interface ValidatedSkill {
 
 export interface ValidatedCatalog {
   skills: ValidatedSkill[];
+  warnings: string[];
 }
 
 export class CatalogValidationError extends Error {
@@ -37,13 +38,15 @@ export function validateCatalog(
   }
 
   const skills: ValidatedSkill[] = [];
+  const warnings: string[] = [];
   for (const [directoryName, paths] of skillFiles) {
     const skillPath = `${directoryName}/SKILL.md`;
     const contents = files.get(skillPath);
     if (!contents) {
-      throw new CatalogValidationError(
-        `${sourceId}: a skill “${directoryName}” não contém SKILL.md`,
+      warnings.push(
+        `o diretório “${directoryName}” foi ignorado porque não contém SKILL.md`,
       );
+      continue;
     }
     const frontmatter = readFrontmatter(
       new TextDecoder().decode(contents),
@@ -63,8 +66,14 @@ export function validateCatalog(
     skills.push({ name: directoryName, files: [...paths].sort() });
   }
 
+  if (skills.length === 0) {
+    throw new CatalogValidationError(
+      `${sourceId}: o catálogo não contém nenhuma skill válida com SKILL.md`,
+    );
+  }
+
   skills.sort((left, right) => left.name.localeCompare(right.name));
-  return { skills };
+  return { skills, warnings };
 }
 
 function readFrontmatter(

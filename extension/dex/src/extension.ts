@@ -100,6 +100,63 @@ export function activate(context: vscode.ExtensionContext): void {
     },
   );
 
+  const enableSourceCommand = vscode.commands.registerCommand(
+    'dex.enableSource',
+    (node: unknown) => updateSourceState(node, true),
+  );
+
+  const disableSourceCommand = vscode.commands.registerCommand(
+    'dex.disableSource',
+    (node: unknown) => updateSourceState(node, false),
+  );
+
+  async function updateSourceState(
+    node: unknown,
+    enabled: boolean,
+  ): Promise<void> {
+    if (!isSourceNode(node) || node.source.enabled === enabled) return;
+    try {
+      const updated = await workspaceConfigManager.updateSourceEnabled(
+        node.folder,
+        node.source.id,
+        enabled,
+      );
+      if (!updated) {
+        throw new Error('a fonte não existe mais na configuração');
+      }
+      sourcesTree.refresh();
+      if (enabled) {
+        try {
+          await sourceService.syncSource(node.folder, node.source.id);
+          sourcesTree.refresh();
+          void vscode.window.showInformationMessage(
+            `A fonte “${node.source.id}” foi ativada e suas skills foram restauradas.`,
+          );
+        } catch (error) {
+          outputChannel.show(true);
+          const message =
+            error instanceof vscode.CancellationError
+              ? 'sincronização cancelada'
+              : error instanceof Error
+                ? error.message
+                : String(error);
+          void vscode.window.showWarningMessage(
+            `A fonte “${node.source.id}” foi ativada, mas suas skills não puderam ser restauradas: ${message}.`,
+          );
+        }
+        return;
+      }
+      void vscode.window.showInformationMessage(
+        `A fonte “${node.source.id}” foi desativada.`,
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      void vscode.window.showErrorMessage(
+        `Não foi possível ${enabled ? 'ativar' : 'desativar'} a fonte: ${message}`,
+      );
+    }
+  }
+
   const removeSourceCommand = vscode.commands.registerCommand(
     'dex.removeSource',
     async (node: unknown) => {
@@ -191,7 +248,7 @@ export function activate(context: vscode.ExtensionContext): void {
         return;
       }
 
-      if (sourceChoice.sourceType === 'gct') {
+      if (sourceChoice.sourceType !== 'custom') {
         try {
           await workspaceConfigManager.addSource(folder, { ...sourceChoice.source });
           sourcesTree.refresh();
@@ -204,7 +261,7 @@ export function activate(context: vscode.ExtensionContext): void {
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
           void vscode.window.showErrorMessage(
-            `Não foi possível incluir a fonte GCT: ${message}`,
+            `Não foi possível incluir a fonte “${sourceChoice.source.id}”: ${message}`,
           );
         }
         return;
@@ -295,6 +352,8 @@ export function activate(context: vscode.ExtensionContext): void {
     sourcesView,
     openSourceRepositoryCommand,
     syncSourceCommand,
+    enableSourceCommand,
+    disableSourceCommand,
     removeSourceCommand,
     openSyncConfigCommand,
     addSourceCommand,

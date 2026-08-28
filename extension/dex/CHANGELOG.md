@@ -7,6 +7,28 @@ Semântico.
 
 ## [Não publicado]
 
+## [2.4.0] - 2026-08-28
+
+### Adicionado
+
+- A Tree View passa a oferecer botões para ativar ou desativar cada fonte.
+- Os catálogos TOTVS EngPro ADVPL/TLPP e TOTVS EngPro Superpowers passam a estar
+  disponíveis entre as fontes conhecidas.
+
+### Modificado
+
+- Fontes ativas e inativas passam a usar ícones, cores e descrições distintos
+  na Tree View.
+
+### Corrigido
+
+- A ativação de uma fonte pela Tree View passa a sincronizá-la imediatamente,
+  restaurando suas skills no workspace.
+- Operações que modificam as skills passam a ser serializadas por workspace,
+  evitando conflitos nas pastas temporárias durante sincronizações simultâneas.
+- A sincronização de fontes passa a ignorar, com aviso no canal `Dex`,
+  diretórios auxiliares sem `SKILL.md`, instalando somente skills válidas.
+
 ## [2.3.1] - 2026-08-28
 
 ### Segurança

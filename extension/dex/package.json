@@ -2,7 +2,7 @@
   "name": "dex",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "publisher": "sordi",
   "license": "SEE LICENSE IN license.MD",
   "repository": {
@@ -58,6 +58,18 @@
         "icon": "$(sync)"
       },
       {
+        "command": "dex.enableSource",
+        "title": "%command.enableSource.title%",
+        "category": "%command.category%",
+        "icon": "$(play-circle)"
+      },
+      {
+        "command": "dex.disableSource",
+        "title": "%command.disableSource.title%",
+        "category": "%command.category%",
+        "icon": "$(circle-slash)"
+      },
+      {
         "command": "dex.removeSource",
         "title": "%command.removeSource.title%",
         "category": "%command.category%",
@@ -103,19 +115,29 @@
       ],
       "view/item/context": [
         {
-          "command": "dex.syncSource",
-          "when": "view == dex.skillSources && viewItem == dexSource",
+          "command": "dex.disableSource",
+          "when": "view == dex.skillSources && viewItem == dexSourceEnabled",
           "group": "inline@0"
         },
         {
-          "command": "dex.openSourceRepository",
-          "when": "view == dex.skillSources && viewItem == dexSource",
+          "command": "dex.enableSource",
+          "when": "view == dex.skillSources && viewItem == dexSourceDisabled",
+          "group": "inline@0"
+        },
+        {
+          "command": "dex.syncSource",
+          "when": "view == dex.skillSources && viewItem == dexSourceEnabled",
           "group": "inline@1"
         },
         {
-          "command": "dex.removeSource",
-          "when": "view == dex.skillSources && viewItem == dexSource",
+          "command": "dex.openSourceRepository",
+          "when": "view == dex.skillSources && (viewItem == dexSourceEnabled || viewItem == dexSourceDisabled)",
           "group": "inline@2"
+        },
+        {
+          "command": "dex.removeSource",
+          "when": "view == dex.skillSources && (viewItem == dexSourceEnabled || viewItem == dexSourceDisabled)",
+          "group": "inline@3"
         }
       ]
     }

@@ -5,6 +5,7 @@ import {
   addDefaultSource,
   parseSyncConfig,
   serializeSyncConfig,
+  setSourceEnabled,
 } from '../sync-config';
 import { createDefaultSyncConfig } from '../sync-types';
 
@@ -38,6 +39,14 @@ test('aplica defaults e preserva campos desconhecidos', () => {
 
 test('aceita uma lista vazia de fontes', () => {
   assert.deepEqual(parseSyncConfig('{"version":1,"sources":[]}').sources, []);
+});
+
+test('ativa e desativa uma fonte preservando as demais configurações', () => {
+  const config = createDefaultSyncConfig();
+  const disabled = setSourceEnabled(config, 'dex-ai', false);
+  assert.equal(disabled?.sources[0].enabled, false);
+  assert.equal(config.sources[0].enabled, true);
+  assert.equal(setSourceEnabled(config, 'inexistente', false), undefined);
 });
 
 test('rejeita versão não suportada e fontes duplicadas', () => {

@@ -8,6 +8,8 @@
   "command.openSyncConfig.title": "Open source configuration",
   "command.openSourceRepository.title": "Open source repository",
   "command.syncSource.title": "Sync skill source",
+  "command.enableSource.title": "Enable skill source",
+  "command.disableSource.title": "Disable skill source",
   "command.removeSource.title": "Remove skill source",
   "command.answerSpecQuestionnaire.title": "Answer specification questionnaire",
   "view.skillSources.name": "Dex Skill Sources"

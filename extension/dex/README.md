@@ -90,15 +90,22 @@ Ao alterar uma fonte de `enabled: true` para `enabled: false`, a extensão remov
 imediatamente do workspace as skills fornecidas por ela e informa quantas foram
 removidas. A cópia local isolada da fonte é preservada.
 
+O estado também pode ser alternado pelo botão exibido em cada fonte na Tree
+View. Ao reativar uma fonte, a extensão a sincroniza imediatamente para
+restaurar suas skills no destino. Se a sincronização falhar ou for cancelada, a
+fonte permanece ativa para permitir uma nova tentativa manual.
+
 ## Tree View
 
 A seção **Fontes de skills Dex** lista as fontes de cada raiz do workspace.
 
-- O botão `+` lista primeiro os catálogos conhecidos, começando por Dex AI e
-  GCT, e mantém **Fonte de skills personalizada** como última opção.
+- O botão `+` lista primeiro os catálogos conhecidos — Dex AI, GCT, TOTVS
+  EngPro ADVPL/TLPP e TOTVS EngPro Superpowers — e mantém **Fonte de skills
+  personalizada** como última opção.
 - O botão de sincronização do cabeçalho atualiza todas as fontes habilitadas.
-- Os botões de cada fonte permitem sincronizá-la, abrir seu repositório ou
-  removê-la.
+- O ícone e a descrição distinguem fontes ativas e inativas. Os botões de cada
+  fonte permitem ativá-la ou desativá-la, sincronizá-la quando ativa, abrir seu
+  repositório ou removê-la.
 - O menu de três pontos permite abrir `.dex/sync.json` e verificar atualizações.
 
 Clicar em uma fonte apenas a seleciona; o repositório é aberto pelo botão
@@ -111,6 +118,8 @@ local isolada.
   recompõe o destino.
 - `Dex: Sincronizar fonte de skills`: sincroniza a fonte selecionada e recompõe
   o destino com todas as fontes habilitadas.
+- `Dex: Ativar fonte de skills` e `Dex: Desativar fonte de skills`: alternam a
+  participação da fonte nas sincronizações diretamente pela Tree View.
 - `Dex: Verificar atualizações das fontes`: compara os commits locais com as
   referências remotas configuradas.
 - `Dex: Adicionar fonte de skills`: permite escolher um catálogo conhecido ou

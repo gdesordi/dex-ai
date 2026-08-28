@@ -53,6 +53,22 @@ export function serializeSyncConfig(config: SyncConfig): string {
   return `${JSON.stringify(config, undefined, 2)}\n`;
 }
 
+export function setSourceEnabled(
+  config: SyncConfig,
+  sourceId: string,
+  enabled: boolean,
+): SyncConfig | undefined {
+  const index = config.sources.findIndex((source) => source.id === sourceId);
+  if (index < 0) return undefined;
+
+  return {
+    ...config,
+    sources: config.sources.map((source, sourceIndex) =>
+      sourceIndex === index ? { ...source, enabled } : source,
+    ),
+  };
+}
+
 export type AddDefaultSourceResult =
   | { status: 'added'; config: SyncConfig }
   | { status: 'already-configured'; sourceId: string }

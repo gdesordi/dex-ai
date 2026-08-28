@@ -15,13 +15,31 @@ test('valida skills sem exigir manifesto de versão do catálogo', () => {
     skills: [
       { name: 'alpha', files: ['alpha/SKILL.md', 'alpha/reference.md'] },
     ],
+    warnings: [],
   });
 });
 
-test('rejeita diretório sem SKILL.md', () => {
+test('ignora diretório auxiliar sem SKILL.md quando há skills válidas', () => {
+  const catalog = validateCatalog(
+    'catalog',
+    files({
+      'alpha/SKILL.md': '---\nname: alpha\ndescription: Texto\n---\n',
+      'references/guide.md': '# Guia',
+    }),
+  );
+
+  assert.deepEqual(catalog.skills, [
+    { name: 'alpha', files: ['alpha/SKILL.md'] },
+  ]);
+  assert.deepEqual(catalog.warnings, [
+    'o diretório “references” foi ignorado porque não contém SKILL.md',
+  ]);
+});
+
+test('rejeita catálogo sem nenhuma skill válida', () => {
   assert.throws(
-    () => validateCatalog('catalog', files({ 'alpha/readme.md': 'texto' })),
-    /não contém SKILL.md/,
+    () => validateCatalog('catalog', files({ 'references/guide.md': 'texto' })),
+    /nenhuma skill válida com SKILL.md/,
   );
 });
 

@@ -8,6 +8,8 @@
   "command.openSyncConfig.title": "Abrir configuração de fontes",
   "command.openSourceRepository.title": "Abrir repositório da fonte",
   "command.syncSource.title": "Sincronizar fonte de skills",
+  "command.enableSource.title": "Ativar fonte de skills",
+  "command.disableSource.title": "Desativar fonte de skills",
   "command.removeSource.title": "Remover fonte de skills",
   "command.answerSpecQuestionnaire.title": "Responder questionário de especificação",
   "view.skillSources.name": "Fontes de skills Dex"
