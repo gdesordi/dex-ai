@@ -7,8 +7,7 @@ catálogos habilitados em cada workspace pelo Visual Studio Code ou pelo Kiro.
 
 1. Abra uma pasta ou workspace confiável.
 2. No Explorer, localize a seção **Fontes de skills Dex**.
-3. Use o botão `+` para cadastrar uma fonte ou, no menu de três pontos, escolha
-   **Dex: Adicionar fonte Dex padrão**.
+3. Use o botão `+` e escolha o catálogo Dex ou uma fonte personalizada.
 4. Use o botão de sincronização no cabeçalho para atualizar todas as fontes
    habilitadas.
 
@@ -77,9 +76,11 @@ Se o download de uma fonte falhar durante a sincronização global, a extensão
 registra a falha e usa sua última cópia local válida, quando disponível, para
 compor o destino. Os detalhes ficam no canal de saída **Dex**.
 
-A verificação de atualizações é manual. Ela compara o commit armazenado de cada
-fonte habilitada com o commit atual da referência configurada, sem sincronizar o
-catálogo.
+A verificação de atualizações é manual. Para cada repositório configurado, ela
+resolve a referência remota e compara seu commit com o commit armazenado na
+última sincronização, sem depender de um manifesto de versão e sem baixar o
+catálogo. Mudanças de repositório, referência ou caminho também indicam que a
+fonte precisa ser sincronizada.
 
 Ao alterar uma fonte de `enabled: true` para `enabled: false`, a extensão remove
 imediatamente do workspace as skills fornecidas por ela e informa quantas foram
@@ -89,12 +90,12 @@ removidas. A cópia local isolada da fonte é preservada.
 
 A seção **Fontes de skills Dex** lista as fontes de cada raiz do workspace.
 
-- O botão `+` abre o cadastro guiado de uma nova fonte.
+- O botão `+` lista primeiro os catálogos conhecidos, começando por Dex AI e
+  GCT, e mantém **Fonte de skills personalizada** como última opção.
 - O botão de sincronização do cabeçalho atualiza todas as fontes habilitadas.
 - Os botões de cada fonte permitem sincronizá-la, abrir seu repositório ou
   removê-la.
-- O menu de três pontos permite adicionar a fonte Dex padrão, abrir
-  `.dex/sync.json` e verificar atualizações.
+- O menu de três pontos permite abrir `.dex/sync.json` e verificar atualizações.
 
 Clicar em uma fonte apenas a seleciona; o repositório é aberto pelo botão
 correspondente. Ao remover uma fonte, é possível preservar ou apagar sua cópia
@@ -108,9 +109,8 @@ local isolada.
   o destino com todas as fontes habilitadas.
 - `Dex: Verificar atualizações das fontes`: compara os commits locais com as
   referências remotas configuradas.
-- `Dex: Adicionar fonte de skills`: cadastra uma fonte em `.dex/sync.json`.
-- `Dex: Adicionar fonte Dex padrão`: inclui o catálogo Dex sem criar duplicatas
-  ou sobrescrever uma fonte conflitante.
+- `Dex: Adicionar fonte de skills`: permite escolher um catálogo conhecido ou
+  cadastrar uma fonte personalizada em `.dex/sync.json`.
 - `Dex: Abrir configuração de fontes`: abre `.dex/sync.json` para edição.
 - `Dex: Abrir repositório da fonte`: abre no navegador a origem selecionada.
 - `Dex: Remover fonte de skills`: remove a fonte da configuração e oferece a

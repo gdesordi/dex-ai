@@ -4,7 +4,6 @@
   "command.category": "Dex",
   "command.syncSources.title": "Sincronizar fontes de skills",
   "command.checkSkillsUpdates.title": "Verificar atualizações das fontes",
-  "command.addDefaultSource.title": "Adicionar fonte Dex padrão",
   "command.addSource.title": "Adicionar fonte de skills",
   "command.openSyncConfig.title": "Abrir configuração de fontes",
   "command.openSourceRepository.title": "Abrir repositório da fonte",

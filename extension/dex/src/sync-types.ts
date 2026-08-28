@@ -26,10 +26,10 @@ export interface SourceMetadata {
   sourceId: string;
   repository: string;
   requestedRef: string;
+  sourcePath: string;
   resolvedCommit: string;
   syncedAt: string;
   skillCount: number;
-  skillsVersion?: string;
 }
 
 export interface SourceSyncResult {
@@ -42,6 +42,14 @@ export interface SourceSyncResult {
 export const defaultDexSource: Readonly<SyncSource> = Object.freeze({
   id: 'dex-ai',
   repository: 'https://github.com/gdesordi/dex-ai',
+  ref: 'main',
+  path: 'skills',
+  enabled: true,
+});
+
+export const gctSkillsSource: Readonly<SyncSource> = Object.freeze({
+  id: 'gct',
+  repository: 'https://github.com/sordi-totvs/gct-resources',
   ref: 'main',
   path: 'skills',
   enabled: true,

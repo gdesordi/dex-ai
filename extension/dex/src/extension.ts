@@ -3,7 +3,7 @@ import { WorkspaceConfigManager } from './workspace-config';
 import { SourceService } from './source-service';
 import { SourcesTreeProvider, isSourceNode } from './sources-tree';
 import { answerSpecQuestionnaire } from './spec-questionnaire-command';
-import { SyncSource } from './sync-types';
+import { gctSkillsSource, SyncSource } from './sync-types';
 import { newlyDisabledSourceIds } from './source-composition';
 import {
   calculateWorkdayProgress,
@@ -147,28 +147,95 @@ export function activate(context: vscode.ExtensionContext): void {
       const folder = await selectWorkspaceFolder();
       if (!folder) return;
 
-      const id = await promptQuickPickValue(
+      const sourceChoice = await vscode.window.showQuickPick(
+        [
+          {
+            label: 'Dex AI',
+            description: 'Catálogo padrão de skills do Dex',
+            sourceType: 'dex' as const,
+          },
+          {
+            label: 'GCT',
+            description: 'Catálogo de skills do GCT',
+            sourceType: 'gct' as const,
+          },
+          {
+            label: 'Fonte de skills personalizada',
+            description: 'Configurar outro repositório GitHub',
+            sourceType: 'custom' as const,
+          },
+        ],
+        {
+          title: 'Adicionar fonte de skills',
+          placeHolder: 'Escolha uma fonte',
+        },
+      );
+      if (!sourceChoice) return;
+
+      if (sourceChoice.sourceType === 'dex') {
+        try {
+          const result = await workspaceConfigManager.addDefaultSource(folder);
+          sourcesTree.refresh();
+          if (result.status === 'added') {
+            void vscode.window.showInformationMessage(
+              `A fonte dex-ai foi adicionada a ${folder.name}/.dex/sync.json.`,
+            );
+          } else if (result.status === 'already-configured') {
+            void vscode.window.showInformationMessage(
+              'A fonte dex-ai já está configurada.',
+            );
+          } else if (result.status === 'catalog-already-configured') {
+            void vscode.window.showInformationMessage(
+              `O catálogo Dex já está configurado pela fonte “${result.sourceId}”.`,
+            );
+          } else {
+            void vscode.window.showErrorMessage(
+              'O identificador dex-ai já pertence a uma fonte com outros valores.',
+            );
+          }
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          void vscode.window.showErrorMessage(
+            `Não foi possível incluir a fonte Dex: ${message}`,
+          );
+        }
+        return;
+      }
+
+      if (sourceChoice.sourceType === 'gct') {
+        try {
+          await workspaceConfigManager.addSource(folder, { ...gctSkillsSource });
+          sourcesTree.refresh();
+          void vscode.window.showInformationMessage(
+            `A fonte gct foi adicionada a ${folder.name}/.dex/sync.json.`,
+          );
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          void vscode.window.showErrorMessage(
+            `Não foi possível incluir a fonte GCT: ${message}`,
+          );
+        }
+        return;
+      }
+
+      const id = await promptInputValue(
         'Adicionar fonte — Identificador',
         'Digite um ID único em kebab-case',
-        ['company-skills', 'team-skills'],
       );
       if (!id) return;
-      const repository = await promptQuickPickValue(
+      const repository = await promptInputValue(
         'Adicionar fonte — Repositório',
         'Digite a URL pública do GitHub',
-        ['https://github.com/owner/skills-repository'],
       );
       if (!repository) return;
-      const ref = await promptQuickPickValue(
+      const ref = await promptInputValue(
         'Adicionar fonte — Referência',
         'Digite uma branch, tag ou commit',
-        ['main', 'develop', 'v1.0.0'],
       );
       if (!ref) return;
-      const sourcePath = await promptQuickPickValue(
+      const sourcePath = await promptInputValue(
         'Adicionar fonte — Pasta',
         'Digite o caminho relativo do catálogo no repositório',
-        ['skills', 'catalog/skills'],
       );
       if (!sourcePath) return;
       const enabledChoice = await vscode.window.showQuickPick(
@@ -199,51 +266,6 @@ export function activate(context: vscode.ExtensionContext): void {
         const message = error instanceof Error ? error.message : String(error);
         void vscode.window.showErrorMessage(
           `Não foi possível adicionar a fonte: ${message}`,
-        );
-      }
-    },
-  );
-
-  const addDefaultSourceCommand = vscode.commands.registerCommand(
-    'dex.addDefaultSource',
-    async () => {
-      const workspaceFolder = await selectWorkspaceFolder();
-      if (!workspaceFolder) {
-        void vscode.window.showErrorMessage(
-          'Abra uma pasta ou workspace antes de incluir a fonte Dex.',
-        );
-        return;
-      }
-
-      try {
-        const result = await workspaceConfigManager.addDefaultSource(
-          workspaceFolder,
-        );
-        if (result.status === 'added') {
-          void vscode.window.showInformationMessage(
-            `A fonte dex-ai foi adicionada a ${workspaceFolder.name}/.dex/sync.json.`,
-          );
-          return;
-        }
-        if (result.status === 'already-configured') {
-          void vscode.window.showInformationMessage(
-            'A fonte dex-ai já está configurada.',
-          );
-          return;
-        }
-        if (result.status === 'catalog-already-configured') {
-          void vscode.window.showInformationMessage(
-            `O catálogo Dex já está configurado pela fonte “${result.sourceId}”.`,
-          );
-          return;
-        }
-        void vscode.window.showErrorMessage(
-          'O identificador dex-ai já pertence a uma fonte com outros valores.',
-        );
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        void vscode.window.showErrorMessage(
-          `Não foi possível incluir a fonte Dex: ${message}`,
         );
       }
     },
@@ -286,7 +308,6 @@ export function activate(context: vscode.ExtensionContext): void {
     removeSourceCommand,
     openSyncConfigCommand,
     addSourceCommand,
-    addDefaultSourceCommand,
     syncSourcesCommand,
     checkSkillsUpdatesCommand,
     answerSpecQuestionnaireCommand,
@@ -396,34 +417,10 @@ async function selectWorkspaceFolder(): Promise<
   });
 }
 
-async function promptQuickPickValue(
+async function promptInputValue(
   title: string,
   placeHolder: string,
-  examples: string[],
 ): Promise<string | undefined> {
-  const picker = vscode.window.createQuickPick();
-  picker.title = title;
-  picker.placeholder = placeHolder;
-  picker.items = examples.map((example) => ({
-    label: example,
-    description: 'Exemplo',
-  }));
-  picker.matchOnDescription = true;
-
-  return new Promise<string | undefined>((resolve) => {
-    let settled = false;
-    const finish = (value: string | undefined): void => {
-      if (settled) return;
-      settled = true;
-      picker.dispose();
-      resolve(value);
-    };
-    picker.onDidAccept(() => {
-      const typed = picker.value.trim();
-      const selected = picker.activeItems[0]?.label;
-      finish(typed || selected);
-    });
-    picker.onDidHide(() => finish(undefined));
-    picker.show();
-  });
+  const value = await vscode.window.showInputBox({ title, placeHolder });
+  return value?.trim() || undefined;
 }

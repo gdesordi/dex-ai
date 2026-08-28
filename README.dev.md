@@ -9,7 +9,6 @@ documentação prática para usuários está no [README.md](README.md).
 .
 ├── extension/dex/       Extensão Dex para Visual Studio Code e Kiro
 ├── skills/              Catálogo distribuído pela extensão
-│   ├── dex.json         Versão oficial do catálogo
 │   └── changelog.md     Histórico de mudanças das skills
 ├── .specs/dex/          Specs gerenciadas exclusivamente pelas skills Dex
 ├── specs/               Especificações gerenciadas por outros fluxos
@@ -69,17 +68,17 @@ O catálogo atual inclui:
 - `dex-spec-manage`: cria, refina e mantém especificações funcionais do Dex;
 - `dex-spec-plan`: cria planos a partir das especificações do Dex.
 
-## Versionamento
+## Revisões e versionamento
 
-O catálogo e a extensão possuem versões independentes:
+O catálogo e a extensão usam identificadores independentes:
 
-- `skills/dex.json`, no campo `skillsVersion`, é a fonte oficial da versão do
-  catálogo;
+- o catálogo sincronizado é identificado pelo commit Git resolvido para a
+  referência configurada;
 - `extension/dex/package.json` contém a versão da extensão.
 
-O catálogo segue Versionamento Semântico e registra mudanças em
-[skills/changelog.md](skills/changelog.md). A extensão registra suas mudanças em
-[extension/dex/CHANGELOG.md](extension/dex/CHANGELOG.md).
+As mudanças do catálogo são registradas em
+[skills/changelog.md](skills/changelog.md). A extensão registra suas mudanças
+em [extension/dex/CHANGELOG.md](extension/dex/CHANGELOG.md).
 
 Não crie commit, tag, release ou publicação sem solicitação explícita.
 

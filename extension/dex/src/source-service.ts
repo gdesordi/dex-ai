@@ -134,13 +134,17 @@ export class SourceService {
           this.provider.resolveCommit(source),
           this.storage.readMetadata(folder, source.id),
         ]);
-        if (!metadata || metadata.resolvedCommit !== commit) {
+        const matchesSource =
+          metadata?.repository === source.repository &&
+          metadata.requestedRef === source.ref &&
+          metadata.sourcePath === source.path;
+        if (!matchesSource || metadata.resolvedCommit !== commit) {
           updates.push(source.id);
         }
         this.log(
           `Fonte “${source.id}”: commit remoto ${commit.slice(0, 12)}; ` +
             (metadata
-              ? `commit local ${metadata.resolvedCommit.slice(0, 12)}${metadata.resolvedCommit === commit ? ' (atual).' : ' (atualização disponível).'}`
+              ? `commit local ${metadata.resolvedCommit.slice(0, 12)}${matchesSource && metadata.resolvedCommit === commit ? ' (atual).' : ' (atualização disponível).'}`
               : 'sem cache local.'),
         );
       } catch (error) {
@@ -286,7 +290,6 @@ export class SourceService {
       source,
       catalog,
       validated.skills.length,
-      validated.skillsVersion,
     );
     this.log(`Fonte “${source.id}”: cache local atualizado.`);
     return { sourceId: source.id, status: 'synced', metadata };

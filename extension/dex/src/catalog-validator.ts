@@ -5,7 +5,6 @@ export interface ValidatedSkill {
 
 export interface ValidatedCatalog {
   skills: ValidatedSkill[];
-  skillsVersion?: string;
 }
 
 export class CatalogValidationError extends Error {
@@ -65,7 +64,7 @@ export function validateCatalog(
   }
 
   skills.sort((left, right) => left.name.localeCompare(right.name));
-  return { skills, skillsVersion: readSkillsVersion(files.get('dex.json')) };
+  return { skills };
 }
 
 function readFrontmatter(
@@ -94,22 +93,5 @@ function readFrontmatter(
     throw new CatalogValidationError(
       `${sourceId}: frontmatter inválido em “${path}”: ${detail}`,
     );
-  }
-}
-
-function readSkillsVersion(contents: Uint8Array | undefined): string | undefined {
-  if (!contents) {
-    return undefined;
-  }
-  try {
-    const manifest = JSON.parse(new TextDecoder().decode(contents)) as {
-      skillsVersion?: unknown;
-    };
-    return typeof manifest.skillsVersion === 'string' &&
-      /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(manifest.skillsVersion)
-      ? manifest.skillsVersion
-      : undefined;
-  } catch {
-    return undefined;
   }
 }

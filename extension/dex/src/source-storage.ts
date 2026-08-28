@@ -11,7 +11,6 @@ export class SourceStorage {
     source: SyncSource,
     catalog: DownloadedCatalog,
     skillCount: number,
-    skillsVersion?: string,
   ): Promise<SourceMetadata> {
     const sourceRoot = this.getSourceRoot(workspaceFolder, source.id);
     const activeUri = vscode.Uri.joinPath(sourceRoot, 'active');
@@ -45,10 +44,10 @@ export class SourceStorage {
         sourceId: source.id,
         repository: source.repository,
         requestedRef: source.ref,
+        sourcePath: source.path,
         resolvedCommit: catalog.resolvedCommit,
         syncedAt: new Date().toISOString(),
         skillCount,
-        ...(skillsVersion ? { skillsVersion } : {}),
       };
       await vscode.workspace.fs.writeFile(
         vscode.Uri.joinPath(sourceRoot, 'metadata.json'),

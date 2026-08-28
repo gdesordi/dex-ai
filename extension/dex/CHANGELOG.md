@@ -7,6 +7,19 @@ Semântico.
 
 ## [Não publicado]
 
+### Modificado
+
+- A verificação de atualizações passa a usar exclusivamente o commit Git
+  resolvido de cada fonte, juntamente com repositório, referência e caminho,
+  sem depender de `skills/dex.json` ou de uma versão declarada pelo catálogo.
+- O cadastro de fontes passa a solicitar identificador, repositório, referência
+  e caminho sem exibir valores de exemplo como opções selecionáveis.
+- `Dex: Adicionar fonte de skills` passa a listar catálogos conhecidos, com Dex
+  como primeira opção e a fonte personalizada como última; o comando separado
+  `dex.addDefaultSource` foi removido.
+- O catálogo GCT (`sordi-totvs/gct-resources`, pasta `skills`) passa a estar
+  disponível entre as fontes conhecidas.
+
 ## [2.2.0] - 2026-08-04
 
 ### Adicionado

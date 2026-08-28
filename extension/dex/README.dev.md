@@ -71,6 +71,11 @@ habilitadas em `.agents/skills` no VS Code ou `.kiro/skills` no Kiro. A decisão
 do destino fica centralizada em `src/environment.ts` e considera
 `vscode.env.appName` e `vscode.env.uriScheme`.
 
+O metadata de cada fonte registra repositório, referência, caminho e commit Git
+resolvido. A verificação de atualizações repete a resolução remota para qualquer
+fonte configurada e compara esses dados, sem exigir arquivo de versão dentro do
+catálogo.
+
 Durante a composição, a extensão mantém a pasta `skills` no lugar e substitui
 somente seus arquivos e subdiretórios. Uma cópia temporária do conteúdo anterior
 permite restaurá-lo se a atualização falhar. Isso evita renomear a pasta
@@ -81,21 +86,22 @@ Tree View e observar as configurações dos workspaces. Nenhuma fonte é consult
 ou sincronizada automaticamente durante a ativação.
 
 A configuração declarativa fica em `.dex/sync.json`. A ativação não cria o
-arquivo nem mantém uma fonte implícita em memória. `dex.addSource` e
-`dex.addDefaultSource` são os únicos fluxos que criam a primeira configuração e
-continuam exigindo um workspace confiável para escrita.
+arquivo nem mantém uma fonte implícita em memória. `dex.addSource` é o fluxo que
+cria a primeira configuração e continua exigindo um workspace confiável para
+escrita.
 
 As ações inline da Tree View são declaradas em `view/item/context`. A remoção
 atualiza primeiro `.dex/sync.json` e preserva o cache por padrão; a exclusão da
 cópia local depende de uma segunda escolha explícita do usuário.
 
-As ações globais são declaradas em `view/title`. `dex.addSource` usa Quick Picks
-editáveis: o texto digitado tem prioridade sobre o exemplo selecionado e a
-configuração completa é normalizada e validada antes da escrita.
+As ações globais são declaradas em `view/title`. `dex.addSource` começa por uma
+lista de catálogos conhecidos, com Dex AI e GCT no início e a fonte personalizada
+no fim. Somente a opção personalizada solicita os campos por caixas de entrada;
+a configuração completa é normalizada e validada antes da escrita.
 
 Somente comandos no grupo `navigation` aparecem diretamente no header. As
-ações `dex.addDefaultSource`, `dex.openSyncConfig` e `dex.checkSkillsUpdates`
-usam o grupo `1_configuration` para permanecer no menu de três pontos.
+ações `dex.openSyncConfig` e `dex.checkSkillsUpdates` usam o grupo
+`1_configuration` para permanecer no menu de três pontos.
 
 `dex.syncSources` é a sincronização global usada no header da view.
 `dex.syncSource` recebe o item como argumento, atualiza somente seu cache e
@@ -122,8 +128,8 @@ um comando, mantenha a mesma chave nos dois catálogos `package.nls.json` e
 
 1. Inicie o Extension Development Host com `F5`.
 2. Abra um workspace de teste.
-3. Adicione uma fonte pelo botão `+` ou inclua a fonte Dex padrão pelo menu de
-   três pontos.
+3. Adicione uma fonte pelo botão `+`, escolhendo o catálogo Dex ou uma fonte
+   personalizada.
 4. Execute `Dex: Sincronizar fontes de skills` pelo header da Tree View.
 5. Confirme que `.agents/skills` no VS Code ou `.kiro/skills` no Kiro contém os
    arquivos sincronizados.

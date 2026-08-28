@@ -12,19 +12,18 @@ as fontes habilitadas e instala as skills no diretório correto:
 - Kiro: `.kiro/skills`.
 
 O arquivo `.dex/sync.json` só é criado quando você adiciona uma fonte pelo botão
-`+` ou inclui a fonte Dex padrão pelo menu de três pontos.
+`+`.
 
 ## Gerenciar fontes
 
 A view **Fontes de skills Dex**, no Explorer, permite:
 
-- adicionar uma fonte pelo botão `+`;
+- escolher o catálogo Dex ou uma fonte personalizada pelo botão `+`;
 - sincronizar todas as fontes pelo botão do header;
 - sincronizar somente uma fonte pelo botão inline do item;
 - abrir o repositório de uma fonte no navegador;
 - remover uma fonte;
-- restaurar a fonte Dex padrão ou abrir `.dex/sync.json` pelo menu de três
-  pontos.
+- abrir `.dex/sync.json` pelo menu de três pontos.
 
 Uma fonte possui um identificador, a URL pública do GitHub, uma branch, tag ou
 commit e o caminho da pasta de skills no repositório. O cadastro guiado solicita

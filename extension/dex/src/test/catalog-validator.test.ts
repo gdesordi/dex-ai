@@ -2,13 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { CatalogValidationError, validateCatalog } from '../catalog-validator';
 
-test('valida skills e lê a versão opcional do catálogo', () => {
+test('valida skills sem exigir manifesto de versão do catálogo', () => {
   const catalog = validateCatalog(
     'catalog',
     files({
       'alpha/SKILL.md': '---\nname: alpha\ndescription: Primeira skill\n---\n',
       'alpha/reference.md': '# Referência',
-      'dex.json': '{"skillsVersion":"2.3.4"}',
       'changelog.md': '# Mudanças',
     }),
   );
@@ -16,7 +15,6 @@ test('valida skills e lê a versão opcional do catálogo', () => {
     skills: [
       { name: 'alpha', files: ['alpha/SKILL.md', 'alpha/reference.md'] },
     ],
-    skillsVersion: '2.3.4',
   });
 });
 

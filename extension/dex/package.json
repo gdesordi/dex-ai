@@ -34,12 +34,6 @@
         "category": "%command.category%"
       },
       {
-        "command": "dex.addDefaultSource",
-        "title": "%command.addDefaultSource.title%",
-        "category": "%command.category%",
-        "icon": "$(repo)"
-      },
-      {
         "command": "dex.addSource",
         "title": "%command.addSource.title%",
         "category": "%command.category%",
@@ -105,11 +99,6 @@
           "command": "dex.checkSkillsUpdates",
           "when": "view == dex.skillSources",
           "group": "1_configuration@3"
-        },
-        {
-          "command": "dex.addDefaultSource",
-          "when": "view == dex.skillSources",
-          "group": "1_configuration@1"
         }
       ],
       "view/item/context": [

@@ -33,18 +33,15 @@ npm run check
   corresponder ao nome do diretório.
 - Recursos específicos do agente podem ficar em `skills/<nome>/agents/`.
 - Não altere o comportamento de outra skill sem que isso faça parte do escopo.
-- Preserve os arquivos `skills/dex.json` e `skills/changelog.md` na raiz do
-  catálogo, pois eles também são distribuídos pela extensão.
+- Preserve `skills/changelog.md` na raiz do catálogo, pois ele também é
+  distribuído pela extensão.
 
-## Versionamento do catálogo
+## Revisões do catálogo
 
-- `skills/dex.json` é a fonte oficial da versão, no campo `skillsVersion`.
-- Use Versionamento Semântico: `MAJOR.MINOR.PATCH`.
-- Mudanças incompatíveis incrementam `MAJOR`; novas funcionalidades compatíveis
-  incrementam `MINOR`; correções compatíveis incrementam `PATCH`.
-- Mantenha `skills/changelog.md` no padrão Keep a Changelog.
-- A seção de versão mais recente do changelog deve corresponder a
-  `skillsVersion`.
+- A revisão de um catálogo sincronizado é identificada pelo commit Git resolvido
+  para a referência configurada, sem manifesto de versão próprio.
+- Mantenha `skills/changelog.md` no padrão Keep a Changelog para registrar as
+  mudanças relevantes do catálogo.
 - Não crie commit, tag, release ou publicação sem solicitação explícita.
 
 ## Documentação e estilo

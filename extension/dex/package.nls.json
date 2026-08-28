@@ -4,7 +4,6 @@
   "command.category": "Dex",
   "command.syncSources.title": "Sync skill sources",
   "command.checkSkillsUpdates.title": "Check skill source updates",
-  "command.addDefaultSource.title": "Add default Dex source",
   "command.addSource.title": "Add skill source",
   "command.openSyncConfig.title": "Open source configuration",
   "command.openSourceRepository.title": "Open source repository",

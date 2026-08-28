@@ -3,10 +3,9 @@
 Todas as mudanças relevantes do conjunto de skills Dex serão documentadas
 neste arquivo.
 
-O formato segue o padrão Keep a Changelog e as versões seguem o Versionamento
-Semântico. A versão oficial das skills é controlada pela propriedade
-`skillsVersion` do arquivo `dex.json` e deve corresponder à versão publicada mais
-recente deste changelog.
+O formato segue o padrão Keep a Changelog. A revisão sincronizada do catálogo é
+identificada pelo commit Git da referência configurada; as versões abaixo são
+mantidas como histórico das entregas anteriores.
 
 ## [Não publicado]
 
