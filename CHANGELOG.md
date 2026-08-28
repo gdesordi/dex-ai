@@ -8,10 +8,28 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [2.3.0] - 2026-08-28
+
+### Adicionado
+
+- O seletor de fontes conhecidas passa a oferecer o catálogo GCT e sincroniza
+  automaticamente fontes conhecidas ou personalizadas após o cadastro.
+- Testes unitários passam a cobrir fontes conhecidas, comparação de revisões e
+  o resultado da sincronização inicial após o cadastro.
+
 ### Modificado
 
+- A verificação de atualizações das fontes passa a comparar o commit Git remoto
+  com o commit armazenado, considerando também repositório, referência e caminho.
+- O cadastro de fontes passa a listar catálogos conhecidos antes da opção
+  personalizada, sem apresentar valores de exemplo como opções selecionáveis.
 - O changelog deixa de pertencer exclusivamente ao catálogo de skills, passa
   para a raiz do repositório e passa a registrar mudanças de todo o projeto.
+
+### Removido
+
+- O manifesto `skills/dex.json`, o campo `skillsVersion` e o comando separado
+  `dex.addDefaultSource` foram removidos.
 
 ## [3.1.2] - 2026-08-04
 

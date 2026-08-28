@@ -6,6 +6,7 @@ import { SyncSource, SourceSyncResult } from './sync-types';
 import { WorkspaceConfigManager } from './workspace-config';
 import { resolveSkillsDestination } from './environment';
 import { managedEntriesToReplace } from './source-composition';
+import { isSourceRevisionCurrent } from './source-revision';
 
 export class SourceService {
   private readonly provider = new GitHubSourceProvider();
@@ -134,17 +135,14 @@ export class SourceService {
           this.provider.resolveCommit(source),
           this.storage.readMetadata(folder, source.id),
         ]);
-        const matchesSource =
-          metadata?.repository === source.repository &&
-          metadata.requestedRef === source.ref &&
-          metadata.sourcePath === source.path;
-        if (!matchesSource || metadata.resolvedCommit !== commit) {
+        const isCurrent = isSourceRevisionCurrent(source, metadata, commit);
+        if (!isCurrent) {
           updates.push(source.id);
         }
         this.log(
           `Fonte “${source.id}”: commit remoto ${commit.slice(0, 12)}; ` +
             (metadata
-              ? `commit local ${metadata.resolvedCommit.slice(0, 12)}${matchesSource && metadata.resolvedCommit === commit ? ' (atual).' : ' (atualização disponível).'}`
+              ? `commit local ${metadata.resolvedCommit.slice(0, 12)}${isCurrent ? ' (atual).' : ' (atualização disponível).'}`
               : 'sem cache local.'),
         );
       } catch (error) {

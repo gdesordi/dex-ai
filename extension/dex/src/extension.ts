@@ -3,8 +3,10 @@ import { WorkspaceConfigManager } from './workspace-config';
 import { SourceService } from './source-service';
 import { SourcesTreeProvider, isSourceNode } from './sources-tree';
 import { answerSpecQuestionnaire } from './spec-questionnaire-command';
-import { gctSkillsSource, SyncSource } from './sync-types';
+import { SyncSource } from './sync-types';
 import { newlyDisabledSourceIds } from './source-composition';
+import { knownSourceChoices } from './known-sources';
+import { runInitialSourceSync } from './initial-source-sync';
 import {
   calculateWorkdayProgress,
   formatWorkdayProgress,
@@ -148,23 +150,7 @@ export function activate(context: vscode.ExtensionContext): void {
       if (!folder) return;
 
       const sourceChoice = await vscode.window.showQuickPick(
-        [
-          {
-            label: 'Dex AI',
-            description: 'Catálogo padrão de skills do Dex',
-            sourceType: 'dex' as const,
-          },
-          {
-            label: 'GCT',
-            description: 'Catálogo de skills do GCT',
-            sourceType: 'gct' as const,
-          },
-          {
-            label: 'Fonte de skills personalizada',
-            description: 'Configurar outro repositório GitHub',
-            sourceType: 'custom' as const,
-          },
-        ],
+        knownSourceChoices,
         {
           title: 'Adicionar fonte de skills',
           placeHolder: 'Escolha uma fonte',
@@ -179,7 +165,7 @@ export function activate(context: vscode.ExtensionContext): void {
           if (result.status === 'added') {
             await syncAddedSource(
               folder,
-              'dex-ai',
+              sourceChoice.source.id,
               sourceService,
               sourcesTree,
             );
@@ -207,11 +193,11 @@ export function activate(context: vscode.ExtensionContext): void {
 
       if (sourceChoice.sourceType === 'gct') {
         try {
-          await workspaceConfigManager.addSource(folder, { ...gctSkillsSource });
+          await workspaceConfigManager.addSource(folder, { ...sourceChoice.source });
           sourcesTree.refresh();
           await syncAddedSource(
             folder,
-            gctSkillsSource.id,
+            sourceChoice.source.id,
             sourceService,
             sourcesTree,
           );
@@ -435,18 +421,20 @@ async function syncAddedSource(
   sourceService: SourceService,
   sourcesTree: SourcesTreeProvider,
 ): Promise<void> {
-  try {
-    await sourceService.syncSource(folder, sourceId);
+  const result = await runInitialSourceSync(
+    () => sourceService.syncSource(folder, sourceId).then(() => undefined),
+  );
+  if (result.status === 'synced') {
     sourcesTree.refresh();
     void vscode.window.showInformationMessage(
       `A fonte “${sourceId}” foi adicionada e sincronizada.`,
     );
-  } catch (error) {
-    const detail = error instanceof vscode.CancellationError
+  } else {
+    const detail = result.error instanceof vscode.CancellationError
       ? 'a sincronização foi cancelada'
-      : error instanceof Error
-        ? error.message
-        : String(error);
+      : result.error instanceof Error
+        ? result.error.message
+        : String(result.error);
     void vscode.window.showWarningMessage(
       `A fonte “${sourceId}” foi adicionada, mas não pôde ser sincronizada: ${detail}.`,
     );

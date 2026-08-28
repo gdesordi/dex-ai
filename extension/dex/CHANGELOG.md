@@ -7,6 +7,13 @@ Semântico.
 
 ## [Não publicado]
 
+## [2.3.0] - 2026-08-28
+
+### Adicionado
+
+- Testes unitários para fontes conhecidas, comparação de revisões e resultado
+  da sincronização inicial após o cadastro.
+
 ### Modificado
 
 - A verificação de atualizações passa a usar exclusivamente o commit Git
