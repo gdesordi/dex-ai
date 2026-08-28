@@ -66,6 +66,10 @@ O botão de sincronização de uma fonte atualiza somente a fonte selecionada. O
 destino é recomposto com sua nova cópia e com as cópias locais das demais fontes
 habilitadas.
 
+Ao adicionar uma fonte conhecida ou personalizada, a extensão inicia
+automaticamente sua primeira sincronização. Se ela falhar ou for cancelada, a
+configuração é preservada para uma nova tentativa manual.
+
 Durante a composição, a pasta `.agents/skills` ou `.kiro/skills` permanece no
 lugar e somente seu conteúdo é substituído. A extensão mantém uma cópia
 temporária do conteúdo anterior para restauração em caso de falha. Como o

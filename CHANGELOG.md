@@ -1,15 +1,43 @@
 # Changelog
 
-Todas as mudanças relevantes do conjunto de skills Dex serão documentadas
-neste arquivo.
+Todas as mudanças relevantes do projeto Dex AI serão documentadas neste arquivo.
 
-O formato segue o padrão Keep a Changelog. A revisão sincronizada do catálogo é
-identificada pelo commit Git da referência configurada; as versões abaixo são
-mantidas como histórico das entregas anteriores.
+O formato segue o padrão Keep a Changelog. As versões abaixo anteriores à
+adoção deste changelog global registram entregas do catálogo de skills e são
+mantidas como histórico.
 
 ## [Não publicado]
 
-Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
+## [2.3.1] - 2026-08-28
+
+### Segurança
+
+- Dependências transitivas das ferramentas da extensão foram atualizadas para
+  corrigir vulnerabilidades em `brace-expansion`, `fast-uri`, `js-yaml`,
+  `linkify-it` e `undici`.
+
+## [2.3.0] - 2026-08-28
+
+### Adicionado
+
+- O seletor de fontes conhecidas passa a oferecer o catálogo GCT e sincroniza
+  automaticamente fontes conhecidas ou personalizadas após o cadastro.
+- Testes unitários passam a cobrir fontes conhecidas, comparação de revisões e
+  o resultado da sincronização inicial após o cadastro.
+
+### Modificado
+
+- A verificação de atualizações das fontes passa a comparar o commit Git remoto
+  com o commit armazenado, considerando também repositório, referência e caminho.
+- O cadastro de fontes passa a listar catálogos conhecidos antes da opção
+  personalizada, sem apresentar valores de exemplo como opções selecionáveis.
+- O changelog deixa de pertencer exclusivamente ao catálogo de skills, passa
+  para a raiz do repositório e passa a registrar mudanças de todo o projeto.
+
+### Removido
+
+- O manifesto `skills/dex.json`, o campo `skillsVersion` e o comando separado
+  `dex.addDefaultSource` foram removidos.
 
 ## [3.1.2] - 2026-08-04
 

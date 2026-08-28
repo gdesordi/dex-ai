@@ -33,15 +33,14 @@ npm run check
   corresponder ao nome do diretório.
 - Recursos específicos do agente podem ficar em `skills/<nome>/agents/`.
 - Não altere o comportamento de outra skill sem que isso faça parte do escopo.
-- Preserve `skills/changelog.md` na raiz do catálogo, pois ele também é
-  distribuído pela extensão.
 
-## Revisões do catálogo
+## Changelog e revisões
 
 - A revisão de um catálogo sincronizado é identificada pelo commit Git resolvido
   para a referência configurada, sem manifesto de versão próprio.
-- Mantenha `skills/changelog.md` no padrão Keep a Changelog para registrar as
-  mudanças relevantes do catálogo.
+- Mantenha `CHANGELOG.md`, na raiz do repositório, no padrão Keep a Changelog
+  para registrar mudanças relevantes de todo o projeto, incluindo extensão e
+  catálogo de skills.
 - Não crie commit, tag, release ou publicação sem solicitação explícita.
 
 ## Documentação e estilo

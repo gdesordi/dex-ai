@@ -7,6 +7,21 @@ Semântico.
 
 ## [Não publicado]
 
+## [2.3.1] - 2026-08-28
+
+### Segurança
+
+- Dependências transitivas de desenvolvimento foram atualizadas para corrigir
+  vulnerabilidades em `brace-expansion`, `fast-uri`, `js-yaml`, `linkify-it` e
+  `undici`.
+
+## [2.3.0] - 2026-08-28
+
+### Adicionado
+
+- Testes unitários para fontes conhecidas, comparação de revisões e resultado
+  da sincronização inicial após o cadastro.
+
 ### Modificado
 
 - A verificação de atualizações passa a usar exclusivamente o commit Git
@@ -19,6 +34,9 @@ Semântico.
   `dex.addDefaultSource` foi removido.
 - O catálogo GCT (`sordi-totvs/gct-resources`, pasta `skills`) passa a estar
   disponível entre as fontes conhecidas.
+- Fontes conhecidas e personalizadas passam a ser sincronizadas automaticamente
+  logo após o cadastro, preservando a configuração quando a sincronização falha
+  ou é cancelada.
 
 ## [2.2.0] - 2026-08-04
 

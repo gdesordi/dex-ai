@@ -26,7 +26,7 @@ export interface SourceMetadata {
   sourceId: string;
   repository: string;
   requestedRef: string;
-  sourcePath: string;
+  sourcePath?: string;
   resolvedCommit: string;
   syncedAt: string;
   skillCount: number;
