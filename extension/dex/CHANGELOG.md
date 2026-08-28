@@ -7,6 +7,14 @@ Semântico.
 
 ## [Não publicado]
 
+## [2.3.1] - 2026-08-28
+
+### Segurança
+
+- Dependências transitivas de desenvolvimento foram atualizadas para corrigir
+  vulnerabilidades em `brace-expansion`, `fast-uri`, `js-yaml`, `linkify-it` e
+  `undici`.
+
 ## [2.3.0] - 2026-08-28
 
 ### Adicionado
