@@ -8,6 +8,11 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+### Corrigido
+
+- A extensão passa a ignorar, com aviso no canal `Dex`, diretórios auxiliares
+  sem `SKILL.md` em fontes de skills, sem impedir a instalação das skills válidas.
+
 ## [2.3.1] - 2026-08-28
 
 ### Segurança

@@ -7,6 +7,11 @@ Semântico.
 
 ## [Não publicado]
 
+### Corrigido
+
+- A sincronização de fontes passa a ignorar, com aviso no canal `Dex`,
+  diretórios auxiliares sem `SKILL.md`, instalando somente skills válidas.
+
 ## [2.3.1] - 2026-08-28
 
 ### Segurança

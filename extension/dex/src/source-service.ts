@@ -280,13 +280,25 @@ export class SourceService {
       `Fonte “${source.id}”: commit ${catalog.resolvedCommit.slice(0, 12)} resolvido; ${catalog.files.size} arquivo(s) baixado(s).`,
     );
     const validated = validateCatalog(source.id, catalog.files);
+    for (const warning of validated.warnings) {
+      this.log(`Fonte “${source.id}”: aviso: ${warning}`);
+    }
     this.log(
       `Fonte “${source.id}”: catálogo válido com ${validated.skills.length} skill(s).`,
     );
+    const skillFiles = new Set(
+      validated.skills.flatMap((skill) => skill.files),
+    );
+    const installableCatalog = {
+      ...catalog,
+      files: new Map(
+        [...catalog.files].filter(([path]) => skillFiles.has(path)),
+      ),
+    };
     const metadata = await this.storage.install(
       folder,
       source,
-      catalog,
+      installableCatalog,
       validated.skills.length,
     );
     this.log(`Fonte “${source.id}”: cache local atualizado.`);
