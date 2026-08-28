@@ -1,15 +1,17 @@
 # Changelog
 
-Todas as mudanças relevantes do conjunto de skills Dex serão documentadas
-neste arquivo.
+Todas as mudanças relevantes do projeto Dex AI serão documentadas neste arquivo.
 
-O formato segue o padrão Keep a Changelog. A revisão sincronizada do catálogo é
-identificada pelo commit Git da referência configurada; as versões abaixo são
-mantidas como histórico das entregas anteriores.
+O formato segue o padrão Keep a Changelog. As versões abaixo anteriores à
+adoção deste changelog global registram entregas do catálogo de skills e são
+mantidas como histórico.
 
 ## [Não publicado]
 
-Mudanças ainda não incluídas em uma versão devem ser registradas nesta seção.
+### Modificado
+
+- O changelog deixa de pertencer exclusivamente ao catálogo de skills, passa
+  para a raiz do repositório e passa a registrar mudanças de todo o projeto.
 
 ## [3.1.2] - 2026-08-04
 

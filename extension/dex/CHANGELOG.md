@@ -19,6 +19,9 @@ Semântico.
   `dex.addDefaultSource` foi removido.
 - O catálogo GCT (`sordi-totvs/gct-resources`, pasta `skills`) passa a estar
   disponível entre as fontes conhecidas.
+- Fontes conhecidas e personalizadas passam a ser sincronizadas automaticamente
+  logo após o cadastro, preservando a configuração quando a sincronização falha
+  ou é cancelada.
 
 ## [2.2.0] - 2026-08-04
 

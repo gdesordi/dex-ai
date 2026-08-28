@@ -38,3 +38,5 @@ Para a lista completa de comandos e opções, consulte o
 
 Para contribuir com o projeto, consulte o
 [guia de desenvolvimento](README.dev.md).
+
+O histórico de mudanças do projeto está em [CHANGELOG.md](CHANGELOG.md).

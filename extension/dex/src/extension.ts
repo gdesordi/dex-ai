@@ -177,8 +177,11 @@ export function activate(context: vscode.ExtensionContext): void {
           const result = await workspaceConfigManager.addDefaultSource(folder);
           sourcesTree.refresh();
           if (result.status === 'added') {
-            void vscode.window.showInformationMessage(
-              `A fonte dex-ai foi adicionada a ${folder.name}/.dex/sync.json.`,
+            await syncAddedSource(
+              folder,
+              'dex-ai',
+              sourceService,
+              sourcesTree,
             );
           } else if (result.status === 'already-configured') {
             void vscode.window.showInformationMessage(
@@ -206,8 +209,11 @@ export function activate(context: vscode.ExtensionContext): void {
         try {
           await workspaceConfigManager.addSource(folder, { ...gctSkillsSource });
           sourcesTree.refresh();
-          void vscode.window.showInformationMessage(
-            `A fonte gct foi adicionada a ${folder.name}/.dex/sync.json.`,
+          await syncAddedSource(
+            folder,
+            gctSkillsSource.id,
+            sourceService,
+            sourcesTree,
           );
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
@@ -259,9 +265,7 @@ export function activate(context: vscode.ExtensionContext): void {
           enabled: enabledChoice.label === 'Ativada',
         } as SyncSource);
         sourcesTree.refresh();
-        void vscode.window.showInformationMessage(
-          `A fonte “${id}” foi adicionada a ${folder.name}/.dex/sync.json.`,
-        );
+        await syncAddedSource(folder, id, sourceService, sourcesTree);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         void vscode.window.showErrorMessage(
@@ -423,4 +427,28 @@ async function promptInputValue(
 ): Promise<string | undefined> {
   const value = await vscode.window.showInputBox({ title, placeHolder });
   return value?.trim() || undefined;
+}
+
+async function syncAddedSource(
+  folder: vscode.WorkspaceFolder,
+  sourceId: string,
+  sourceService: SourceService,
+  sourcesTree: SourcesTreeProvider,
+): Promise<void> {
+  try {
+    await sourceService.syncSource(folder, sourceId);
+    sourcesTree.refresh();
+    void vscode.window.showInformationMessage(
+      `A fonte “${sourceId}” foi adicionada e sincronizada.`,
+    );
+  } catch (error) {
+    const detail = error instanceof vscode.CancellationError
+      ? 'a sincronização foi cancelada'
+      : error instanceof Error
+        ? error.message
+        : String(error);
+    void vscode.window.showWarningMessage(
+      `A fonte “${sourceId}” foi adicionada, mas não pôde ser sincronizada: ${detail}.`,
+    );
+  }
 }
