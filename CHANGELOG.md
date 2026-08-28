@@ -8,8 +8,21 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [2.4.0] - 2026-08-28
+
+### Adicionado
+
+- A extensão passa a permitir ativar e desativar fontes diretamente pela Tree
+  View, com identificação visual diferente para cada estado.
+- O seletor de fontes conhecidas passa a oferecer os catálogos TOTVS EngPro
+  ADVPL/TLPP e TOTVS EngPro Superpowers.
+
 ### Corrigido
 
+- A ativação de uma fonte pela Tree View passa a restaurar suas skills por meio
+  de uma sincronização imediata.
+- Sincronizações simultâneas deixam de disputar as pastas temporárias usadas na
+  composição das skills do workspace.
 - A extensão passa a ignorar, com aviso no canal `Dex`, diretórios auxiliares
   sem `SKILL.md` em fontes de skills, sem impedir a instalação das skills válidas.
 

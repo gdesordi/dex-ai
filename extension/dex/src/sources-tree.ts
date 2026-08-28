@@ -29,10 +29,20 @@ export class SourcesTreeProvider
       return new vscode.TreeItem(node.folder.name, vscode.TreeItemCollapsibleState.Expanded);
     }
     const item = new vscode.TreeItem(node.source.id, vscode.TreeItemCollapsibleState.None);
-    item.description = node.source.enabled ? `${node.source.ref} · ${node.source.path}` : 'desabilitada';
-    item.tooltip = `${node.source.repository}\nref: ${node.source.ref}\npath: ${node.source.path}`;
-    item.contextValue = 'dexSource';
-    item.iconPath = new vscode.ThemeIcon(node.source.enabled ? 'repo' : 'circle-slash');
+    const state = node.source.enabled ? 'ativa' : 'inativa';
+    item.description = node.source.enabled
+      ? `${state} · ${node.source.ref} · ${node.source.path}`
+      : state;
+    item.tooltip = `Fonte ${state}\n${node.source.repository}\nref: ${node.source.ref}\npath: ${node.source.path}`;
+    item.contextValue = node.source.enabled
+      ? 'dexSourceEnabled'
+      : 'dexSourceDisabled';
+    item.iconPath = new vscode.ThemeIcon(
+      node.source.enabled ? 'pass-filled' : 'circle-slash',
+      new vscode.ThemeColor(
+        node.source.enabled ? 'charts.green' : 'disabledForeground',
+      ),
+    );
     return item;
   }
 

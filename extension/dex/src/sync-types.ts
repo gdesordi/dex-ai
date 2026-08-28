@@ -55,6 +55,22 @@ export const gctSkillsSource: Readonly<SyncSource> = Object.freeze({
   enabled: true,
 });
 
+export const engproAdvplTlppSource: Readonly<SyncSource> = Object.freeze({
+  id: 'engpro-advpl-tlpp',
+  repository: 'https://github.com/totvs/engpro-advpl-tlpp-skills',
+  ref: 'main',
+  path: 'skills/advpl-tlpp',
+  enabled: true,
+});
+
+export const engproSuperpowersSource: Readonly<SyncSource> = Object.freeze({
+  id: 'engpro-superpowers',
+  repository: 'https://github.com/totvs/engpro-advpl-tlpp-skills',
+  ref: 'main',
+  path: 'skills/superpowers',
+  enabled: true,
+});
+
 export function createDefaultSyncConfig(): SyncConfig {
   return {
     version: syncConfigVersion,

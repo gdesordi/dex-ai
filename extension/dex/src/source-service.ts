@@ -10,6 +10,7 @@ import { isSourceRevisionCurrent } from './source-revision';
 
 export class SourceService {
   private readonly provider = new GitHubSourceProvider();
+  private readonly workspaceOperations = new Map<string, Promise<void>>();
   readonly storage: SourceStorage;
 
   constructor(
@@ -21,6 +22,12 @@ export class SourceService {
   }
 
   async syncAll(folder: vscode.WorkspaceFolder): Promise<SourceSyncResult[]> {
+    return this.runExclusive(folder, () => this.syncAllUnlocked(folder));
+  }
+
+  private async syncAllUnlocked(
+    folder: vscode.WorkspaceFolder,
+  ): Promise<SourceSyncResult[]> {
     const { config } = await this.configs.read(folder);
     const enabled = config.sources.filter((source) => source.enabled);
     const previouslyManaged = await this.collectManagedSkillNames(
@@ -72,6 +79,15 @@ export class SourceService {
   }
 
   async syncSource(
+    folder: vscode.WorkspaceFolder,
+    sourceId: string,
+  ): Promise<SourceSyncResult> {
+    return this.runExclusive(folder, () =>
+      this.syncSourceUnlocked(folder, sourceId),
+    );
+  }
+
+  private async syncSourceUnlocked(
     folder: vscode.WorkspaceFolder,
     sourceId: string,
   ): Promise<SourceSyncResult> {
@@ -158,6 +174,15 @@ export class SourceService {
     folder: vscode.WorkspaceFolder,
     sourceIds: readonly string[],
   ): Promise<number> {
+    return this.runExclusive(folder, () =>
+      this.removeSourceSkillsUnlocked(folder, sourceIds),
+    );
+  }
+
+  private async removeSourceSkillsUnlocked(
+    folder: vscode.WorkspaceFolder,
+    sourceIds: readonly string[],
+  ): Promise<number> {
     const { config } = await this.configs.read(folder);
     const protectedNames = await this.collectManagedSkillNames(
       folder,
@@ -188,6 +213,27 @@ export class SourceService {
       `${removed} skill(s) removida(s) de “${folder.name}” após desativar ${sourceIds.length} fonte(s).`,
     );
     return removed;
+  }
+
+  private async runExclusive<T>(
+    folder: vscode.WorkspaceFolder,
+    operation: () => Promise<T>,
+  ): Promise<T> {
+    const key = folder.uri.toString();
+    const previous = this.workspaceOperations.get(key) ?? Promise.resolve();
+    const result = previous.then(operation, operation);
+    const tail = result.then(
+      () => undefined,
+      () => undefined,
+    );
+    this.workspaceOperations.set(key, tail);
+    try {
+      return await result;
+    } finally {
+      if (this.workspaceOperations.get(key) === tail) {
+        this.workspaceOperations.delete(key);
+      }
+    }
   }
 
   private async compose(

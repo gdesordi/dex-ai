@@ -4,6 +4,7 @@ import {
   addDefaultSource,
   parseSyncConfig,
   serializeSyncConfig,
+  setSourceEnabled,
 } from './sync-config';
 import { SyncConfig, SyncSource } from './sync-types';
 
@@ -116,6 +117,18 @@ export class WorkspaceConfigManager implements vscode.Disposable {
       return false;
     }
     await this.write(folder, { ...config, sources });
+    return true;
+  }
+
+  async updateSourceEnabled(
+    folder: vscode.WorkspaceFolder,
+    sourceId: string,
+    enabled: boolean,
+  ): Promise<boolean> {
+    const { config } = await this.read(folder);
+    const updated = setSourceEnabled(config, sourceId, enabled);
+    if (!updated) return false;
+    await this.write(folder, updated);
     return true;
   }
 
