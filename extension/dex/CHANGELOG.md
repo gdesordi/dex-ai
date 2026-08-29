@@ -7,6 +7,13 @@ Semântico.
 
 ## [Não publicado]
 
+## [2.5.0] - 2026-08-28
+
+### Modificado
+
+- O questionário de especificação passa a abrir em um webview com perguntas
+  agrupadas, progresso e salvamento automático das respostas.
+
 ## [2.4.0] - 2026-08-28
 
 ### Adicionado

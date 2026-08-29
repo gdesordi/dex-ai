@@ -124,6 +124,18 @@ export function calculateSpecQuestionnaireStatus(
   return 'partially-answered';
 }
 
+export function updateSpecQuestionAnswer(
+  questionnaire: SpecQuestionnaire,
+  questionId: string,
+  answer: string,
+): void {
+  const question = questionnaire.questions.find((item) => item.id === questionId);
+  if (!question) throw new SpecQuestionnaireError(`questão desconhecida: ${questionId}`);
+  const normalized = answer.trim();
+  question.answer = normalized.length ? normalized : null;
+  questionnaire.status = calculateSpecQuestionnaireStatus(questionnaire.questions);
+}
+
 export function compareSpecQuestionnaires(
   left: Pick<SpecQuestionnaire, 'status' | 'feature' | 'title'>,
   right: Pick<SpecQuestionnaire, 'status' | 'feature' | 'title'>,

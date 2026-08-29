@@ -129,8 +129,8 @@ local isolada.
 - `Dex: Remover fonte de skills`: remove a fonte da configuração e oferece a
   opção de apagar sua cópia local.
 - `Dex: Responder questionário de especificação`: localiza questionários JSON
-  mantidos pela `dex-spec-manage` em `.specs/dex/`, permite aceitar a sugestão
-  ou escrever outra resposta e grava cada decisão imediatamente.
+  mantidos pela `dex-spec-manage` em `.specs/dex/` e abre um painel para aceitar
+  sugestões ou editar todas as respostas com salvamento automático.
 
 ## Questionários de especificação
 
@@ -139,9 +139,10 @@ A skill `dex-spec-manage` mantém cada questionário em Markdown e no arquivo
 extensão procura esses arquivos em todas as pastas do workspace, apresenta os
 pendentes primeiro e também permite revisar questionários já respondidos.
 
-O estado exibido pode ser **Pendente**, **Respondido parcialmente** ou
-**Respondido**. Cancelar o fluxo preserva as respostas confirmadas até aquele
-momento. Arquivos inválidos ou com versão de schema incompatível não são
+O painel agrupa as perguntas por seção, mostra o progresso e informa quando as
+alterações foram salvas. O estado pode ser **Pendente**, **Respondido
+parcialmente** ou **Respondido**. Fechar o painel preserva as respostas já
+salvas. Arquivos inválidos ou com versão de schema incompatível não são
 alterados; os detalhes ficam no canal de saída **Dex**.
 
 Depois de responder, solicite à `dex-spec-manage` que sincronize ou consolide a

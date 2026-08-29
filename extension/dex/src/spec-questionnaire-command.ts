@@ -1,12 +1,11 @@
 import * as vscode from 'vscode';
 import {
-  SpecQuestion,
   SpecQuestionnaire,
   SpecQuestionnaireStatus,
-  calculateSpecQuestionnaireStatus,
   compareSpecQuestionnaires,
   parseSpecQuestionnaire,
   serializeSpecQuestionnaire,
+  updateSpecQuestionAnswer,
 } from './spec-questionnaire';
 
 interface LocatedQuestionnaire {
@@ -58,60 +57,7 @@ export async function answerSpecQuestionnaire(
   if (!located) return false;
 
   try {
-    const pending = located.questionnaire.questions.filter(
-      (question) => question.answer === null,
-    );
-    if (pending.length) {
-      const completed = await answerQuestions(located, pending);
-      if (!completed) return false;
-
-      const next = await vscode.window.showQuickPick(
-        [
-          {
-            label: t('Revisar todas', 'Review all'),
-            description: t(
-              'Percorrer e alterar respostas existentes',
-              'Review and change existing answers',
-            ),
-            review: true,
-          },
-          {
-            label: t('Concluir', 'Finish'),
-            description: t(
-              'Manter as respostas gravadas',
-              'Keep the saved answers',
-            ),
-            review: false,
-          },
-        ],
-        {
-          title: located.questionnaire.title,
-          placeHolder: t(
-            'O questionário não possui mais respostas pendentes',
-            'The questionnaire has no unanswered questions',
-          ),
-        },
-      );
-      if (!next) return false;
-      if (next.review) {
-        const reviewed = await answerQuestions(
-          located,
-          located.questionnaire.questions,
-        );
-        if (!reviewed) return false;
-      }
-    } else {
-      const reviewed = await answerQuestions(
-        located,
-        located.questionnaire.questions,
-      );
-      if (!reviewed) return false;
-    }
-
-    void vscode.window.showInformationMessage(t(
-      `Questionário “${located.questionnaire.feature}” atualizado com status ${statusLabel(located.questionnaire.status)}.`,
-      `Questionnaire “${located.questionnaire.feature}” updated with status ${statusLabel(located.questionnaire.status)}.`,
-    ));
+    openQuestionnairePanel(located, outputChannel);
     return true;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -193,93 +139,201 @@ async function pickQuestionnaire(
   return selected?.located;
 }
 
-async function answerQuestions(
+function openQuestionnairePanel(
   located: LocatedQuestionnaire,
-  questions: readonly SpecQuestion[],
-): Promise<boolean> {
-  for (let index = 0; index < questions.length; index += 1) {
-    const question = questions[index];
-    const answer = await promptQuestion(
-      located.questionnaire,
-      question,
-      index + 1,
-      questions.length,
-    );
-    if (answer === undefined) return false;
-
-    question.answer = answer;
-    located.questionnaire.status = calculateSpecQuestionnaireStatus(
-      located.questionnaire.questions,
-    );
-    await writeQuestionnaireSafely(located.uri, located.questionnaire);
-  }
-  return true;
-}
-
-async function promptQuestion(
-  questionnaire: SpecQuestionnaire,
-  question: SpecQuestion,
-  position: number,
-  total: number,
-): Promise<string | undefined> {
-  const current = question.answer === null
-    ? t('Sem resposta', 'Unanswered')
-    : question.answer;
-  const selected = await vscode.window.showQuickPick(
-    [
-      {
-        label: t('Manter sugestão', 'Keep suggestion'),
-        description: question.suggestion,
-        action: 'suggestion' as const,
-      },
-      {
-        label: t('Dar outra resposta', 'Give another answer'),
-        description: t(`Atual: ${current}`, `Current: ${current}`),
-        action: 'custom' as const,
-      },
-    ],
-    {
-      title: `${questionnaire.title} — ${position}/${total}`,
-      placeHolder: `[${question.id}] ${question.text}`,
-      matchOnDescription: true,
-    },
+  outputChannel: vscode.OutputChannel,
+): void {
+  const panel = vscode.window.createWebviewPanel(
+    'dex.specQuestionnaire',
+    located.questionnaire.title,
+    vscode.ViewColumn.Active,
+    { enableScripts: true, retainContextWhenHidden: true },
   );
-  if (!selected) return undefined;
-  if (selected.action === 'suggestion') return 'manter sugestão';
+  panel.webview.html = renderQuestionnaireHtml(located.questionnaire);
 
-  return promptTextValue(
-    `${questionnaire.title} — ${question.id}`,
-    question.text,
-    question.answer === 'manter sugestão' ? '' : (question.answer ?? ''),
-  );
-}
-
-async function promptTextValue(
-  title: string,
-  placeHolder: string,
-  initialValue: string,
-): Promise<string | undefined> {
-  const picker = vscode.window.createQuickPick();
-  picker.title = title;
-  picker.placeholder = placeHolder;
-  picker.value = initialValue;
-  picker.items = [];
-
-  return new Promise<string | undefined>((resolve) => {
-    let settled = false;
-    const finish = (value: string | undefined): void => {
-      if (settled) return;
-      settled = true;
-      picker.dispose();
-      resolve(value);
-    };
-    picker.onDidAccept(() => {
-      const value = picker.value.trim();
-      if (value) finish(value);
+  let writes = Promise.resolve();
+  panel.webview.onDidReceiveMessage((message: unknown) => {
+    if (!isAnswerMessage(message)) return;
+    writes = writes.then(async () => {
+      updateSpecQuestionAnswer(
+        located.questionnaire,
+        message.questionId,
+        message.answer,
+      );
+      await writeQuestionnaireSafely(located.uri, located.questionnaire);
+      await panel.webview.postMessage({
+        type: 'saved',
+        revision: message.revision,
+        status: located.questionnaire.status,
+      });
+    }).catch(async (error: unknown) => {
+      const detail = error instanceof Error ? error.message : String(error);
+      outputChannel.appendLine(
+        `[${new Date().toISOString()}] Falha ao atualizar ${located.uri.fsPath}: ${detail}`,
+      );
+      outputChannel.show(true);
+      await panel.webview.postMessage({
+        type: 'saveError',
+        revision: message.revision,
+        message: detail,
+      });
     });
-    picker.onDidHide(() => finish(undefined));
-    picker.show();
   });
+}
+
+interface AnswerMessage {
+  type: 'updateAnswer';
+  questionId: string;
+  answer: string;
+  revision: number;
+}
+
+function isAnswerMessage(value: unknown): value is AnswerMessage {
+  if (!value || typeof value !== 'object') return false;
+  const message = value as Record<string, unknown>;
+  return message.type === 'updateAnswer'
+    && typeof message.questionId === 'string'
+    && typeof message.answer === 'string'
+    && typeof message.revision === 'number';
+}
+
+export function renderQuestionnaireHtml(
+  questionnaire: SpecQuestionnaire,
+  nonce = createNonce(),
+): string {
+  const language = isPortuguese() ? 'pt-BR' : 'en';
+  const copy = isPortuguese()
+    ? {
+      progress: 'Progresso', essential: 'Essencial', suggestion: 'Sugestão',
+      useSuggestion: 'Usar sugestão', answer: 'Resposta', unanswered: 'Sem resposta',
+      saved: 'Todas as alterações foram salvas.', saving: 'Salvando…',
+      saveError: 'Não foi possível salvar. Edite a resposta para tentar novamente.',
+    }
+    : {
+      progress: 'Progress', essential: 'Essential', suggestion: 'Suggestion',
+      useSuggestion: 'Use suggestion', answer: 'Answer', unanswered: 'Unanswered',
+      saved: 'All changes saved.', saving: 'Saving…',
+      saveError: 'Could not save. Edit the answer to try again.',
+    };
+  const data = safeJson({ questionnaire, copy });
+  return `<!DOCTYPE html>
+<html lang="${language}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'; script-src 'nonce-${nonce}';">
+  <title>${escapeHtml(questionnaire.title)}</title>
+  <style nonce="${nonce}">
+    body { max-width: 920px; margin: 0 auto; padding: 28px 32px 64px; color: var(--vscode-foreground); font-family: var(--vscode-font-family); }
+    header { position: sticky; top: 0; z-index: 2; padding: 12px 0 18px; background: var(--vscode-editor-background); border-bottom: 1px solid var(--vscode-panel-border); }
+    h1 { margin: 0 0 12px; font-size: 1.55rem; }
+    .summary { display: flex; align-items: center; gap: 12px; }
+    progress { flex: 1; height: 8px; accent-color: var(--vscode-progressBar-background); }
+    #save-state { min-height: 1.4em; margin-top: 8px; color: var(--vscode-descriptionForeground); }
+    section { margin-top: 30px; }
+    section > h2 { font-size: 1.15rem; padding-bottom: 8px; border-bottom: 1px solid var(--vscode-panel-border); }
+    article { margin: 18px 0; padding: 18px; border: 1px solid var(--vscode-input-border, var(--vscode-panel-border)); border-radius: 6px; background: var(--vscode-editorWidget-background); }
+    .question-title { display: flex; gap: 8px; align-items: baseline; font-weight: 600; line-height: 1.45; }
+    .badge { padding: 2px 7px; border-radius: 10px; font-size: .75rem; color: var(--vscode-badge-foreground); background: var(--vscode-badge-background); }
+    .suggestion { margin: 12px 0; padding: 10px 12px; border-left: 3px solid var(--vscode-textLink-foreground); color: var(--vscode-descriptionForeground); background: var(--vscode-textBlockQuote-background); }
+    .suggestion strong { display: block; margin-bottom: 4px; color: var(--vscode-foreground); }
+    textarea { box-sizing: border-box; width: 100%; min-height: 88px; resize: vertical; padding: 9px; color: var(--vscode-input-foreground); background: var(--vscode-input-background); border: 1px solid var(--vscode-input-border); font: inherit; }
+    textarea:focus { outline: 1px solid var(--vscode-focusBorder); border-color: var(--vscode-focusBorder); }
+    button { margin: 0 0 10px; padding: 6px 11px; color: var(--vscode-button-foreground); background: var(--vscode-button-background); border: 0; border-radius: 2px; cursor: pointer; }
+    button:hover { background: var(--vscode-button-hoverBackground); }
+    .error { color: var(--vscode-errorForeground) !important; }
+  </style>
+</head>
+<body>
+  <header><h1>${escapeHtml(questionnaire.title)}</h1><div class="summary"><progress id="progress"></progress><span id="progress-label"></span></div><div id="save-state" role="status" aria-live="polite"></div></header>
+  <main id="questions"></main>
+  <script nonce="${nonce}">
+    const vscode = acquireVsCodeApi();
+    const data = ${data};
+    const answers = new Map(data.questionnaire.questions.map(question => [question.id, question.answer]));
+    const timers = new Map();
+    let revision = 0;
+    let latestSavedRevision = 0;
+    const main = document.getElementById('questions');
+    const saveState = document.getElementById('save-state');
+
+    for (const question of data.questionnaire.questions) {
+      let section = main.querySelector('[data-section="' + CSS.escape(question.section) + '"]');
+      if (!section) {
+        section = document.createElement('section');
+        section.dataset.section = question.section;
+        const heading = document.createElement('h2');
+        heading.textContent = question.section;
+        section.appendChild(heading);
+        main.appendChild(section);
+      }
+      const article = document.createElement('article');
+      const title = document.createElement('div'); title.className = 'question-title';
+      const text = document.createElement('span'); text.textContent = '[' + question.id + '] ' + question.text; title.appendChild(text);
+      if (question.essential) { const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = data.copy.essential; title.appendChild(badge); }
+      const suggestion = document.createElement('div'); suggestion.className = 'suggestion';
+      const suggestionLabel = document.createElement('strong'); suggestionLabel.textContent = data.copy.suggestion; suggestion.append(suggestionLabel, document.createTextNode(question.suggestion));
+      const button = document.createElement('button'); button.type = 'button'; button.textContent = data.copy.useSuggestion;
+      const textarea = document.createElement('textarea'); textarea.placeholder = data.copy.unanswered; textarea.setAttribute('aria-label', data.copy.answer + ': ' + question.text);
+      textarea.value = question.answer === 'manter sugestão' ? question.suggestion : (question.answer || '');
+      const update = () => { answers.set(question.id, textarea.value.trim() || null); updateProgress(); scheduleSave(question.id, textarea.value); };
+      textarea.addEventListener('input', update);
+      button.addEventListener('click', () => {
+        textarea.value = question.suggestion;
+        answers.set(question.id, 'manter sugestão');
+        updateProgress();
+        scheduleSave(question.id, 'manter sugestão');
+        textarea.focus();
+      });
+      article.append(title, suggestion, button, textarea); section.appendChild(article);
+    }
+
+    function scheduleSave(questionId, answer) {
+      clearTimeout(timers.get(questionId));
+      saveState.className = ''; saveState.textContent = data.copy.saving;
+      timers.set(questionId, setTimeout(() => {
+        revision += 1;
+        vscode.postMessage({ type: 'updateAnswer', questionId, answer, revision });
+      }, 400));
+    }
+    function updateProgress() {
+      const answered = [...answers.values()].filter(answer => answer !== null).length;
+      const total = answers.size;
+      document.getElementById('progress').value = answered; document.getElementById('progress').max = total;
+      document.getElementById('progress-label').textContent = data.copy.progress + ': ' + answered + '/' + total;
+    }
+    window.addEventListener('message', event => {
+      const message = event.data;
+      if (message.type === 'saved') {
+        latestSavedRevision = Math.max(latestSavedRevision, message.revision);
+        if (latestSavedRevision === revision) { saveState.className = ''; saveState.textContent = data.copy.saved; }
+      } else if (message.type === 'saveError' && message.revision >= latestSavedRevision) {
+        saveState.className = 'error'; saveState.textContent = data.copy.saveError + ' ' + message.message;
+      }
+    });
+    updateProgress(); saveState.textContent = data.copy.saved;
+  </script>
+</body>
+</html>`;
+}
+
+function safeJson(value: unknown): string {
+  return JSON.stringify(value).replace(/[<>&\u2028\u2029]/g, (character) => {
+    const code = character.charCodeAt(0).toString(16).padStart(4, '0');
+    return `\\u${code}`;
+  });
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  })[character] ?? character);
+}
+
+function createNonce(): string {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from({ length: 32 }, () =>
+    alphabet.charAt(Math.floor(Math.random() * alphabet.length))).join('');
 }
 
 async function writeQuestionnaireSafely(

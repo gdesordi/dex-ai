@@ -6,6 +6,7 @@ import {
   compareSpecQuestionnaires,
   parseSpecQuestionnaire,
   serializeSpecQuestionnaire,
+  updateSpecQuestionAnswer,
 } from '../spec-questionnaire';
 
 test('valida e serializa um questionário conforme o contrato', () => {
@@ -67,6 +68,22 @@ test('calcula as três transições de status', () => {
       { answer: 'não' },
     ]),
     'answered',
+  );
+});
+
+test('atualiza, limpa e rejeita respostas desconhecidas', () => {
+  const questionnaire = parseSpecQuestionnaire(validQuestionnaire());
+
+  updateSpecQuestionAnswer(questionnaire, '1.1', '  resposta personalizada  ');
+  assert.equal(questionnaire.questions[0].answer, 'resposta personalizada');
+  assert.equal(questionnaire.status, 'answered');
+
+  updateSpecQuestionAnswer(questionnaire, '1.1', '   ');
+  assert.equal(questionnaire.questions[0].answer, null);
+  assert.equal(questionnaire.status, 'pending');
+  assert.throws(
+    () => updateSpecQuestionAnswer(questionnaire, 'inexistente', 'resposta'),
+    /questão desconhecida/,
   );
 });
 
