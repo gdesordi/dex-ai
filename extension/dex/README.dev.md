@@ -113,7 +113,10 @@ recompõe o destino com todas as fontes habilitadas.
 `.specs/dex/*/*.refinement-questionnaire.json` em todas as raízes abertas. O
 parser exige `schemaVersion: 1`, campos obrigatórios, IDs únicos e status
 coerente com as respostas. Cada resposta é gravada por substituição segura antes
-de o fluxo avançar; questionários rejeitados nunca são sobrescritos.
+de o painel confirmar o salvamento; questionários rejeitados nunca são
+sobrescritos. O `QuickPick` seleciona o questionário e um webview agrupa as
+perguntas por seção, envia alterações com debounce e recebe a confirmação de
+cada gravação serializada pela extensão.
 
 O canal de saída `Dex` registra as etapas de consulta, download, validação,
 atualização do cache e composição. Erros do GitHub distinguem repositório,
@@ -137,5 +140,5 @@ um comando, mantenha a mesma chave nos dois catálogos `package.nls.json` e
    arquivos sincronizados.
 6. Para validar questionários, crie um JSON conforme o contrato em
    `.specs/dex/<feature>/`, execute **Dex: Responder questionário de
-   especificação** e confirme respostas, revisão, cancelamento e atualização do
-   status.
+   especificação** e confirme o uso de sugestões, edição, autosave, retomada e
+   atualização do status.

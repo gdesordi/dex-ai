@@ -8,6 +8,13 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [2.5.0] - 2026-08-28
+
+### Modificado
+
+- A extensão passa a responder questionários de especificação em um webview
+  com visão completa, progresso e salvamento automático.
+
 ## [2.4.0] - 2026-08-28
 
 ### Adicionado
