@@ -38,9 +38,12 @@ npm run check
 
 - A revisão de um catálogo sincronizado é identificada pelo commit Git resolvido
   para a referência configurada, sem manifesto de versão próprio.
+- Mantenha os arquivos `README.md` e `CHANGELOG.md` na raiz do projeto. Atualize
+  o README quando uma mudança afetar o uso, a instalação, a estrutura ou o fluxo
+  do projeto.
 - Mantenha `CHANGELOG.md`, na raiz do repositório, no padrão Keep a Changelog
   para registrar mudanças relevantes de todo o projeto, incluindo extensão e
-  catálogo de skills.
+  catálogo de skills. As datas de versões publicadas usam o formato `YYYY-MM`.
 - Não crie commit, tag, release ou publicação sem solicitação explícita.
 
 ## Documentação e estilo
