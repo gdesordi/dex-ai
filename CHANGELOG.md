@@ -8,14 +8,22 @@ mantidas como histórico.
 
 ## [Não publicado]
 
-## [2.5.0] - 2026-08-28
+### Adicionado
+
+- A skill `dex-init` garante a documentação básica de projetos, incluindo
+  instruções em `AGENTS.md`, README e changelog no padrão mensal `YYYY-MM`.
+- A skill `pr-text` gera textos de pull request em Markdown a partir do diff da
+  branch atual contra `master` ou `main`, incluindo resumo simples para check-in
+  no TFS e prefixo JIRA no título quando houver arquivos `.prw` ou `.tlpp`.
+
+## [2.5.0] - 2026-08
 
 ### Modificado
 
 - A extensão passa a responder questionários de especificação em um webview
   com visão completa, progresso e salvamento automático.
 
-## [2.4.0] - 2026-08-28
+## [2.4.0] - 2026-08
 
 ### Adicionado
 
@@ -33,7 +41,7 @@ mantidas como histórico.
 - A extensão passa a ignorar, com aviso no canal `Dex`, diretórios auxiliares
   sem `SKILL.md` em fontes de skills, sem impedir a instalação das skills válidas.
 
-## [2.3.1] - 2026-08-28
+## [2.3.1] - 2026-08
 
 ### Segurança
 
@@ -41,7 +49,7 @@ mantidas como histórico.
   corrigir vulnerabilidades em `brace-expansion`, `fast-uri`, `js-yaml`,
   `linkify-it` e `undici`.
 
-## [2.3.0] - 2026-08-28
+## [2.3.0] - 2026-08
 
 ### Adicionado
 
@@ -64,7 +72,7 @@ mantidas como histórico.
 - O manifesto `skills/dex.json`, o campo `skillsVersion` e o comando separado
   `dex.addDefaultSource` foram removidos.
 
-## [3.1.2] - 2026-08-04
+## [3.1.2] - 2026-08
 
 ### Corrigido
 
@@ -72,7 +80,7 @@ mantidas como histórico.
   respostas existentes no JSON antes de avaliar pendências ou prosseguir com
   consolidação, planejamento de tarefas ou implementação.
 
-## [3.1.1] - 2026-08-04
+## [3.1.1] - 2026-08
 
 ### Corrigido
 
@@ -81,7 +89,7 @@ mantidas como histórico.
   por caminho, evitando importação ou descoberta acidental em `specs/` e outros
   diretórios.
 
-## [3.1.0] - 2026-08-04
+## [3.1.0] - 2026-08
 
 ### Adicionado
 
@@ -90,7 +98,7 @@ mantidas como histórico.
   e importar respostas da extensão Dex para o Markdown com detecção de
   conflitos.
 
-## [3.0.0] - 2026-08-04
+## [3.0.0] - 2026-08
 
 ### Modificado
 
@@ -105,7 +113,7 @@ mantidas como histórico.
 
 - `dex-spec-create`, incorporada integralmente a `dex-spec-manage`.
 
-## [2.0.0] - 2026-08-04
+## [2.0.0] - 2026-08
 
 ### Modificado
 
@@ -116,7 +124,7 @@ mantidas como histórico.
 - `.specs/dex/readme.md` passa a declarar a propriedade exclusiva desse
   diretório e é criado automaticamente quando estiver ausente.
 
-## [1.3.0] - 2026-06-20
+## [1.3.0] - 2026-06
 
 ### Modificado
 
@@ -124,7 +132,7 @@ mantidas como histórico.
   `[Não publicado]` na seção da nova versão, preservando categorias e evitando
   notas sem suporte.
 
-## [1.2.0] - 2026-06-20
+## [1.2.0] - 2026-06
 
 ### Adicionado
 
@@ -142,7 +150,7 @@ mantidas como histórico.
 
 - `spec-refinement` e `spec-update`, substituídas por `spec-manage`.
 
-## [1.1.0] - 2026-06-19
+## [1.1.0] - 2026-06
 
 ### Adicionado
 
@@ -154,7 +162,7 @@ mantidas como histórico.
 - Skills `spec-*` passam a criar `specs/readme.md` a partir do template
   distribuído quando a pasta de especificações ainda não possuir esse arquivo.
 
-## [1.0.0] - 2026-06-19
+## [1.0.0] - 2026-06
 
 ### Adicionado
 
