@@ -85,6 +85,7 @@ export class WorkspaceConfigManager implements vscode.Disposable {
 
   async addDefaultSource(
     folder: vscode.WorkspaceFolder,
+    source?: SyncSource,
   ): Promise<AddDefaultSourceResult> {
     if (!vscode.workspace.isTrusted) {
       throw new Error('o workspace precisa ser confiável para alterar sync.json');
@@ -100,7 +101,7 @@ export class WorkspaceConfigManager implements vscode.Disposable {
       current = { version: 1, sources: [] };
     }
 
-    const result = addDefaultSource(current);
+    const result = addDefaultSource(current, source);
     if (result.status === 'added') {
       await this.write(folder, result.config);
     }

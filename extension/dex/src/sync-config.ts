@@ -75,16 +75,21 @@ export type AddDefaultSourceResult =
   | { status: 'id-conflict'; sourceId: string }
   | { status: 'catalog-already-configured'; sourceId: string };
 
-export function addDefaultSource(config: SyncConfig): AddDefaultSourceResult {
-  const sameId = config.sources.find((source) => source.id === defaultDexSource.id);
+export function addDefaultSource(
+  config: SyncConfig,
+  defaultSource: SyncSource = defaultDexSource,
+): AddDefaultSourceResult {
+  const sameId = config.sources.find((source) => source.id === defaultSource.id);
   if (sameId) {
-    return sourceMatchesDefaultCatalog(sameId) &&
-      sameId.enabled === defaultDexSource.enabled
+    return sourceMatchesDefaultCatalog(sameId, defaultSource) &&
+      sameId.enabled === defaultSource.enabled
       ? { status: 'already-configured', sourceId: sameId.id }
       : { status: 'id-conflict', sourceId: sameId.id };
   }
 
-  const sameCatalog = config.sources.find(sourceMatchesDefaultCatalog);
+  const sameCatalog = config.sources.find((source) =>
+    sourceMatchesDefaultCatalog(source, defaultSource),
+  );
   if (sameCatalog) {
     return { status: 'catalog-already-configured', sourceId: sameCatalog.id };
   }
@@ -93,16 +98,19 @@ export function addDefaultSource(config: SyncConfig): AddDefaultSourceResult {
     status: 'added',
     config: {
       ...config,
-      sources: [...config.sources, { ...defaultDexSource }],
+      sources: [...config.sources, { ...defaultSource }],
     },
   };
 }
 
-function sourceMatchesDefaultCatalog(source: SyncSource): boolean {
+function sourceMatchesDefaultCatalog(
+  source: SyncSource,
+  defaultSource: SyncSource,
+): boolean {
   return (
-    source.repository === defaultDexSource.repository &&
-    source.ref === defaultDexSource.ref &&
-    source.path === defaultDexSource.path
+    source.repository === defaultSource.repository &&
+    source.ref === defaultSource.ref &&
+    source.path === defaultSource.path
   );
 }
 

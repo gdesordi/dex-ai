@@ -8,6 +8,14 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [3.1.0] - 2026-09
+
+### Adicionado
+
+- A extensão Dex passa a carregar, na ativação, o catálogo público de fontes
+  conhecidas para atualizar o seletor sem nova publicação, com fallback embutido
+  validado para uso offline ou em caso de falha.
+
 ## [3.0.3] - 2026-09
 
 ### Adicionado

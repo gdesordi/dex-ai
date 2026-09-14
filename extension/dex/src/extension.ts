@@ -5,7 +5,8 @@ import { SourcesTreeProvider, isSourceNode } from './sources-tree';
 import { answerSpecQuestionnaire } from './spec-questionnaire-command';
 import { SyncSource } from './sync-types';
 import { newlyDisabledSourceIds } from './source-composition';
-import { knownSourceChoices } from './known-sources';
+import { fallbackKnownSources } from './default-sources';
+import { KnownSourcesCatalog } from './remote-known-sources';
 import { runInitialSourceSync } from './initial-source-sync';
 import {
   calculateWorkdayProgress,
@@ -15,6 +16,7 @@ import {
 
 export function activate(context: vscode.ExtensionContext): void {
   const outputChannel = vscode.window.createOutputChannel('Dex');
+  const knownSourcesCatalog = new KnownSourcesCatalog(fallbackKnownSources);
   createTimeStatusBar(context);
   const workspaceConfigManager = new WorkspaceConfigManager();
   const sourceService = new SourceService(
@@ -207,7 +209,7 @@ export function activate(context: vscode.ExtensionContext): void {
       if (!folder) return;
 
       const sourceChoice = await vscode.window.showQuickPick(
-        knownSourceChoices,
+        knownSourcesCatalog.getChoices(),
         {
           title: 'Adicionar fonte de skills',
           placeHolder: 'Escolha uma fonte',
@@ -217,7 +219,10 @@ export function activate(context: vscode.ExtensionContext): void {
 
       if (sourceChoice.sourceType === 'dex') {
         try {
-          const result = await workspaceConfigManager.addDefaultSource(folder);
+          const result = await workspaceConfigManager.addDefaultSource(
+            folder,
+            sourceChoice.source,
+          );
           sourcesTree.refresh();
           if (result.status === 'added') {
             await syncAddedSource(
@@ -379,6 +384,18 @@ export function activate(context: vscode.ExtensionContext): void {
       `[${new Date().toISOString()}] Falha ao observar configurações: ${message}`,
     );
   });
+
+  void knownSourcesCatalog.refresh().then(
+    () => outputChannel.appendLine(
+      `[${new Date().toISOString()}] Catálogo de fontes conhecidas atualizado.`,
+    ),
+    (error: unknown) => {
+      const message = error instanceof Error ? error.message : String(error);
+      outputChannel.appendLine(
+        `[${new Date().toISOString()}] Não foi possível atualizar o catálogo de fontes conhecidas: ${message}`,
+      );
+    },
+  );
 }
 
 async function initializeConfigObservation(
