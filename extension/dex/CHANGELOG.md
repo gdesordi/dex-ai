@@ -7,6 +7,11 @@ Semântico.
 
 ## [Não publicado]
 
+### Modificado
+
+- Os dados dos repositórios padrão passaram a ficar concentrados em
+  `src/default-sources.ts`, facilitando sua identificação e revisão.
+
 ## [2.5.0] - 2026-08-28
 
 ### Modificado

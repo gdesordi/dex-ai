@@ -1,9 +1,9 @@
 import {
   SyncConfig,
   SyncSource,
-  defaultDexSource,
   syncConfigVersion,
 } from './sync-types';
+import { defaultDexSource } from './default-sources';
 
 const sourceIdPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const invalidGitRefPattern = /[\u0000-\u0020~^:?*[\\]/;

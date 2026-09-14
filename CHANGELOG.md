@@ -16,6 +16,12 @@ mantidas como histórico.
   branch atual contra `master` ou `main`, incluindo resumo simples para check-in
   no TFS e prefixo JIRA no título quando houver arquivos `.prw` ou `.tlpp`.
 
+### Modificado
+
+- Os dados dos repositórios padrão da extensão passaram a ficar concentrados em
+  `extension/dex/src/default-sources.ts`, facilitando sua identificação e
+  revisão.
+
 ## [2.5.0] - 2026-08
 
 ### Modificado
