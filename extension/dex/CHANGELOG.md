@@ -7,6 +7,12 @@ Semântico.
 
 ## [Não publicado]
 
+### Adicionado
+
+- A extensão consulta o catálogo público `default-sources.json` na ativação para
+  atualizar as fontes conhecidas sem exigir uma nova publicação. Uma lista
+  embutida continua disponível quando a consulta falha ou o catálogo é inválido.
+
 ## [3.0.3] - 2026-09-14
 
 ### Adicionado

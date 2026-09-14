@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "feature": "default-sources-as-json",
+  "title": "Questionário de Refinamento — default-sources-as-json",
+  "status": "answered",
+  "questions": [
+    {
+      "id": "1.1",
+      "section": "Catálogo remoto",
+      "text": "Quais dados o JSON remoto deve controlar?",
+      "essential": true,
+      "suggestion": "O JSON deve conter uma lista ordenada de fontes conhecidas com id, label, description, repository, ref, path, agentsPath opcional e enabled; a opção de fonte personalizada continua local e última.",
+      "answer": "manter sugestão"
+    },
+    {
+      "id": "1.2",
+      "section": "Catálogo remoto",
+      "text": "Qual será a origem estável do arquivo?",
+      "essential": true,
+      "suggestion": "Versionar extension/dex/default-sources.json neste repositório e buscá-lo pela URL raw do GitHub na branch main.",
+      "answer": "manter sugestão"
+    },
+    {
+      "id": "2.1",
+      "section": "Disponibilidade e efeito das atualizações",
+      "text": "Como a extensão deve agir se a consulta, o download ou a validação do JSON falhar?",
+      "essential": true,
+      "suggestion": "Usar uma lista embutida como fallback da instalação; somente aplicar a resposta remota após validação integral; registrar a falha no canal Dex sem notificação intrusiva. A extensão não deve gravar o catálogo remoto no workspace.",
+      "answer": "manter sugestão"
+    },
+    {
+      "id": "2.2",
+      "section": "Disponibilidade e efeito das atualizações",
+      "text": "Que comportamentos devem refletir o catálogo carregado nesta ativação?",
+      "essential": true,
+      "suggestion": "Aplicar o catálogo remoto ao seletor e à criação de uma nova fonte padrão; preservar integralmente fontes já registradas em .dex/sync.json, inclusive quando deixarem de constar do catálogo.",
+      "answer": "manter sugestão"
+    },
+    {
+      "id": "3.1",
+      "section": "Segurança e atualização",
+      "text": "O catálogo deve ser reutilizado entre ativações?",
+      "essential": false,
+      "suggestion": "Não criar cache adicional nesta primeira versão; consultar a origem a cada ativação e usar o fallback embutido quando necessário.",
+      "answer": "manter sugestão"
+    }
+  ]
+}

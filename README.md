@@ -25,6 +25,11 @@ A view **Fontes de skills Dex**, no Explorer, permite:
 - remover uma fonte;
 - abrir `.dex/sync.json` pelo menu de três pontos.
 
+Durante a ativação, a extensão consulta o catálogo público de fontes conhecidas
+para manter o seletor atualizado sem exigir uma nova publicação. Se a consulta
+falhar ou o catálogo for inválido, a lista distribuída pela extensão é usada.
+Essa consulta não altera fontes já declaradas no workspace.
+
 Uma fonte possui um identificador, a URL pública do GitHub, uma branch, tag ou
 commit e o caminho da pasta de skills no repositório. O cadastro guiado solicita
 essas informações e atualiza a Tree View automaticamente.

@@ -42,6 +42,9 @@ local dessa pasta.
 - `src/extension.ts`: ativação e registro dos comandos.
 - `src/sync-types.ts`: contratos da configuração e dos estados de fontes.
 - `src/sync-config.ts`: parsing e validação de `.dex/sync.json`.
+- `src/default-sources.ts`: fallback distribuído das fontes conhecidas.
+- `src/remote-known-sources.ts`: consulta e validação do catálogo remoto de
+  fontes conhecidas.
 - `src/workspace-config.ts`: leitura, escrita e observação da configuração por
   workspace.
 - `src/github-source.ts`: resolução e download de fontes públicas do GitHub.
@@ -60,6 +63,7 @@ local dessa pasta.
 - `package.json`: manifesto, comandos e scripts.
 - `package.nls.json`: textos padrão em inglês.
 - `package.nls.pt-br.json`: textos em português do Brasil.
+- `default-sources.json`: catálogo público consultado na ativação.
 - `.vscode/`: tarefas e configuração do Extension Host.
 - `out/`: JavaScript gerado pela compilação; não deve ser versionado.
 

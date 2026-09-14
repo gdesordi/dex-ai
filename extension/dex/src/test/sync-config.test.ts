@@ -134,6 +134,22 @@ test('adiciona a fonte padrão preservando a configuração', () => {
   ]);
 });
 
+test('adiciona a fonte padrão fornecida pelo catálogo carregado', () => {
+  const source = parseSyncConfig(JSON.stringify({
+    version: 1,
+    sources: [{
+      ...defaultSource('dex-ai'),
+      repository: 'https://github.com/gdesordi/dex-ai',
+      ref: 'next',
+    }],
+  })).sources[0];
+  const result = addDefaultSource({ version: 1, sources: [] }, source);
+  assert.equal(result.status, 'added');
+  if (result.status === 'added') {
+    assert.deepEqual(result.config.sources, [source]);
+  }
+});
+
 test('não duplica a fonte padrão e detecta conflitos', () => {
   assert.deepEqual(addDefaultSource(createDefaultSyncConfig()), {
     status: 'already-configured',

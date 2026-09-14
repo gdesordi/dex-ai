@@ -35,9 +35,11 @@ total do mês. O valor é atualizado na virada de cada dia local.
 ## Configuração por workspace
 
 As fontes ficam declaradas em `.dex/sync.json` na raiz selecionada. Abrir uma
-pasta sem esse arquivo não cria configuração, adiciona fontes, consulta o GitHub
-ou sincroniza skills automaticamente. O arquivo é criado somente quando uma
-fonte é adicionada pela extensão.
+pasta sem esse arquivo não cria configuração, adiciona fontes ou sincroniza
+skills automaticamente. Durante a ativação, a extensão consulta apenas o
+catálogo público de fontes conhecidas para manter o seletor atualizado; essa
+consulta não altera o workspace. O arquivo é criado somente quando uma fonte é
+adicionada pela extensão.
 
 Exemplo de configuração:
 
@@ -110,7 +112,9 @@ A seção **Fontes de skills Dex** lista as fontes de cada raiz do workspace.
 
 - O botão `+` lista primeiro os catálogos conhecidos — Dex AI, GCT, GCT Staging, TOTVS
   EngPro ADVPL/TLPP e TOTVS EngPro Superpowers — e mantém **Fonte de skills
-  personalizada** como última opção.
+  personalizada** como última opção. A lista é atualizada pelo catálogo público
+  do Dex durante a ativação; se ele estiver indisponível ou inválido, a extensão
+  usa a lista distribuída na instalação.
 - O botão de sincronização do cabeçalho atualiza todas as fontes habilitadas.
 - O ícone e a descrição distinguem fontes ativas e inativas. Os botões de cada
   fonte permitem ativá-la ou desativá-la, sincronizá-la quando ativa, abrir seu
