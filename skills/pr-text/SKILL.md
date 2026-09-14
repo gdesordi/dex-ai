@@ -1,16 +1,58 @@
 ---
 name: pr-text
-description: Redige sempre em português do Brasil, em Markdown, o texto de um pull request da branch Git atual em relação a master ou main. Use quando o usuário pedir descrição, resumo ou texto para PR; se houver alterações .prw ou .tlpp, inclua ao final um resumo curto em texto puro para check-in no TFS.
+description: Redige, em português do Brasil, mensagens de commit e textos de pull request a partir das alterações Git. Use quando o usuário pedir uma mensagem de commit, descrição, resumo ou texto para PR; se houver alterações .prw ou .tlpp no PR, inclua ao final um resumo curto em texto puro para check-in no TFS.
 ---
 
-# Texto de Pull Request
+# Texto de Commit e Pull Request
 
 ## Objetivo
 
-Produzir um texto de pull request claro, factual e pronto para copiar e colar,
-descrevendo as alterações já commitadas da branch atual em comparação com a
-branch-base `master` ou `main`. Não criar pull request, commit, tag, push ou
+Produzir mensagens de commit ou textos de pull request claros, factuais e
+prontos para copiar e colar. Não criar pull request, commit, tag, push ou
 alterar arquivos do repositório.
+
+## Escolha do artefato
+
+- Quando o usuário pedir explicitamente uma mensagem de commit, gerar somente a
+  mensagem de commit, com base nas alterações que ele indicar. Na ausência de
+  indicação, usar as alterações preparadas no índice Git. Se não houver arquivos
+  preparados e existirem alterações não preparadas, perguntar se elas devem
+  compor o commit antes de redigir.
+- Quando o usuário pedir explicitamente um texto, descrição ou resumo de PR,
+  gerar o texto de pull request usando as regras desta skill para PR.
+- Quando o pedido puder significar tanto commit quanto PR — por exemplo,
+  "redija o texto das alterações" — perguntar qual artefato o usuário deseja.
+- Se o usuário solicitar ambos, entregar cada artefato em uma seção claramente
+  identificada, sem misturar a redação ou as regras de um com as do outro.
+
+## Mensagem de commit
+
+Escrever em português do Brasil, exceto quando o usuário pedir explicitamente
+outro idioma. Seguir o padrão Conventional Commits, amplamente usado no mercado:
+
+```text
+<tipo>(<escopo opcional>): <resumo no imperativo>
+```
+
+- Usar o tipo que melhor descreve a alteração: `feat`, `fix`, `docs`, `refactor`,
+  `test`, `build`, `ci`, `perf`, `chore` ou `revert`. Manter o tipo em inglês e o
+  resumo em português do Brasil, salvo pedido explícito de outro idioma.
+- Incluir o escopo somente se ele for claro e ajudar a localizar a área afetada.
+  Não inferir escopo apenas pelo nome de um arquivo.
+- Escrever um resumo específico, conciso e no imperativo, sem ponto final. Visar
+  uma primeira linha de até 72 caracteres, sem sacrificar a clareza.
+- Acrescentar corpo apenas quando ele esclarecer uma decisão, efeito relevante,
+  migração, risco ou alteração incompatível comprovada. Separar o corpo do
+  resumo por uma linha em branco e manter suas linhas preferencialmente em até
+  72 caracteres.
+- Não usar a estrutura Markdown, o prefixo JIRA nem o resumo TFS do PR na
+  mensagem de commit, a menos que o usuário os solicite explicitamente.
+- Entregar apenas a mensagem pronta para uso, em texto simples. Não alegar
+  testes, impacto ou contexto que não estejam evidenciados nas alterações.
+
+## Texto de pull request
+
+As regras desta seção valem exclusivamente para o pull request.
 
 ## Descoberta do escopo
 
@@ -33,8 +75,9 @@ alterar arquivos do repositório.
 ## Redação
 
 Escrever sempre em português do Brasil, inclusive se os commits, o código ou o
-repositório estiverem em outro idioma. Entregar somente o Markdown final, sem
-preâmbulo, análise do Git ou instruções de uso.
+repositório estiverem em outro idioma, exceto se o usuário pedir explicitamente
+outro idioma. Entregar somente o Markdown final, sem preâmbulo, análise do Git
+ou instruções de uso.
 
 Usar esta estrutura quando houver informação suficiente:
 
