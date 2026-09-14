@@ -8,6 +8,8 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [3.0.0] - 2026-09
+
 ### Adicionado
 
 - A skill `dex-init` garante a documentação básica de projetos, incluindo

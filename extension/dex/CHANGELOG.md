@@ -7,6 +7,8 @@ Semântico.
 
 ## [Não publicado]
 
+## [3.0.0] - 2026-09-14
+
 ### Adicionado
 
 - A sincronização de fontes passa a baixar, atualizar e compor agentes quando
