@@ -287,6 +287,10 @@ export class SourceService {
     previouslyManaged: ReadonlySet<string>,
     kind: 'skills' | 'agents',
   ): Promise<void> {
+    const target = resolveSkillsDestination(
+      vscode.env.appName,
+      vscode.env.uriScheme,
+    );
     const owners = new Map<string, string>();
     for (const source of sources) {
       if (kind === 'agents' && !source.agentsPath) continue;
@@ -296,18 +300,20 @@ export class SourceService {
       }
       for (const [name, type] of await vscode.workspace.fs.readDirectory(active)) {
         if (kind === 'skills' && !(type & vscode.FileType.Directory)) continue;
+        if (
+          kind === 'agents' &&
+          !isCompatibleAgentFile(name, type, target.agentFileExtension)
+        ) continue;
         const owner = owners.get(name);
         if (owner) throw new Error(`o item ${kind === 'skills' ? '“' + name + '”' : 'de agentes “' + name + '”'} existe nas fontes “${owner}” e “${source.id}”`);
         owners.set(name, source.id);
       }
     }
 
-    if (owners.size === 0) return;
+    if (owners.size === 0 && (kind === 'skills' || previouslyManaged.size === 0)) {
+      return;
+    }
 
-    const target = resolveSkillsDestination(
-      vscode.env.appName,
-      vscode.env.uriScheme,
-    );
     const environmentRoot = vscode.Uri.joinPath(
       folder.uri,
       target.rootDirectory,
@@ -330,7 +336,14 @@ export class SourceService {
       }
       for (const source of sources) {
         if (kind === 'agents' && !source.agentsPath) continue;
-        await copyDirectory(await this.getActiveCatalogUri(folder, source.id, kind), temporary);
+        await copyDirectory(
+          await this.getActiveCatalogUri(folder, source.id, kind),
+          temporary,
+          kind === 'agents'
+            ? (name, type) =>
+              isCompatibleAgentFile(name, type, target.agentFileExtension)
+            : undefined,
+        );
       }
       await vscode.workspace.fs.createDirectory(backup);
       if (await exists(destination)) await copyDirectory(destination, backup);
@@ -441,13 +454,28 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-async function copyDirectory(source: vscode.Uri, destination: vscode.Uri): Promise<void> {
+function isCompatibleAgentFile(
+  name: string,
+  type: vscode.FileType,
+  extension: '.json' | '.md',
+): boolean {
+  return Boolean(type & vscode.FileType.File) &&
+    name.toLowerCase().endsWith(extension);
+}
+
+async function copyDirectory(
+  source: vscode.Uri,
+  destination: vscode.Uri,
+  includeFile?: (name: string, type: vscode.FileType) => boolean,
+): Promise<void> {
   await vscode.workspace.fs.createDirectory(destination);
   for (const [name, type] of await vscode.workspace.fs.readDirectory(source)) {
     const from = vscode.Uri.joinPath(source, name);
     const to = vscode.Uri.joinPath(destination, name);
-    if (type & vscode.FileType.Directory) await copyDirectory(from, to);
-    else if (type & vscode.FileType.File) await vscode.workspace.fs.writeFile(to, await vscode.workspace.fs.readFile(from));
+    if (type & vscode.FileType.Directory) await copyDirectory(from, to, includeFile);
+    else if (type & vscode.FileType.File && (!includeFile || includeFile(name, type))) {
+      await vscode.workspace.fs.writeFile(to, await vscode.workspace.fs.readFile(from));
+    }
   }
 }
 

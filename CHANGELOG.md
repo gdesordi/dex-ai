@@ -8,6 +8,13 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [3.0.1] - 2026-09
+
+### Modificado
+
+- A extensão Dex seleciona agentes `.json` para o Kiro e `.md` para o Visual
+  Studio Code e demais editores.
+
 ## [3.0.0] - 2026-09
 
 ### Adicionado

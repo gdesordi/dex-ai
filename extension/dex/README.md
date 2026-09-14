@@ -17,7 +17,9 @@ A extensão identifica o editor automaticamente e grava a composição em:
 - Kiro: `.kiro/skills`.
 
 Os agentes baixados ficam em `.agents/agents` no Visual Studio Code ou em
-`.kiro/agents` no Kiro.
+`.kiro/agents` no Kiro. Cada repositório de agentes pode disponibilizar as duas
+variações na pasta configurada: a extensão instala apenas arquivos `.md` no
+Visual Studio Code e em outros editores, ou apenas arquivos `.json` no Kiro.
 
 É necessário ter acesso à internet durante a sincronização e a verificação de
 atualizações.
