@@ -86,6 +86,32 @@ test('rejeita caminhos que podem escapar ou não são POSIX relativos', () => {
   for (const path of ['/skills', '../skills', 'skills/../private', 'a//b', 'a\\b']) {
     assertInvalidSource({ path }, /campo “path”/);
   }
+  for (const agentsPath of ['/agents', '../agents', 'agents/../private', 'a//b', 'a\\b']) {
+    assertInvalidSource({ agentsPath }, /campo “agentsPath”/);
+  }
+});
+
+test('preserva o caminho opcional dos agentes', () => {
+  const config = parseSyncConfig(
+    JSON.stringify({ version: 1, sources: [{ ...defaultSource('with-agents'), agentsPath: 'agents' }] }),
+  );
+  assert.equal(config.sources[0].agentsPath, 'agents');
+});
+
+test('inclui agentes ao ler uma configuração GCT criada anteriormente', () => {
+  const config = parseSyncConfig(
+    JSON.stringify({
+      version: 1,
+      sources: [{
+        id: 'gct',
+        repository: 'https://github.com/sordi-totvs/gct-resources',
+        ref: 'main',
+        path: 'skills',
+        enabled: true,
+      }],
+    }),
+  );
+  assert.equal(config.sources[0].agentsPath, 'agents');
 });
 
 test('adiciona a fonte padrão preservando a configuração', () => {

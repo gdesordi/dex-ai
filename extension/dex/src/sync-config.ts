@@ -1,9 +1,9 @@
 import {
   SyncConfig,
   SyncSource,
-  defaultDexSource,
   syncConfigVersion,
 } from './sync-types';
+import { defaultDexSource, gctSkillsSource } from './default-sources';
 
 const sourceIdPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const invalidGitRefPattern = /[\u0000-\u0020~^:?*[\\]/;
@@ -127,12 +127,39 @@ function parseSource(value: unknown, index: number): SyncSource {
       : requireString(source.path, label, 'path'),
     label,
   );
+  const agentsPath = source.agentsPath === undefined
+    ? undefined
+    : validateRepositoryPath(
+        requireString(source.agentsPath, label, 'agentsPath'),
+        label,
+        'agentsPath',
+      );
   const enabled =
     source.enabled === undefined
       ? true
       : requireBoolean(source.enabled, label, 'enabled');
 
-  return { ...source, id, repository, ref, path, enabled } as SyncSource;
+  const normalized: Record<string, unknown> = {
+    ...source,
+    id,
+    repository,
+    ref,
+    path,
+    enabled,
+  };
+  if (agentsPath !== undefined) {
+    normalized.agentsPath = agentsPath;
+  } else if (isGctDefaultSource(normalized)) {
+    normalized.agentsPath = gctSkillsSource.agentsPath;
+  }
+  return normalized as SyncSource;
+}
+
+function isGctDefaultSource(source: Record<string, unknown>): boolean {
+  return source.id === gctSkillsSource.id &&
+    source.repository === gctSkillsSource.repository &&
+    source.ref === gctSkillsSource.ref &&
+    source.path === gctSkillsSource.path;
 }
 
 function normalizeGitHubRepository(value: string, label: string): string {
@@ -194,10 +221,14 @@ function validateGitRef(value: string, label: string): string {
   return value;
 }
 
-function validateRepositoryPath(value: string, label: string): string {
+function validateRepositoryPath(
+  value: string,
+  label: string,
+  field = 'path',
+): string {
   if (value.startsWith('/') || value.includes('\\')) {
     throw new SyncConfigError(
-      `${label}, campo “path”: use um caminho POSIX relativo`,
+      `${label}, campo “${field}”: use um caminho POSIX relativo`,
     );
   }
 
@@ -207,7 +238,7 @@ function validateRepositoryPath(value: string, label: string): string {
     segments.some((segment) => !segment || segment === '.' || segment === '..')
   ) {
     throw new SyncConfigError(
-      `${label}, campo “path”: segmentos vazios, “.” e “..” não são permitidos`,
+      `${label}, campo “${field}”: segmentos vazios, “.” e “..” não são permitidos`,
     );
   }
   return segments.join('/');

@@ -9,5 +9,6 @@ export function isSourceRevisionCurrent(
     metadata.repository === source.repository &&
     metadata.requestedRef === source.ref &&
     metadata.sourcePath === source.path &&
+    metadata.agentsPath === source.agentsPath &&
     metadata.resolvedCommit === remoteCommit;
 }

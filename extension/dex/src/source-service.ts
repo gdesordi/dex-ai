@@ -30,9 +30,15 @@ export class SourceService {
   ): Promise<SourceSyncResult[]> {
     const { config } = await this.configs.read(folder);
     const enabled = config.sources.filter((source) => source.enabled);
-    const previouslyManaged = await this.collectManagedSkillNames(
+    const previouslyManaged = await this.collectManagedEntryNames(
       folder,
       config.sources,
+      'skills',
+    );
+    const previouslyManagedAgents = await this.collectManagedEntryNames(
+      folder,
+      config.sources,
+      'agents',
     );
     this.log(
       `Sincronização iniciada para “${folder.name}”: ${enabled.length} de ${config.sources.length} fonte(s) habilitada(s).`,
@@ -69,7 +75,7 @@ export class SourceService {
     );
     this.log(`Compondo o destino de “${folder.name}” com ${enabled.length} fonte(s).`);
     try {
-      await this.compose(folder, enabled, previouslyManaged);
+      await this.compose(folder, enabled, previouslyManaged, previouslyManagedAgents);
     } catch (error) {
       this.log(`Falha ao compor o destino: ${errorMessage(error)}`);
       throw error;
@@ -98,9 +104,15 @@ export class SourceService {
     }
 
     this.log(`Sincronização individual iniciada para a fonte “${source.id}”.`);
-    const previouslyManaged = await this.collectManagedSkillNames(
+    const previouslyManaged = await this.collectManagedEntryNames(
       folder,
       config.sources,
+      'skills',
+    );
+    const previouslyManagedAgents = await this.collectManagedEntryNames(
+      folder,
+      config.sources,
+      'agents',
     );
 
     const result = await vscode.window.withProgress(
@@ -131,6 +143,7 @@ export class SourceService {
         folder,
         config.sources.filter((item) => item.enabled),
         previouslyManaged,
+        previouslyManagedAgents,
       );
     } catch (error) {
       this.log(`Falha ao compor o destino: ${errorMessage(error)}`);
@@ -184,13 +197,15 @@ export class SourceService {
     sourceIds: readonly string[],
   ): Promise<number> {
     const { config } = await this.configs.read(folder);
-    const protectedNames = await this.collectManagedSkillNames(
+    const protectedNames = await this.collectManagedEntryNames(
       folder,
       config.sources.filter((source) => source.enabled),
+      'skills',
     );
-    const names = await this.collectManagedSkillNames(
+    const names = await this.collectManagedEntryNames(
       folder,
       config.sources.filter((source) => sourceIds.includes(source.id)),
+      'skills',
     );
     const target = resolveSkillsDestination(
       vscode.env.appName,
@@ -209,9 +224,29 @@ export class SourceService {
       await vscode.workspace.fs.delete(skill, { recursive: true });
       removed += 1;
     }
-    this.log(
-      `${removed} skill(s) removida(s) de “${folder.name}” após desativar ${sourceIds.length} fonte(s).`,
+    const protectedAgentNames = await this.collectManagedEntryNames(
+      folder,
+      config.sources.filter((source) => source.enabled),
+      'agents',
     );
+    const agentNames = await this.collectManagedEntryNames(
+      folder,
+      config.sources.filter((source) => sourceIds.includes(source.id)),
+      'agents',
+    );
+    const agentsDestination = vscode.Uri.joinPath(
+      folder.uri,
+      target.rootDirectory,
+      target.agentsDirectory,
+    );
+    for (const name of agentNames) {
+      if (protectedAgentNames.has(name)) continue;
+      const agent = vscode.Uri.joinPath(agentsDestination, name);
+      if (!(await exists(agent))) continue;
+      await vscode.workspace.fs.delete(agent, { recursive: true });
+      removed += 1;
+    }
+    this.log(`${removed} item(ns) gerenciado(s) removido(s) de “${folder.name}” após desativar ${sourceIds.length} fonte(s).`);
     return removed;
   }
 
@@ -240,20 +275,34 @@ export class SourceService {
     folder: vscode.WorkspaceFolder,
     sources: SyncSource[],
     previouslyManaged: ReadonlySet<string>,
+    previouslyManagedAgents: ReadonlySet<string>,
+  ): Promise<void> {
+    await this.composeCatalog(folder, sources, previouslyManaged, 'skills');
+    await this.composeCatalog(folder, sources, previouslyManagedAgents, 'agents');
+  }
+
+  private async composeCatalog(
+    folder: vscode.WorkspaceFolder,
+    sources: SyncSource[],
+    previouslyManaged: ReadonlySet<string>,
+    kind: 'skills' | 'agents',
   ): Promise<void> {
     const owners = new Map<string, string>();
     for (const source of sources) {
-      const active = this.storage.getActiveUri(folder, source.id);
+      if (kind === 'agents' && !source.agentsPath) continue;
+      const active = await this.getActiveCatalogUri(folder, source.id, kind);
       if (!(await exists(active))) {
-        throw new Error(`a fonte “${source.id}” ainda não possui uma cópia válida`);
+        throw new Error(`a fonte “${source.id}” ainda não possui uma cópia válida de ${kind}`);
       }
       for (const [name, type] of await vscode.workspace.fs.readDirectory(active)) {
-        if (!(type & vscode.FileType.Directory)) continue;
+        if (kind === 'skills' && !(type & vscode.FileType.Directory)) continue;
         const owner = owners.get(name);
-        if (owner) throw new Error(`a skill “${name}” existe nas fontes “${owner}” e “${source.id}”`);
+        if (owner) throw new Error(`o item ${kind === 'skills' ? '“' + name + '”' : 'de agentes “' + name + '”'} existe nas fontes “${owner}” e “${source.id}”`);
         owners.set(name, source.id);
       }
     }
+
+    if (owners.size === 0) return;
 
     const target = resolveSkillsDestination(
       vscode.env.appName,
@@ -265,10 +314,10 @@ export class SourceService {
     );
     const destination = vscode.Uri.joinPath(
       environmentRoot,
-      target.skillsDirectory,
+      kind === 'skills' ? target.skillsDirectory : target.agentsDirectory,
     );
-    const temporary = vscode.Uri.joinPath(environmentRoot, 'skills-dex-next');
-    const backup = vscode.Uri.joinPath(environmentRoot, 'skills-dex-backup');
+    const temporary = vscode.Uri.joinPath(environmentRoot, `${kind}-dex-next`);
+    const backup = vscode.Uri.joinPath(environmentRoot, `${kind}-dex-backup`);
     await remove(temporary);
     await remove(backup);
     await vscode.workspace.fs.createDirectory(temporary);
@@ -280,7 +329,8 @@ export class SourceService {
         await remove(vscode.Uri.joinPath(temporary, name));
       }
       for (const source of sources) {
-        await copyDirectory(this.storage.getActiveUri(folder, source.id), temporary);
+        if (kind === 'agents' && !source.agentsPath) continue;
+        await copyDirectory(await this.getActiveCatalogUri(folder, source.id, kind), temporary);
       }
       await vscode.workspace.fs.createDirectory(backup);
       if (await exists(destination)) await copyDirectory(destination, backup);
@@ -298,19 +348,33 @@ export class SourceService {
     }
   }
 
-  private async collectManagedSkillNames(
+  private async collectManagedEntryNames(
     folder: vscode.WorkspaceFolder,
     sources: SyncSource[],
+    kind: 'skills' | 'agents',
   ): Promise<Set<string>> {
     const names = new Set<string>();
     for (const source of sources) {
-      const active = this.storage.getActiveUri(folder, source.id);
+      if (kind === 'agents' && !source.agentsPath) continue;
+      const active = await this.getActiveCatalogUri(folder, source.id, kind);
       if (!(await exists(active))) continue;
       for (const [name, type] of await vscode.workspace.fs.readDirectory(active)) {
-        if (type & vscode.FileType.Directory) names.add(name);
+        if (kind === 'agents' || type & vscode.FileType.Directory) names.add(name);
       }
     }
     return names;
+  }
+
+  private async getActiveCatalogUri(
+    folder: vscode.WorkspaceFolder,
+    sourceId: string,
+    kind: 'skills' | 'agents',
+  ): Promise<vscode.Uri> {
+    const nested = kind === 'skills'
+      ? this.storage.getActiveSkillsUri(folder, sourceId)
+      : this.storage.getActiveAgentsUri(folder, sourceId);
+    if (await exists(nested)) return nested;
+    return kind === 'skills' ? this.storage.getActiveUri(folder, sourceId) : nested;
   }
 
   private async downloadAndInstall(
@@ -341,11 +405,22 @@ export class SourceService {
         [...catalog.files].filter(([path]) => skillFiles.has(path)),
       ),
     };
+    const agentsCatalog = source.agentsPath
+      ? await this.provider.download(
+          source,
+          signal,
+          undefined,
+          source.agentsPath,
+          catalog.resolvedCommit,
+        )
+      : undefined;
     const metadata = await this.storage.install(
       folder,
       source,
       installableCatalog,
+      agentsCatalog,
       validated.skills.length,
+      agentsCatalog?.files.size ?? 0,
     );
     this.log(`Fonte “${source.id}”: cache local atualizado.`);
     return { sourceId: source.id, status: 'synced', metadata };

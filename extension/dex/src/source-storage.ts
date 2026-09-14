@@ -9,8 +9,10 @@ export class SourceStorage {
   async install(
     workspaceFolder: vscode.WorkspaceFolder,
     source: SyncSource,
-    catalog: DownloadedCatalog,
+    skillCatalog: DownloadedCatalog,
+    agentCatalog: DownloadedCatalog | undefined,
     skillCount: number,
+    agentCount: number,
   ): Promise<SourceMetadata> {
     const sourceRoot = this.getSourceRoot(workspaceFolder, source.id);
     const activeUri = vscode.Uri.joinPath(sourceRoot, 'active');
@@ -21,10 +23,16 @@ export class SourceStorage {
     await vscode.workspace.fs.createDirectory(temporaryUri);
 
     try {
-      for (const [path, contents] of catalog.files) {
-        const fileUri = vscode.Uri.joinPath(temporaryUri, ...path.split('/'));
-        await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(fileUri, '..'));
-        await vscode.workspace.fs.writeFile(fileUri, contents);
+      for (const [kind, catalog] of [
+        ['skills', skillCatalog],
+        ['agents', agentCatalog],
+      ] as const) {
+        if (!catalog) continue;
+        for (const [path, contents] of catalog.files) {
+          const fileUri = vscode.Uri.joinPath(temporaryUri, kind, ...path.split('/'));
+          await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(fileUri, '..'));
+          await vscode.workspace.fs.writeFile(fileUri, contents);
+        }
       }
 
       const hadActive = await uriExists(activeUri);
@@ -45,9 +53,11 @@ export class SourceStorage {
         repository: source.repository,
         requestedRef: source.ref,
         sourcePath: source.path,
-        resolvedCommit: catalog.resolvedCommit,
+        agentsPath: source.agentsPath,
+        resolvedCommit: skillCatalog.resolvedCommit,
         syncedAt: new Date().toISOString(),
         skillCount,
+        agentCount,
       };
       await vscode.workspace.fs.writeFile(
         vscode.Uri.joinPath(sourceRoot, 'metadata.json'),
@@ -86,6 +96,14 @@ export class SourceStorage {
     sourceId: string,
   ): vscode.Uri {
     return vscode.Uri.joinPath(this.getSourceRoot(workspaceFolder, sourceId), 'active');
+  }
+
+  getActiveSkillsUri(workspaceFolder: vscode.WorkspaceFolder, sourceId: string): vscode.Uri {
+    return vscode.Uri.joinPath(this.getActiveUri(workspaceFolder, sourceId), 'skills');
+  }
+
+  getActiveAgentsUri(workspaceFolder: vscode.WorkspaceFolder, sourceId: string): vscode.Uri {
+    return vscode.Uri.joinPath(this.getActiveUri(workspaceFolder, sourceId), 'agents');
   }
 
   getWorkspaceRoot(workspaceFolder: vscode.WorkspaceFolder): vscode.Uri {

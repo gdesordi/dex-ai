@@ -3,8 +3,8 @@ import {
   engproAdvplTlppSource,
   engproSuperpowersSource,
   gctSkillsSource,
-  SyncSource,
-} from './sync-types';
+} from './default-sources';
+import { SyncSource } from './sync-types';
 
 export type KnownSourceChoice =
   | {

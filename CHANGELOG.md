@@ -8,6 +8,8 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [3.0.0] - 2026-09
+
 ### Adicionado
 
 - A skill `dex-init` garante a documentação básica de projetos, incluindo
@@ -15,6 +17,14 @@ mantidas como histórico.
 - A skill `pr-text` gera textos de pull request em Markdown a partir do diff da
   branch atual contra `master` ou `main`, incluindo resumo simples para check-in
   no TFS e prefixo JIRA no título quando houver arquivos `.prw` ou `.tlpp`.
+- A extensão passa a baixar, atualizar e compor agentes configurados em
+  `agentsPath`; a fonte padrão GCT usa o caminho `agents`.
+
+### Modificado
+
+- Os dados dos repositórios padrão da extensão passaram a ficar concentrados em
+  `extension/dex/src/default-sources.ts`, facilitando sua identificação e
+  revisão.
 
 ## [2.5.0] - 2026-08
 

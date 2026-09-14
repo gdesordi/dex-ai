@@ -85,11 +85,13 @@ export class GitHubSourceProvider {
     source: SyncSource,
     signal?: AbortSignal,
     onProgress?: (completed: number, total: number, path: string) => void,
+    path = source.path,
+    resolvedCommit?: string,
   ): Promise<DownloadedCatalog> {
-    const resolvedCommit = await this.resolveCommit(source, signal);
+    const commit = resolvedCommit ?? await this.resolveCommit(source, signal);
     const { owner, repository } = parseRepository(source.repository);
     const treeResponse = await this.fetcher(
-      `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/git/trees/${resolvedCommit}?recursive=1`,
+      `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/git/trees/${commit}?recursive=1`,
       { headers: githubHeaders(), signal },
     );
     await requireSuccessfulResponse(treeResponse, source, 'consultar a árvore');
@@ -101,14 +103,14 @@ export class GitHubSourceProvider {
       );
     }
 
-    const prefix = `${source.path}/`;
+    const prefix = `${path}/`;
     const entries = (tree.tree ?? []).filter(
       (entry) => entry.type === 'blob' && entry.path.startsWith(prefix),
     );
     if (entries.length === 0) {
       throw new GitHubSourceError(
         'path-not-found',
-        `${source.id}: a pasta “${source.path}” não existe ou não contém arquivos no commit ${resolvedCommit.slice(0, 12)}`,
+        `${source.id}: a pasta “${path}” não existe ou não contém arquivos no commit ${commit.slice(0, 12)}`,
       );
     }
 
@@ -122,7 +124,7 @@ export class GitHubSourceProvider {
         validateRemotePath(relativePath, source.id);
         const encodedPath = entry.path.split('/').map(encodeURIComponent).join('/');
         const response = await this.fetcher(
-          `https://raw.githubusercontent.com/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/${resolvedCommit}/${encodedPath}`,
+          `https://raw.githubusercontent.com/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}/${commit}/${encodedPath}`,
           { headers: { 'User-Agent': 'dex-vscode-extension' }, signal },
         );
         await requireSuccessfulResponse(
@@ -141,7 +143,7 @@ export class GitHubSourceProvider {
     await Promise.all(
       Array.from({ length: Math.min(6, entries.length) }, () => worker()),
     );
-    return { resolvedCommit, files };
+    return { resolvedCommit: commit, files };
   }
 }
 
