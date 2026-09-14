@@ -7,6 +7,13 @@ Semântico.
 
 ## [Não publicado]
 
+## [3.0.3] - 2026-09-14
+
+### Adicionado
+
+- A fonte conhecida `gct-staging` passa a disponibilizar o catálogo GCT a
+  partir da branch `staging`.
+
 ## [3.0.1] - 2026-09-14
 
 ### Modificado

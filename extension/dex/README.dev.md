@@ -95,7 +95,7 @@ atualiza primeiro `.dex/sync.json` e preserva o cache por padrão; a exclusão d
 cópia local depende de uma segunda escolha explícita do usuário.
 
 As ações globais são declaradas em `view/title`. `dex.addSource` começa por uma
-lista de catálogos conhecidos, com Dex AI e GCT no início e a fonte personalizada
+lista de catálogos conhecidos, com Dex AI, GCT e GCT Staging no início e a fonte personalizada
 no fim. Somente a opção personalizada solicita os campos por caixas de entrada;
 a configuração completa é normalizada e validada antes da escrita. Depois da
 inclusão, `SourceService.syncSource` executa automaticamente a primeira

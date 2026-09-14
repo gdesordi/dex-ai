@@ -8,6 +8,7 @@ test('mantém os catálogos conhecidos e a fonte personalizada por último', () 
     [
       'dex',
       'gct',
+      'gct-staging',
       'engpro-advpl-tlpp',
       'engpro-superpowers',
       'custom',
@@ -22,6 +23,19 @@ test('mantém os catálogos conhecidos e a fonte personalizada por último', () 
     id: 'gct',
     repository: 'https://github.com/sordi-totvs/gct-resources',
     ref: 'main',
+    path: 'skills',
+    agentsPath: 'agents',
+    enabled: true,
+  });
+
+  const gctStaging = knownSourceChoices.find(
+    (choice) => choice.sourceType === 'gct-staging',
+  );
+  assert.ok(gctStaging && 'source' in gctStaging);
+  assert.deepEqual(gctStaging.source, {
+    id: 'gct-staging',
+    repository: 'https://github.com/sordi-totvs/gct-resources',
+    ref: 'staging',
     path: 'skills',
     agentsPath: 'agents',
     enabled: true,

@@ -8,6 +8,13 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [3.0.3] - 2026-09
+
+### Adicionado
+
+- A extensão oferece a fonte conhecida `gct-staging`, equivalente à GCT e
+  sincronizada a partir da branch `staging`.
+
 ## [3.0.2] - 2026-09
 
 ### Modificado
