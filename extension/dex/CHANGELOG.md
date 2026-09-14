@@ -7,6 +7,11 @@ Semântico.
 
 ## [Não publicado]
 
+### Modificado
+
+- A composição de agentes agora instala arquivos `.json` no Kiro e arquivos
+  `.md` no Visual Studio Code e demais editores.
+
 ## [3.0.0] - 2026-09-14
 
 ### Adicionado

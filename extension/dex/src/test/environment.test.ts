@@ -3,17 +3,15 @@ import test from 'node:test';
 import { resolveSkillsDestination } from '../environment';
 
 test('usa .agents/skills no Visual Studio Code', () => {
-  assert.equal(
-    resolveSkillsDestination('Visual Studio Code', 'vscode').relativePath,
-    '.agents/skills',
-  );
+  const destination = resolveSkillsDestination('Visual Studio Code', 'vscode');
+  assert.equal(destination.relativePath, '.agents/skills');
+  assert.equal(destination.agentFileExtension, '.md');
 });
 
 test('usa .kiro/skills quando o nome do aplicativo indica Kiro', () => {
-  assert.equal(
-    resolveSkillsDestination('Kiro', 'vscode').relativePath,
-    '.kiro/skills',
-  );
+  const destination = resolveSkillsDestination('Kiro', 'vscode');
+  assert.equal(destination.relativePath, '.kiro/skills');
+  assert.equal(destination.agentFileExtension, '.json');
 });
 
 test('usa .kiro/skills quando o URI scheme indica Kiro', () => {
