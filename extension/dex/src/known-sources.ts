@@ -3,6 +3,7 @@ import {
   engproAdvplTlppSource,
   engproSuperpowersSource,
   gctSkillsSource,
+  gctStagingSkillsSource,
 } from './default-sources';
 import { SyncSource } from './sync-types';
 
@@ -13,6 +14,7 @@ export type KnownSourceChoice =
       sourceType:
         | 'dex'
         | 'gct'
+        | 'gct-staging'
         | 'engpro-advpl-tlpp'
         | 'engpro-superpowers';
       source: Readonly<SyncSource>;
@@ -35,6 +37,12 @@ export const knownSourceChoices: readonly KnownSourceChoice[] = Object.freeze([
     description: 'Catálogo de skills do GCT',
     sourceType: 'gct',
     source: gctSkillsSource,
+  },
+  {
+    label: 'GCT Staging',
+    description: 'Catálogo de skills do GCT na branch staging',
+    sourceType: 'gct-staging',
+    source: gctStagingSkillsSource,
   },
   {
     label: 'TOTVS EngPro — ADVPL/TLPP',

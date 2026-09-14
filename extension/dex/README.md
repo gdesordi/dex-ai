@@ -108,7 +108,7 @@ fonte permanece ativa para permitir uma nova tentativa manual.
 
 A seção **Fontes de skills Dex** lista as fontes de cada raiz do workspace.
 
-- O botão `+` lista primeiro os catálogos conhecidos — Dex AI, GCT, TOTVS
+- O botão `+` lista primeiro os catálogos conhecidos — Dex AI, GCT, GCT Staging, TOTVS
   EngPro ADVPL/TLPP e TOTVS EngPro Superpowers — e mantém **Fonte de skills
   personalizada** como última opção.
 - O botão de sincronização do cabeçalho atualiza todas as fontes habilitadas.
