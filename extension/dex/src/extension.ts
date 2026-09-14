@@ -287,6 +287,12 @@ export function activate(context: vscode.ExtensionContext): void {
         'Digite o caminho relativo do catálogo no repositório',
       );
       if (!sourcePath) return;
+      const agentsPathInput = await vscode.window.showInputBox({
+        title: 'Adicionar fonte — Pasta de agentes (opcional)',
+        placeHolder: 'Digite o caminho relativo dos agentes ou deixe em branco',
+      });
+      if (agentsPathInput === undefined) return;
+      const agentsPath = agentsPathInput.trim() || undefined;
       const enabledChoice = await vscode.window.showQuickPick(
         [
           { label: 'Ativada', description: 'Participa das sincronizações' },
@@ -305,6 +311,7 @@ export function activate(context: vscode.ExtensionContext): void {
           repository,
           ref,
           path: sourcePath,
+          agentsPath,
           enabled: enabledChoice.label === 'Ativada',
         } as SyncSource);
         sourcesTree.refresh();

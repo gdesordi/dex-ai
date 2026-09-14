@@ -7,6 +7,7 @@ export interface SyncSource extends Record<string, unknown> {
   repository: string;
   ref: string;
   path: string;
+  agentsPath?: string;
   enabled: boolean;
 }
 
@@ -29,9 +30,11 @@ export interface SourceMetadata {
   repository: string;
   requestedRef: string;
   sourcePath?: string;
+  agentsPath?: string;
   resolvedCommit: string;
   syncedAt: string;
   skillCount: number;
+  agentCount?: number;
 }
 
 export interface SourceSyncResult {

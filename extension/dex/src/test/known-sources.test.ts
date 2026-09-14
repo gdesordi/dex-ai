@@ -23,6 +23,7 @@ test('mantém os catálogos conhecidos e a fonte personalizada por último', () 
     repository: 'https://github.com/sordi-totvs/gct-resources',
     ref: 'main',
     path: 'skills',
+    agentsPath: 'agents',
     enabled: true,
   });
 

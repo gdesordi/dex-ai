@@ -7,6 +7,11 @@ Semântico.
 
 ## [Não publicado]
 
+### Adicionado
+
+- A sincronização de fontes passa a baixar, atualizar e compor agentes quando
+  `agentsPath` estiver configurado. A fonte GCT usa o caminho `agents`.
+
 ### Modificado
 
 - Os dados dos repositórios padrão passaram a ficar concentrados em

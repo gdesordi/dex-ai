@@ -42,6 +42,29 @@ test('resolve commit, filtra a pasta e baixa arquivos pelo commit', async () => 
   assert.match(calls[2], new RegExp(`/[a]{40}/skills/alpha/SKILL.md$`));
 });
 
+test('baixa agentes em outro caminho usando o mesmo commit resolvido', async () => {
+  const calls: string[] = [];
+  const fetcher: FetchLike = async (input) => {
+    const url = String(input);
+    calls.push(url);
+    if (url.includes('/git/trees/')) {
+      return jsonResponse({ tree: [{ path: 'agents/reviewer.md', type: 'blob' }] });
+    }
+    return new Response('# Revisor');
+  };
+
+  const result = await new GitHubSourceProvider(fetcher).download(
+    source,
+    undefined,
+    undefined,
+    'agents',
+    'd'.repeat(40),
+  );
+  assert.equal(result.resolvedCommit, 'd'.repeat(40));
+  assert.deepEqual([...result.files.keys()], ['reviewer.md']);
+  assert.equal(calls.some((url) => url.includes('/commits/')), false);
+});
+
 test('distingue rate limit e árvore truncada', async () => {
   const rateLimited = new GitHubSourceProvider(async () =>
     new Response('', {

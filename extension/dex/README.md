@@ -1,6 +1,6 @@
 # Dex
 
-Dex gerencia fontes públicas de skills hospedadas no GitHub e compõe os
+Dex gerencia fontes públicas de skills e agentes hospedados no GitHub e compõe os
 catálogos habilitados em cada workspace pelo Visual Studio Code ou pelo Kiro.
 
 ## Como usar
@@ -15,6 +15,9 @@ A extensão identifica o editor automaticamente e grava a composição em:
 
 - Visual Studio Code: `.agents/skills`;
 - Kiro: `.kiro/skills`.
+
+Os agentes baixados ficam em `.agents/agents` no Visual Studio Code ou em
+`.kiro/agents` no Kiro.
 
 É necessário ter acesso à internet durante a sincronização e a verificação de
 atualizações.
@@ -45,6 +48,7 @@ Exemplo de configuração:
       "repository": "https://github.com/gdesordi/dex-ai",
       "ref": "main",
       "path": "skills",
+      "agentsPath": "agents",
       "enabled": true
     }
   ]
@@ -52,15 +56,18 @@ Exemplo de configuração:
 ```
 
 Cada fonte define um identificador único, a URL pública do GitHub, uma branch,
-tag ou commit, o caminho do catálogo no repositório e se participa das
-sincronizações. Em workspaces com várias raízes, os comandos globais solicitam
-qual pasta deve ser usada.
+tag ou commit, o caminho do catálogo de skills no repositório e se participa
+das sincronizações. `agentsPath` é opcional e define o caminho dos agentes no
+mesmo repositório. Em workspaces com várias raízes, os comandos globais
+solicitam qual pasta deve ser usada.
 
 ## Sincronização
 
 O botão de sincronização no cabeçalho baixa todas as fontes habilitadas, valida
-seus catálogos, atualiza a cópia local isolada de cada fonte e recompõe o destino
-do workspace. Skills de mesmo nome em fontes diferentes são rejeitadas.
+seus catálogos de skills, atualiza a cópia local isolada de cada fonte e recompõe
+os destinos do workspace. Quando `agentsPath` estiver configurado, os agentes
+também são baixados e atualizados. Skills ou agentes de mesmo nome em fontes
+diferentes são rejeitados.
 
 O botão de sincronização de uma fonte atualiza somente a fonte selecionada. O
 destino é recomposto com sua nova cópia e com as cópias locais das demais fontes
@@ -70,11 +77,11 @@ Ao adicionar uma fonte conhecida ou personalizada, a extensão inicia
 automaticamente sua primeira sincronização. Se ela falhar ou for cancelada, a
 configuração é preservada para uma nova tentativa manual.
 
-Durante a composição, a pasta `.agents/skills` ou `.kiro/skills` permanece no
-lugar e somente seu conteúdo é substituído. A extensão mantém uma cópia
-temporária do conteúdo anterior para restauração em caso de falha. Como o
-destino inteiro é gerenciado pela Dex, arquivos e skills adicionados manualmente
-dentro dele são removidos na próxima composição.
+Durante a composição, as pastas de skills e agentes permanecem no lugar e
+somente seu conteúdo é substituído. A extensão mantém uma cópia temporária do
+conteúdo anterior para restauração em caso de falha. Como esses destinos são
+gerenciados pela Dex, arquivos adicionados manualmente dentro deles são removidos
+na próxima composição.
 
 Se o download de uma fonte falhar durante a sincronização global, a extensão
 registra a falha e usa sua última cópia local válida, quando disponível, para
@@ -87,12 +94,12 @@ catálogo. Mudanças de repositório, referência ou caminho também indicam que
 fonte precisa ser sincronizada.
 
 Ao alterar uma fonte de `enabled: true` para `enabled: false`, a extensão remove
-imediatamente do workspace as skills fornecidas por ela e informa quantas foram
-removidas. A cópia local isolada da fonte é preservada.
+imediatamente do workspace as skills e os agentes fornecidos por ela e informa
+quantos itens foram removidos. A cópia local isolada da fonte é preservada.
 
 O estado também pode ser alternado pelo botão exibido em cada fonte na Tree
 View. Ao reativar uma fonte, a extensão a sincroniza imediatamente para
-restaurar suas skills no destino. Se a sincronização falhar ou for cancelada, a
+restaurar suas skills e agentes no destino. Se a sincronização falhar ou for cancelada, a
 fonte permanece ativa para permitir uma nova tentativa manual.
 
 ## Tree View
@@ -123,7 +130,8 @@ local isolada.
 - `Dex: Verificar atualizações das fontes`: compara os commits locais com as
   referências remotas configuradas.
 - `Dex: Adicionar fonte de skills`: permite escolher um catálogo conhecido ou
-  cadastrar uma fonte personalizada em `.dex/sync.json`.
+  cadastrar uma fonte personalizada, inclusive um caminho opcional de agentes,
+  em `.dex/sync.json`.
 - `Dex: Abrir configuração de fontes`: abre `.dex/sync.json` para edição.
 - `Dex: Abrir repositório da fonte`: abre no navegador a origem selecionada.
 - `Dex: Remover fonte de skills`: remove a fonte da configuração e oferece a

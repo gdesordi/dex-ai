@@ -15,6 +15,8 @@ mantidas como histórico.
 - A skill `pr-text` gera textos de pull request em Markdown a partir do diff da
   branch atual contra `master` ou `main`, incluindo resumo simples para check-in
   no TFS e prefixo JIRA no título quando houver arquivos `.prw` ou `.tlpp`.
+- A extensão passa a baixar, atualizar e compor agentes configurados em
+  `agentsPath`; a fonte padrão GCT usa o caminho `agents`.
 
 ### Modificado
 

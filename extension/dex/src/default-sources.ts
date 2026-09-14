@@ -1,6 +1,6 @@
 import type { SyncSource } from './sync-types';
 
-/** Catálogos de skills oferecidos pela extensão como fontes conhecidas. */
+/** Catálogos e agentes oferecidos pela extensão como fontes conhecidas. */
 export const defaultDexSource: Readonly<SyncSource> = Object.freeze({
   id: 'dex-ai',
   repository: 'https://github.com/gdesordi/dex-ai',
@@ -14,6 +14,7 @@ export const gctSkillsSource: Readonly<SyncSource> = Object.freeze({
   repository: 'https://github.com/sordi-totvs/gct-resources',
   ref: 'main',
   path: 'skills',
+  agentsPath: 'agents',
   enabled: true,
 });
 
