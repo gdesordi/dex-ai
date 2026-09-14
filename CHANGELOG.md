@@ -8,6 +8,14 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [3.0.2] - 2026-09
+
+### Modificado
+
+- A skill `pr-text` passa a gerar mensagens de commit em português do Brasil no
+  padrão Conventional Commits e diferencia esse texto da descrição de pull
+  request.
+
 ## [3.0.1] - 2026-09
 
 ### Modificado
