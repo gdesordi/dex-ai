@@ -7,6 +7,8 @@ Semântico.
 
 ## [Não publicado]
 
+## [3.1.0] - 2026-09-14
+
 ### Adicionado
 
 - A extensão consulta o catálogo público `default-sources.json` na ativação para
