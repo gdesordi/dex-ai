@@ -28,8 +28,8 @@ export const gctStagingSkillsSource: Readonly<SyncSource> = Object.freeze({
   id: 'gct-staging',
   repository: 'https://github.com/sordi-totvs/gct-resources',
   ref: 'staging',
-  path: 'skills',
-  agentsPath: 'agents',
+  path: 'ai-resources/skills',
+  agentsPath: 'ai-resources/agents',
   enabled: true,
 });
 

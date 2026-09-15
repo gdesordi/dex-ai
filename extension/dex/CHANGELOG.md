@@ -7,6 +7,11 @@ Semântico.
 
 ## [Não publicado]
 
+### Corrigido
+
+- A fonte conhecida GCT Staging usa `ai-resources/skills` e
+  `ai-resources/agents`, inclusive no fallback distribuído pela extensão.
+
 ## [3.1.0] - 2026-09-14
 
 ### Adicionado
