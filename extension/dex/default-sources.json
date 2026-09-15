@@ -3,7 +3,7 @@
   "sources": [
     { "id": "dex-ai", "label": "Dex AI", "description": "Catálogo padrão de skills do Dex", "repository": "https://github.com/gdesordi/dex-ai", "ref": "main", "path": "skills", "enabled": true },
     { "id": "gct", "label": "GCT", "description": "Catálogo de skills do GCT", "repository": "https://github.com/sordi-totvs/gct-resources", "ref": "main", "path": "skills", "agentsPath": "agents", "enabled": true },
-    { "id": "gct-staging", "label": "GCT Staging", "description": "Catálogo de skills do GCT na branch staging", "repository": "https://github.com/sordi-totvs/gct-resources", "ref": "staging", "path": "skills", "agentsPath": "agents", "enabled": true },
+    { "id": "gct-staging", "label": "GCT Staging", "description": "Catálogo de skills do GCT na branch staging", "repository": "https://github.com/sordi-totvs/gct-resources", "ref": "staging", "path": "ai-resources/skills", "agentsPath": "ai-resources/agents", "enabled": true },
     { "id": "engpro-advpl-tlpp", "label": "TOTVS EngPro — ADVPL/TLPP", "description": "Skills de engenharia para ADVPL e TLPP", "repository": "https://github.com/totvs/engpro-advpl-tlpp-skills", "ref": "main", "path": "skills/advpl-tlpp", "enabled": true },
     { "id": "engpro-superpowers", "label": "TOTVS EngPro — Superpowers", "description": "Skills Superpowers para engenharia de software", "repository": "https://github.com/totvs/engpro-advpl-tlpp-skills", "ref": "main", "path": "skills/superpowers", "enabled": true }
   ]
