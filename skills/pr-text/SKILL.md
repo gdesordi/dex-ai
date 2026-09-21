@@ -1,6 +1,6 @@
 ---
 name: pr-text
-description: Redige, em português do Brasil, mensagens de commit e textos de pull request a partir das alterações Git. Use quando o usuário pedir uma mensagem de commit, descrição, resumo ou texto para PR; se houver alterações .prw ou .tlpp no PR, inclua ao final um resumo curto em texto puro para check-in no TFS.
+description: Redige, em português do Brasil, mensagens de commit e textos de pull request a partir das alterações Git. Use quando o usuário pedir uma mensagem de commit, descrição, resumo ou texto para PR.
 ---
 
 # Texto de Commit e Pull Request
@@ -45,8 +45,8 @@ outro idioma. Seguir o padrão Conventional Commits, amplamente usado no mercado
   migração, risco ou alteração incompatível comprovada. Separar o corpo do
   resumo por uma linha em branco e manter suas linhas preferencialmente em até
   72 caracteres.
-- Não usar a estrutura Markdown, o prefixo JIRA nem o resumo TFS do PR na
-  mensagem de commit, a menos que o usuário os solicite explicitamente.
+- Não usar a estrutura Markdown nem o prefixo JIRA do PR na mensagem de commit,
+  a menos que o usuário os solicite explicitamente.
 - Entregar apenas a mensagem pronta para uso, em texto simples. Não alegar
   testes, impacto ou contexto que não estejam evidenciados nas alterações.
 
@@ -138,21 +138,3 @@ PROJETO-1234 - Atualiza a skill de geração de texto para PR
 Preservar o código como aparece no nome da branch. Se o diff não incluir essas
 extensões ou a branch não tiver um código JIRA nesse formato, não adicionar
 prefixo ao título.
-
-## Resumo para TFS
-
-Verificar os caminhos alterados no diff do PR, não apenas os arquivos ainda
-presentes no diretório de trabalho. Se existir pelo menos um arquivo com
-extensão `.prw` ou `.tlpp` (sem diferenciar maiúsculas de minúsculas), acrescentar
-ao final do Markdown exatamente esta seção:
-
-```markdown
-## Resumo para check-in no TFS
-
-<uma frase curta em texto puro que sintetize o PR>
-```
-
-A frase deve ser adequada para copiar diretamente no campo de check-in: sem
-Markdown, apóstrofos, crases, listas, citações ou identificadores decorativos.
-Usar apenas texto simples e pontuação comum. Ela deve resumir o resultado de
-negócio ou técnico mais importante, sem exceder uma frase curta.
