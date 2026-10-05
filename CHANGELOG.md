@@ -10,6 +10,8 @@ mantidas como histórico.
 
 ### Adicionado
 
+- A skill `node-app-ghcr` exige imagens multi-plataforma para `linux/amd64` e
+  `linux/arm64`, sob a mesma tag no GHCR.
 - Skill `node-app-ghcr` para configurar publicação de aplicações com `package.json`,
   incluindo APIs e front-ends Angular e React,
   no GHCR por tags validadas contra a versão do manifesto, incluindo um script

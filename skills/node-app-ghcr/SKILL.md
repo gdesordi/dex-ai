@@ -25,7 +25,8 @@ A nova versão da aplicação é a versão **já definida** no `package.json`, i
 - Passar valores do evento por variáveis de ambiente e lê-los no código; não interpolar a tag diretamente em comandos shell. Usar um parser SemVer existente ou uma validação completa, sem instalar dependências implicitamente só para essa comparação.
 - Executar essa validação antes de build, login ou publicação. Em jobs separados, fazer os jobs de publicação dependerem do job validador com `needs`; não usar `always()` para contornar sua falha.
 - Reutilizar os comandos de build e testes existentes quando necessários para entregar a aplicação. Se o Dockerfile já compilar a aplicação, evitar duplicar a compilação fora dele. Respeitar o gerenciador, lockfile e versão Node do projeto.
-- Construir o Dockerfile da aplicação e publicar com Buildx no GHCR. Usar `docker/login-action`, `docker/setup-buildx-action` e `docker/build-push-action` em versões suportadas verificadas na documentação oficial no momento da implementação; seguir a política de pinagem por SHA do repositório, quando houver.
+- Construir o Dockerfile da aplicação e publicar com Buildx no GHCR para as plataformas `linux/amd64` e `linux/arm64`, usando `platforms: linux/amd64,linux/arm64` em `docker/build-push-action`. Isso deve produzir uma imagem multi-plataforma com manifest list/index OCI para a mesma tag, permitindo que Docker selecione automaticamente a variante x64 ou ARM64 (incluindo Apple Silicon). Não publicar somente uma arquitetura nem usar duas tags distintas como substituto.
+- Usar `docker/login-action`, `docker/setup-buildx-action` e `docker/build-push-action` em versões suportadas verificadas na documentação oficial no momento da implementação; seguir a política de pinagem por SHA do repositório, quando houver.
 - Autenticar em `ghcr.io` com `github.actor` e `secrets.GITHUB_TOKEN`. Conceder `contents: read` e `packages: write` ao job publicador; não exigir PAT por padrão.
 - Por padrão, publicar `ghcr.io/<owner>/<repository>:v<version>`, normalizando o caminho da imagem para minúsculas. Em monorepos, preservar ou definir um nome específico para a aplicação para evitar colisões. Usar a versão validada nas tags e no label `org.opencontainers.image.version`, além de labels de origem e revisão. Não adicionar `latest` ou outras tags móveis sem convenção existente ou pedido.
 - SemVer com build metadata (`+...`) não pode ser usado literalmente como tag Docker. Quando presente, manter a comparação Git exata e definir uma codificação determinística e sem colisões para a tag da imagem, documentando-a; na ausência de convenção, pedir essa decisão antes de entregar a configuração.
@@ -56,7 +57,7 @@ Atualizar o README e o changelog conforme as regras do projeto. Explicar o fluxo
 
 Antes de concluir:
 
-- Validar JSON e YAML e executar as verificações exigidas pelo repositório. Conferir o gatilho, os caminhos da aplicação e a dependência da publicação em relação à validação.
+- Validar JSON e YAML e executar as verificações exigidas pelo repositório. Conferir o gatilho, os caminhos da aplicação, a dependência da publicação em relação à validação e se o build publica `linux/amd64` e `linux/arm64` sob a mesma tag.
 - Testar o validador com versão/tag iguais, divergentes, manifesto sem versão e versão inválida; confirmar que falhas impedem a publicação.
 - Testar o script em um repositório temporário com remoto Git bare local: sucesso envia somente a tag correta; árvore suja, tag já existente e versão inválida falham sem push. Simular falha de push e confirmar a mensagem e permanência da tag local. Não testar contra o remoto real.
 - Validar o build Docker quando o ambiente permitir; se não for possível, relatar essa limitação. Não publicar imagens como teste.
