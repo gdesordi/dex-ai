@@ -8,6 +8,13 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+### Adicionado
+
+- Skill `node-app-ghcr` para configurar publicação de aplicações com `package.json`,
+  incluindo APIs e front-ends Angular e React,
+  no GHCR por tags validadas contra a versão do manifesto, incluindo um script
+  npm para criar e enviar somente a tag da versão.
+
 ### Corrigido
 
 - A fonte conhecida GCT Staging usa `ai-resources/skills` e

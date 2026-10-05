@@ -45,3 +45,11 @@ Para contribuir com o projeto, consulte o
 [guia de desenvolvimento](README.dev.md).
 
 O histórico de mudanças do projeto está em [CHANGELOG.md](CHANGELOG.md).
+
+## Publicar aplicações no GHCR
+
+A skill [node-app-ghcr](skills/node-app-ghcr/SKILL.md) configura, em projetos
+com `package.json`, incluindo APIs e front-ends Angular e React, um workflow para construir e publicar a imagem Docker da aplicação
+no GHCR ao enviar uma tag como `v1.0.0`. O workflow exige que a tag corresponda
+exatamente à versão do manifesto. A skill também adiciona `npm run release:tag`
+para criar e enviar essa tag, sem executar a publicação durante a configuração.
