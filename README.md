@@ -53,3 +53,11 @@ com `package.json`, incluindo APIs e front-ends Angular e React, um workflow par
 no GHCR ao enviar uma tag como `v1.0.0`. O workflow exige que a tag corresponda
 exatamente à versão do manifesto. A skill também adiciona `npm run release:tag`
 para criar e enviar essa tag, sem executar a publicação durante a configuração.
+
+A imagem é publicada para `linux/amd64` e `linux/arm64`, com QEMU ou uma
+alternativa verificada para o build das duas arquiteturas. Versões estáveis
+também são promovidas para `latest`, reutilizando o digest da imagem versionada.
+Essa promoção é serializada e compara versões SemVer para impedir que uma
+versão antiga substitua uma mais nova; pré-releases não alteram `latest`.
+Se a promoção falhar, a imagem versionada pode permanecer publicada sem a
+atualização de `latest`.
