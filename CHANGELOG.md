@@ -19,6 +19,10 @@ mantidas como histórico.
 
 ### Corrigido
 
+- A skill `node-app-ghcr` passa a exigir `push: true` e preparação de QEMU ou
+  alternativa verificada para publicar as duas arquiteturas. Versões estáveis
+  passam a promover o digest publicado para `latest`, com serialização e
+  comparação SemVer para impedir regressões causadas por builds fora de ordem.
 - A fonte conhecida GCT Staging usa `ai-resources/skills` e
   `ai-resources/agents`, inclusive no fallback distribuído pela extensão.
 
