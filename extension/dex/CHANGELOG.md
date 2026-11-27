@@ -7,6 +7,8 @@ Semântico.
 
 ## [Não publicado]
 
+## [3.2.0] - 2026-11-27
+
 ### Adicionado
 
 - Escolha entre instalar fontes no workspace ou globalmente, com configurações
@@ -14,7 +16,6 @@ Semântico.
 - Notificações de atualização permitem sincronizar a fonte ou ignorar seu commit
   por workspace e configuração.
 - A execução dos testes da extensão exibe um relatório de cobertura.
-
 - Comando para propagar permissões do Kiro aos workspaces sem substituir arquivos existentes.
 
 ### Modificado

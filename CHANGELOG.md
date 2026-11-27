@@ -8,6 +8,8 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [3.2.0] - 2026-11
+
 ### Adicionado
 
 - Instalação de fontes de skills no workspace ou na pasta global do usuário,
@@ -18,7 +20,6 @@ mantidas como histórico.
   com documentação, qualidade, cobertura e gates de CI e publicação, com
   referências por tema e preservação das ferramentas existentes.
 - A execução dos testes da extensão exibe um relatório de cobertura.
-
 - Comando para propagar permissões do Kiro aos workspaces sem substituir arquivos existentes.
 - A skill `node-app-ghcr` exige imagens multi-plataforma para `linux/amd64` e
   `linux/arm64`, sob a mesma tag no GHCR.
