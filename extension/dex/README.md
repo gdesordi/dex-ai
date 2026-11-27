@@ -24,6 +24,13 @@ Visual Studio Code e em outros editores, ou apenas arquivos `.json` no Kiro.
 É necessário ter acesso à internet durante a sincronização e a verificação de
 atualizações.
 
+## Permissões do Kiro
+
+Na paleta de comandos, execute **Dex: Propagar permissões no Kiro** para copiar
+`~/.kiro/settings/permissions.yaml` para cada subpasta de
+`~/.kiro/workspace-roots`. Arquivos existentes são preservados. Em caso de
+falha, consulte os detalhes no canal de saída **Dex**.
+
 ## Tempo do mês
 
 No lado direito da barra de status, a Dex mostra um ícone de relógio e o

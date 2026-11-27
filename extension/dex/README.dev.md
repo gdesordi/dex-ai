@@ -30,7 +30,9 @@ local dessa pasta.
 - `npm run compile`: compila `src` para `out` e gera source maps.
 - `npm run watch`: recompila automaticamente durante o desenvolvimento.
 - `npm run check`: valida os tipos sem gerar arquivos.
-- `npm test`: compila e executa os testes automatizados.
+- `npm test`: compila e executa os testes automatizados e exibe ao final a
+  cobertura de linhas, ramificações e funções dos arquivos carregados pelos
+  testes. Arquivos não carregados não entram no percentual.
 - `npm run vscode:prepublish`: prepara a extensão para empacotamento.
 - `npm run package`: compila e gera o arquivo `.vsix` da versão atual.
 - `npm run publish`: publica a versão atual no Visual Studio Marketplace e, em

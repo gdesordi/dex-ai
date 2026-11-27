@@ -7,6 +7,12 @@ Semântico.
 
 ## [Não publicado]
 
+### Adicionado
+
+- A execução dos testes da extensão exibe um relatório de cobertura.
+
+- Comando para propagar permissões do Kiro aos workspaces sem substituir arquivos existentes.
+
 ### Corrigido
 
 - A fonte conhecida GCT Staging usa `ai-resources/skills` e

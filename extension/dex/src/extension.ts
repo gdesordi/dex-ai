@@ -1,4 +1,8 @@
 import * as vscode from 'vscode';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import { constants } from 'node:fs';
 import { WorkspaceConfigManager } from './workspace-config';
 import { SourceService } from './source-service';
 import { SourcesTreeProvider, isSourceNode } from './sources-tree';
@@ -352,6 +356,48 @@ export function activate(context: vscode.ExtensionContext): void {
     },
   );
 
+  const propagateKiroPermissionsCommand = vscode.commands.registerCommand(
+    'dex.propagateKiroPermissions',
+    async () => {
+      await vscode.window.withProgress(
+        { location: vscode.ProgressLocation.Notification, title: 'Propagando permissões no Kiro...' },
+        async () => {
+          const kiro = path.join(os.homedir(), '.kiro');
+          const source = path.join(kiro, 'settings', 'permissions.yaml');
+          const roots = path.join(kiro, 'workspace-roots');
+          let failures = 0;
+          let copied = 0;
+          try {
+            const sourceStat = await fs.stat(source);
+            if (!sourceStat.isFile()) throw new Error(`A origem não é um arquivo: ${source}`);
+            const entries = await fs.readdir(roots, { withFileTypes: true });
+            for (const entry of entries) {
+              if (!entry.isDirectory()) continue;
+              const destination = path.join(roots, entry.name, 'permissions.yaml');
+              try {
+                await fs.copyFile(source, destination, constants.COPYFILE_EXCL);
+                copied++;
+              } catch (error) {
+                if ((error as NodeJS.ErrnoException).code === 'EEXIST') continue;
+                failures++;
+                outputChannel.appendLine(`Falha ao copiar para ${destination}: ${error instanceof Error ? error.stack ?? error.message : String(error)}`);
+              }
+            }
+          } catch (error) {
+            failures++;
+            outputChannel.appendLine(`Falha ao propagar permissões do Kiro: ${error instanceof Error ? error.stack ?? error.message : String(error)}`);
+          }
+          if (failures) {
+            outputChannel.show(true);
+            void vscode.window.showErrorMessage('Não foi possível propagar todas as permissões no Kiro. Consulte a saída Dex.');
+          } else {
+            void vscode.window.showInformationMessage(`Permissões propagadas no Kiro para ${copied} pasta(s).`);
+          }
+        },
+      );
+    },
+  );
+
   const answerSpecQuestionnaireCommand = vscode.commands.registerCommand(
     'dex.answerSpecQuestionnaire',
     () => answerSpecQuestionnaire(outputChannel),
@@ -372,6 +418,7 @@ export function activate(context: vscode.ExtensionContext): void {
     syncSourcesCommand,
     checkSkillsUpdatesCommand,
     answerSpecQuestionnaireCommand,
+    propagateKiroPermissionsCommand,
     configChangeSubscription,
   );
 

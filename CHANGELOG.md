@@ -8,19 +8,22 @@ mantidas como histórico.
 
 ## [Não publicado]
 
-### Modificado
-
-- A skill `pr-text` passa a exigir títulos e descrições de PR factuais, com
-  verbos no presente do indicativo e revisão do tom antes da entrega.
-
 ### Adicionado
 
+- A execução dos testes da extensão exibe um relatório de cobertura.
+
+- Comando para propagar permissões do Kiro aos workspaces sem substituir arquivos existentes.
 - A skill `node-app-ghcr` exige imagens multi-plataforma para `linux/amd64` e
   `linux/arm64`, sob a mesma tag no GHCR.
 - Skill `node-app-ghcr` para configurar publicação de aplicações com `package.json`,
   incluindo APIs e front-ends Angular e React,
   no GHCR por tags validadas contra a versão do manifesto, incluindo um script
   npm para criar e enviar somente a tag da versão.
+
+### Modificado
+
+- A skill `pr-text` passa a exigir títulos e descrições de PR factuais, com
+  verbos no presente do indicativo e revisão do tom antes da entrega.
 
 ### Corrigido
 
