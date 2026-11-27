@@ -8,6 +8,11 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+### Modificado
+
+- A skill `pr-text` passa a exigir títulos e descrições de PR factuais, com
+  verbos no presente do indicativo e revisão do tom antes da entrega.
+
 ### Adicionado
 
 - A skill `node-app-ghcr` exige imagens multi-plataforma para `linux/amd64` e
