@@ -46,6 +46,15 @@ Para contribuir com o projeto, consulte o
 
 O histórico de mudanças do projeto está em [CHANGELOG.md](CHANGELOG.md).
 
+## Padronizar projetos Node.js
+
+A skill [node-project-standards](skills/node-project-standards/SKILL.md)
+inicializa ou adequa aplicações, CLIs, bibliotecas e monorepos Node.js com
+documentação, scripts, TypeScript, testes, cobertura e gates de CI e publicação.
+Preserva as ferramentas existentes e define cobertura inicial mínima de 80%
+por métrica quando não há política anterior. A configuração não executa
+publicações, releases ou criação de tags.
+
 ## Publicar aplicações no GHCR
 
 A skill [node-app-ghcr](skills/node-app-ghcr/SKILL.md) configura, em projetos

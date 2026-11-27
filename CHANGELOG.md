@@ -10,6 +10,9 @@ mantidas como histórico.
 
 ### Adicionado
 
+- Skill `node-project-standards` para inicializar ou padronizar projetos Node.js
+  com documentação, qualidade, cobertura e gates de CI e publicação, com
+  referências por tema e preservação das ferramentas existentes.
 - A execução dos testes da extensão exibe um relatório de cobertura.
 
 - Comando para propagar permissões do Kiro aos workspaces sem substituir arquivos existentes.
