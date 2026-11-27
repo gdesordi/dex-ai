@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
+import * as os from 'node:os';
 import { validateCatalog } from './catalog-validator';
 import { GitHubSourceError, GitHubSourceProvider } from './github-source';
 import { SourceStorage } from './source-storage';
 import { SyncSource, SourceSyncResult } from './sync-types';
 import { WorkspaceConfigManager } from './workspace-config';
-import { resolveSkillsDestination } from './environment';
-import { managedEntriesToReplace } from './source-composition';
-import { isSourceRevisionCurrent } from './source-revision';
+import { globalRootDirectory, resolveSkillsDestination } from './environment';
+import { managedEntriesToReplace, unmanagedEntryConflicts } from './source-composition';
+import { isSourceRevisionCurrent, sourceRevisionKey } from './source-revision';
 
 export class SourceService {
   private readonly provider = new GitHubSourceProvider();
@@ -164,7 +165,9 @@ export class SourceService {
           this.provider.resolveCommit(source),
           this.storage.readMetadata(folder, source.id),
         ]);
-        const isCurrent = isSourceRevisionCurrent(source, metadata, commit);
+        const installed = this.configs.isGlobal(folder) ? await this.readGlobalRevisions(folder) : undefined;
+        const isCurrent = isSourceRevisionCurrent(source, metadata, commit) &&
+          (!this.configs.isGlobal(folder) || installed?.[source.id] === sourceRevisionKey(source, commit));
         if (!isCurrent) {
           updates.push({ source, commit });
         }
@@ -196,6 +199,7 @@ export class SourceService {
     folder: vscode.WorkspaceFolder,
     sourceIds: readonly string[],
   ): Promise<number> {
+    if (this.configs.isGlobal(folder)) return this.removeGlobalSources(folder, sourceIds);
     const { config } = await this.configs.read(folder);
     const protectedNames = await this.collectManagedEntryNames(
       folder,
@@ -212,7 +216,7 @@ export class SourceService {
       vscode.env.uriScheme,
     );
     const destination = vscode.Uri.joinPath(
-      folder.uri,
+      this.destinationBase(folder),
       target.rootDirectory,
       target.skillsDirectory,
     );
@@ -235,7 +239,7 @@ export class SourceService {
       'agents',
     );
     const agentsDestination = vscode.Uri.joinPath(
-      folder.uri,
+      this.destinationBase(folder),
       target.rootDirectory,
       target.agentsDirectory,
     );
@@ -279,6 +283,16 @@ export class SourceService {
   ): Promise<void> {
     await this.composeCatalog(folder, sources, previouslyManaged, 'skills');
     await this.composeCatalog(folder, sources, previouslyManagedAgents, 'agents');
+    if (this.configs.isGlobal(folder)) {
+      const revisions: Record<string, string> = {};
+      for (const source of sources) {
+        const metadata = await this.storage.readMetadata(folder, source.id);
+        if (metadata && isSourceRevisionCurrent(source, metadata, metadata.resolvedCommit)) revisions[source.id] = sourceRevisionKey(source, metadata.resolvedCommit);
+      }
+      const root = this.storage.getWorkspaceRoot(folder);
+      await vscode.workspace.fs.createDirectory(root);
+      await vscode.workspace.fs.writeFile(vscode.Uri.joinPath(root, 'installed-revisions.json'), new TextEncoder().encode(JSON.stringify(revisions)));
+    }
   }
 
   private async composeCatalog(
@@ -310,28 +324,38 @@ export class SourceService {
       }
     }
 
-    if (owners.size === 0 && (kind === 'skills' || previouslyManaged.size === 0)) {
+    const globalOwners = this.configs.isGlobal(folder) ? await this.readGlobalOwners(folder, kind) : undefined;
+    if (owners.size === 0 && (globalOwners ? Object.keys(globalOwners).length === 0 : (kind === 'skills' || previouslyManaged.size === 0))) {
       return;
     }
 
     const environmentRoot = vscode.Uri.joinPath(
-      folder.uri,
-      target.rootDirectory,
+      this.destinationBase(folder),
+      this.configs.isGlobal(folder) ? globalRootDirectory(target, kind) : target.rootDirectory,
     );
     const destination = vscode.Uri.joinPath(
       environmentRoot,
       kind === 'skills' ? target.skillsDirectory : target.agentsDirectory,
     );
-    const temporary = vscode.Uri.joinPath(environmentRoot, `${kind}-dex-next`);
-    const backup = vscode.Uri.joinPath(environmentRoot, `${kind}-dex-backup`);
+    const stagingRoot = globalOwners ? this.storage.getWorkspaceRoot(folder) : environmentRoot;
+    const temporary = vscode.Uri.joinPath(stagingRoot, `${kind}-dex-next`);
+    const backup = vscode.Uri.joinPath(stagingRoot, `${kind}-dex-backup`);
+    if (globalOwners) {
+      const existing = new Set<string>();
+      for (const name of owners.keys()) {
+        if (await exists(vscode.Uri.joinPath(destination, name))) existing.add(name);
+      }
+      const conflict = unmanagedEntryConflicts(owners.keys(), new Set(Object.keys(globalOwners)), existing)[0];
+      if (conflict) throw new Error(`o item global “${conflict}” já existe e não é gerenciado pela Dex`);
+    }
     await remove(temporary);
     await remove(backup);
     await vscode.workspace.fs.createDirectory(temporary);
     try {
-      if (await exists(destination)) {
+      if (!globalOwners && await exists(destination)) {
         await copyDirectory(destination, temporary);
       }
-      for (const name of managedEntriesToReplace(previouslyManaged, owners.keys())) {
+      for (const name of managedEntriesToReplace(globalOwners ? Object.keys(globalOwners) : previouslyManaged, owners.keys())) {
         await remove(vscode.Uri.joinPath(temporary, name));
       }
       for (const source of sources) {
@@ -346,6 +370,26 @@ export class SourceService {
         );
       }
       await vscode.workspace.fs.createDirectory(backup);
+      if (globalOwners) {
+        await vscode.workspace.fs.createDirectory(destination);
+        const affected = managedEntriesToReplace(Object.keys(globalOwners), owners.keys());
+        for (const name of affected) {
+          const from = vscode.Uri.joinPath(destination, name);
+          if (await exists(from)) await vscode.workspace.fs.copy(from, vscode.Uri.joinPath(backup, name), { overwrite: false });
+        }
+        try {
+          for (const name of affected) await remove(vscode.Uri.joinPath(destination, name));
+          for (const name of owners.keys()) await vscode.workspace.fs.copy(vscode.Uri.joinPath(temporary, name), vscode.Uri.joinPath(destination, name));
+          await this.writeGlobalOwners(folder, kind, Object.fromEntries(owners));
+        } catch (error) {
+          for (const name of affected) await remove(vscode.Uri.joinPath(destination, name));
+          for (const [name] of await vscode.workspace.fs.readDirectory(backup)) await vscode.workspace.fs.copy(vscode.Uri.joinPath(backup, name), vscode.Uri.joinPath(destination, name));
+          throw error;
+        }
+        await remove(temporary);
+        await remove(backup);
+        return;
+      }
       if (await exists(destination)) await copyDirectory(destination, backup);
       try {
         await replaceDirectoryContents(destination, temporary);
@@ -376,6 +420,53 @@ export class SourceService {
       }
     }
     return names;
+  }
+
+  private destinationBase(folder: vscode.WorkspaceFolder): vscode.Uri {
+    return this.configs.isGlobal(folder) ? vscode.Uri.file(os.homedir()) : folder.uri;
+  }
+
+  private globalOwnersUri(folder: vscode.WorkspaceFolder, kind: 'skills' | 'agents'): vscode.Uri {
+    return vscode.Uri.joinPath(this.storage.getWorkspaceRoot(folder), `managed-${kind}.json`);
+  }
+
+  private async readGlobalRevisions(folder: vscode.WorkspaceFolder): Promise<Record<string, string>> {
+    const uri = vscode.Uri.joinPath(this.storage.getWorkspaceRoot(folder), 'installed-revisions.json');
+    if (!(await exists(uri))) return {};
+    return JSON.parse(new TextDecoder().decode(await vscode.workspace.fs.readFile(uri))) as Record<string, string>;
+  }
+
+  private async readGlobalOwners(folder: vscode.WorkspaceFolder, kind: 'skills' | 'agents'): Promise<Record<string, string>> {
+    const uri = this.globalOwnersUri(folder, kind);
+    if (!(await exists(uri))) return {};
+    const value: unknown = JSON.parse(new TextDecoder().decode(await vscode.workspace.fs.readFile(uri)));
+    if (!value || typeof value !== 'object' || Array.isArray(value) || Object.entries(value).some(([name, owner]) => !name || name === '.' || name === '..' || name.includes('/') || name.includes('\\') || typeof owner !== 'string')) {
+      throw new Error('registro de itens globais inválido');
+    }
+    return value as Record<string, string>;
+  }
+
+  private async writeGlobalOwners(folder: vscode.WorkspaceFolder, kind: 'skills' | 'agents', owners: Record<string, string>): Promise<void> {
+    const uri = this.globalOwnersUri(folder, kind);
+    await vscode.workspace.fs.createDirectory(this.storage.getWorkspaceRoot(folder));
+    await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(JSON.stringify(owners, null, 2)));
+  }
+
+  private async removeGlobalSources(folder: vscode.WorkspaceFolder, sourceIds: readonly string[]): Promise<number> {
+    const target = resolveSkillsDestination(vscode.env.appName, vscode.env.uriScheme);
+    let removed = 0;
+    for (const kind of ['skills', 'agents'] as const) {
+      const owners = await this.readGlobalOwners(folder, kind);
+      const destination = vscode.Uri.joinPath(this.destinationBase(folder), globalRootDirectory(target, kind), kind === 'skills' ? target.skillsDirectory : target.agentsDirectory);
+      for (const [name, owner] of Object.entries(owners)) {
+        if (!sourceIds.includes(owner)) continue;
+        const uri = vscode.Uri.joinPath(destination, name);
+        if (await exists(uri)) { await remove(uri); removed++; }
+        delete owners[name];
+      }
+      await this.writeGlobalOwners(folder, kind, owners);
+    }
+    return removed;
   }
 
   private async getActiveCatalogUri(

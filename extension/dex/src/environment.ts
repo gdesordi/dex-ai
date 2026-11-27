@@ -28,3 +28,7 @@ export function resolveSkillsDestination(
     relativePath: '.agents/skills',
   };
 }
+
+export function globalRootDirectory(target: SkillsDestination, kind: 'skills' | 'agents'): string {
+  return kind === 'agents' && target.rootDirectory === '.agents' ? '.copilot' : target.rootDirectory;
+}

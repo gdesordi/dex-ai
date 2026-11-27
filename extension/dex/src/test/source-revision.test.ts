@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { ignoredRevisionKey, isSourceRevisionCurrent } from '../source-revision';
+import { ignoredRevisionKey, isSourceRevisionCurrent, sourceRevisionKey } from '../source-revision';
 import { SourceMetadata, SyncSource } from '../sync-types';
 
 const source: SyncSource = {
@@ -69,4 +69,10 @@ test('identifica versões ignoradas por workspace, configuração e commit', () 
     ignoredRevisionKey('file:///workspace', { ...source, ref: 'develop' }, 'a'.repeat(40)),
     ignoredRevisionKey('file:///workspace', { ...source, agentsPath: 'agents' }, 'a'.repeat(40)),
   ]) assert.notEqual(key, otherKey);
+});
+
+test('identifica a revisão instalada pela configuração e pelo commit', () => {
+  const key = sourceRevisionKey(source, 'a'.repeat(40));
+  assert.notEqual(key, sourceRevisionKey({ ...source, path: 'other' }, 'a'.repeat(40)));
+  assert.notEqual(key, sourceRevisionKey(source, 'b'.repeat(40)));
 });

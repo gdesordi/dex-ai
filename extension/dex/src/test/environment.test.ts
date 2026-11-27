@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { resolveSkillsDestination } from '../environment';
+import { globalRootDirectory, resolveSkillsDestination } from '../environment';
 
 test('usa .agents/skills no Visual Studio Code', () => {
   const destination = resolveSkillsDestination('Visual Studio Code', 'vscode');
@@ -19,4 +19,13 @@ test('usa .kiro/skills quando o URI scheme indica Kiro', () => {
     resolveSkillsDestination('Code OSS', 'kiro').relativePath,
     '.kiro/skills',
   );
+});
+
+test('resolve diretórios globais de skills e agentes por editor', () => {
+  const vscode = resolveSkillsDestination('Visual Studio Code', 'vscode');
+  const kiro = resolveSkillsDestination('Kiro', 'kiro');
+  assert.equal(globalRootDirectory(vscode, 'skills'), '.agents');
+  assert.equal(globalRootDirectory(vscode, 'agents'), '.copilot');
+  assert.equal(globalRootDirectory(kiro, 'skills'), '.kiro');
+  assert.equal(globalRootDirectory(kiro, 'agents'), '.kiro');
 });

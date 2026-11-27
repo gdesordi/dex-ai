@@ -1,7 +1,8 @@
 # Dex AI
 
 Dex AI é uma extensão compatível com Visual Studio Code e Kiro que sincroniza
-skills de múltiplos repositórios públicos do GitHub para o workspace atual.
+skills de múltiplos repositórios públicos do GitHub para o workspace ou a pasta
+global do usuário.
 
 ## Como usar
 
@@ -29,8 +30,8 @@ Durante a ativação, a extensão consulta o catálogo público de fontes conhec
 para manter o seletor atualizado sem exigir uma nova publicação. Se a consulta
 falhar ou o catálogo for inválido, a lista distribuída pela extensão é usada.
 Essa consulta não altera fontes já declaradas no workspace.
-Na inicialização, a extensão também verifica se há atualizações nas fontes de
-skills; em workspaces com várias pastas, solicita qual delas verificar.
+Na inicialização, a extensão também verifica atualizações nas fontes globais e
+nas fontes de todas as pastas abertas.
 Para cada atualização encontrada, é possível sincronizar a fonte ou ignorar o
 commit informado até que uma nova versão esteja disponível.
 

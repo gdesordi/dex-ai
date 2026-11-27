@@ -1,5 +1,9 @@
 import { SourceMetadata, SyncSource } from './sync-types';
 
+export function sourceRevisionKey(source: SyncSource, commit: string): string {
+  return JSON.stringify([source.repository, source.ref, source.path, source.agentsPath ?? null, commit]);
+}
+
 export function ignoredRevisionKey(workspaceUri: string, source: SyncSource, commit: string): string {
   return `ignoredSourceRevision:${JSON.stringify([workspaceUri, source.id, source.repository, source.ref, source.path, source.agentsPath ?? null, commit])}`;
 }

@@ -28,11 +28,16 @@ export class WorkspaceConfigManager implements vscode.Disposable {
 
   readonly onDidChange = this.changedEmitter.event;
 
-  constructor() {
+  constructor(readonly globalFolder?: vscode.WorkspaceFolder) {
     this.disposables.push(this.changedEmitter);
   }
 
+  isGlobal(folder: vscode.WorkspaceFolder): boolean {
+    return this.globalFolder?.uri.toString() === folder.uri.toString();
+  }
+
   async start(): Promise<void> {
+    if (this.globalFolder) this.watch(this.globalFolder);
     for (const folder of vscode.workspace.workspaceFolders ?? []) {
       this.watch(folder);
     }
@@ -81,6 +86,7 @@ export class WorkspaceConfigManager implements vscode.Disposable {
     const uri = this.getConfigUri(folder);
     await vscode.workspace.fs.createDirectory(vscode.Uri.joinPath(folder.uri, '.dex'));
     await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(serialized));
+    if (this.isGlobal(folder)) this.changedEmitter.fire({ folder });
   }
 
   async addDefaultSource(

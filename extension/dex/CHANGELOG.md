@@ -9,6 +9,8 @@ Semântico.
 
 ### Adicionado
 
+- Escolha entre instalar fontes no workspace ou globalmente, com configurações
+  independentes e verificação de atualizações para ambos os destinos.
 - Notificações de atualização permitem sincronizar a fonte ou ignorar seu commit
   por workspace e configuração.
 - A execução dos testes da extensão exibe um relatório de cobertura.

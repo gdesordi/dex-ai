@@ -5,6 +5,10 @@ export function managedEntriesToReplace(
   return new Set([...previouslyManaged, ...currentlyManaged]);
 }
 
+export function unmanagedEntryConflicts(desired: Iterable<string>, owned: ReadonlySet<string>, existing: ReadonlySet<string>): string[] {
+  return [...desired].filter((name) => existing.has(name) && !owned.has(name));
+}
+
 export function newlyDisabledSourceIds(
   previous: Iterable<{ id: string; enabled: boolean }>,
   current: Iterable<{ id: string; enabled: boolean }>,

@@ -76,6 +76,10 @@ separada por workspace e identificador. O `SourceService` compõe as fontes
 habilitadas em `.agents/skills` no VS Code ou `.kiro/skills` no Kiro. A decisão
 do destino fica centralizada em `src/environment.ts` e considera
 `vscode.env.appName` e `vscode.env.uriScheme`.
+O escopo global usa uma configuração separada no armazenamento da extensão e
+compõe skills em `~/.agents/skills` ou `~/.kiro/skills`. O registro de itens
+globais gerenciados impede a substituição de itens externos; as revisões só são
+registradas como instaladas após a composição.
 
 O metadata de cada fonte registra repositório, referência, caminho e commit Git
 resolvido. A verificação de atualizações repete a resolução remota para qualquer
@@ -92,8 +96,8 @@ observada pelo editor, operação que pode falhar com `EPERM` no Kiro.
 
 A extensão é ativada em `onStartupFinished` para registrar comandos, criar a
 Tree View, observar as configurações e executar `dex.checkSkillsUpdates`. Em
-workspaces com várias pastas, o comando solicita qual delas verificar. A
-verificação consulta as fontes habilitadas, sem sincronizá-las.
+verificação consulta as fontes habilitadas globais e de todas as pastas abertas,
+sem sincronizá-las.
 
 A configuração declarativa fica em `.dex/sync.json`. A ativação não cria o
 arquivo nem mantém uma fonte implícita em memória. `dex.addSource` é o fluxo que

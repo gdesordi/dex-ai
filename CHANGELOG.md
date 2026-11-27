@@ -10,6 +10,8 @@ mantidas como histórico.
 
 ### Adicionado
 
+- Instalação de fontes de skills no workspace ou na pasta global do usuário,
+  com verificação de atualizações para ambos os escopos.
 - Notificações de atualização das fontes permitem sincronizar ou ignorar um
   commit específico por workspace e fonte.
 - Skill `node-project-standards` para inicializar ou padronizar projetos Node.js
