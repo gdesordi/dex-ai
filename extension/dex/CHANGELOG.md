@@ -9,9 +9,15 @@ Semântico.
 
 ### Adicionado
 
+- Notificações de atualização permitem sincronizar a fonte ou ignorar seu commit
+  por workspace e configuração.
 - A execução dos testes da extensão exibe um relatório de cobertura.
 
 - Comando para propagar permissões do Kiro aos workspaces sem substituir arquivos existentes.
+
+### Modificado
+
+- A verificação de atualizações das fontes de skills é executada na inicialização.
 
 ### Corrigido
 

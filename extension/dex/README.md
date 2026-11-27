@@ -98,11 +98,18 @@ Se o download de uma fonte falhar durante a sincronização global, a extensão
 registra a falha e usa sua última cópia local válida, quando disponível, para
 compor o destino. Os detalhes ficam no canal de saída **Dex**.
 
-A verificação de atualizações é manual. Para cada repositório configurado, ela
+A verificação de atualizações ocorre na inicialização da extensão e também pode
+ser executada manualmente. Em workspaces com várias pastas, é solicitada a pasta
+que será verificada. Para cada repositório configurado, ela
 resolve a referência remota e compara seu commit com o commit armazenado na
 última sincronização, sem depender de um manifesto de versão e sem baixar o
 catálogo. Mudanças de repositório, referência ou caminho também indicam que a
 fonte precisa ser sincronizada.
+
+Para cada atualização disponível, a notificação oferece **Atualizar**, que
+sincroniza a fonte, e **Ignorar essa versão**. A versão ignorada fica registrada
+no armazenamento da extensão para aquela fonte e workspace; um novo commit
+volta a gerar uma notificação. Ignorar não sincroniza nem altera o catálogo.
 
 Ao alterar uma fonte de `enabled: true` para `enabled: false`, a extensão remove
 imediatamente do workspace as skills e os agentes fornecidos por ela e informa

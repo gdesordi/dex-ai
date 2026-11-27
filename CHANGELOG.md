@@ -10,6 +10,8 @@ mantidas como histórico.
 
 ### Adicionado
 
+- Notificações de atualização das fontes permitem sincronizar ou ignorar um
+  commit específico por workspace e fonte.
 - Skill `node-project-standards` para inicializar ou padronizar projetos Node.js
   com documentação, qualidade, cobertura e gates de CI e publicação, com
   referências por tema e preservação das ferramentas existentes.
@@ -25,6 +27,7 @@ mantidas como histórico.
 
 ### Modificado
 
+- A extensão verifica atualizações das fontes de skills na inicialização.
 - A skill `pr-text` passa a exigir títulos e descrições de PR factuais, com
   verbos no presente do indicativo e revisão do tom antes da entrega.
 

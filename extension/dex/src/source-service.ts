@@ -153,9 +153,9 @@ export class SourceService {
     return result;
   }
 
-  async checkUpdates(folder: vscode.WorkspaceFolder): Promise<string[]> {
+  async checkUpdates(folder: vscode.WorkspaceFolder): Promise<{ source: SyncSource; commit: string }[]> {
     const { config } = await this.configs.read(folder);
-    const updates: string[] = [];
+    const updates: { source: SyncSource; commit: string }[] = [];
     this.log(`Verificando atualizações das fontes de “${folder.name}”.`);
     for (const source of config.sources.filter((item) => item.enabled)) {
       try {
@@ -166,7 +166,7 @@ export class SourceService {
         ]);
         const isCurrent = isSourceRevisionCurrent(source, metadata, commit);
         if (!isCurrent) {
-          updates.push(source.id);
+          updates.push({ source, commit });
         }
         this.log(
           `Fonte “${source.id}”: commit remoto ${commit.slice(0, 12)}; ` +

@@ -81,6 +81,9 @@ O metadata de cada fonte registra repositório, referência, caminho e commit Gi
 resolvido. A verificação de atualizações repete a resolução remota para qualquer
 fonte configurada e compara esses dados, sem exigir arquivo de versão dentro do
 catálogo.
+Cada atualização oferece sincronização individual ou a opção de ignorar o
+commit. A escolha de ignorar é persistida no `globalState`, identificada pelo
+workspace, configuração da fonte e commit, sem alterar `.dex/sync.json`.
 
 Durante a composição, a extensão mantém a pasta `skills` no lugar e substitui
 somente seus arquivos e subdiretórios. Uma cópia temporária do conteúdo anterior
@@ -88,8 +91,9 @@ permite restaurá-lo se a atualização falhar. Isso evita renomear a pasta
 observada pelo editor, operação que pode falhar com `EPERM` no Kiro.
 
 A extensão é ativada em `onStartupFinished` para registrar comandos, criar a
-Tree View e observar as configurações dos workspaces. Nenhuma fonte é consultada
-ou sincronizada automaticamente durante a ativação.
+Tree View, observar as configurações e executar `dex.checkSkillsUpdates`. Em
+workspaces com várias pastas, o comando solicita qual delas verificar. A
+verificação consulta as fontes habilitadas, sem sincronizá-las.
 
 A configuração declarativa fica em `.dex/sync.json`. A ativação não cria o
 arquivo nem mantém uma fonte implícita em memória. `dex.addSource` é o fluxo que

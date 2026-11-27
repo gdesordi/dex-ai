@@ -12,6 +12,7 @@ import { newlyDisabledSourceIds } from './source-composition';
 import { fallbackKnownSources } from './default-sources';
 import { KnownSourcesCatalog } from './remote-known-sources';
 import { runInitialSourceSync } from './initial-source-sync';
+import { ignoredRevisionKey } from './source-revision';
 import {
   calculateWorkdayProgress,
   formatWorkdayProgress,
@@ -341,11 +342,24 @@ export function activate(context: vscode.ExtensionContext): void {
         const folder = await selectWorkspaceFolder();
         if (!folder) return;
         const updates = await sourceService.checkUpdates(folder);
-        void vscode.window.showInformationMessage(
-          updates.length
-            ? `Atualizações disponíveis para: ${updates.join(', ')}.`
-            : 'Todas as fontes de skills estão atualizadas.',
-        );
+        if (!updates.length) {
+          void vscode.window.showInformationMessage('Todas as fontes de skills estão atualizadas.');
+          return;
+        }
+        for (const { source, commit } of updates) {
+          const key = ignoredRevisionKey(folder.uri.toString(), source, commit);
+          if (context.globalState.get<boolean>(key)) continue;
+          const choice = await vscode.window.showInformationMessage(
+            `Atualização disponível para “${source.id}” (${commit.slice(0, 12)}).`,
+            'Atualizar',
+            'Ignorar essa versão',
+          );
+          if (choice === 'Atualizar') {
+            await vscode.commands.executeCommand('dex.syncSource', { kind: 'source', folder, source });
+          } else if (choice === 'Ignorar essa versão') {
+            await context.globalState.update(key, true);
+          }
+        }
       } catch (error) {
         outputChannel.show(true);
         const message = error instanceof Error ? error.message : String(error);
@@ -421,6 +435,13 @@ export function activate(context: vscode.ExtensionContext): void {
     propagateKiroPermissionsCommand,
     configChangeSubscription,
   );
+
+  void vscode.commands.executeCommand('dex.checkSkillsUpdates').then(undefined, (error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error);
+    outputChannel.appendLine(
+      `[${new Date().toISOString()}] Falha ao iniciar verificação de atualizações: ${message}`,
+    );
+  });
 
   void initializeConfigObservation(
     workspaceConfigManager,

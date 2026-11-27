@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { isSourceRevisionCurrent } from '../source-revision';
+import { ignoredRevisionKey, isSourceRevisionCurrent } from '../source-revision';
 import { SourceMetadata, SyncSource } from '../sync-types';
 
 const source: SyncSource = {
@@ -58,4 +58,15 @@ test('considera desatualizada metadata ausente ou anterior a sourcePath', () => 
     ),
     false,
   );
+});
+
+test('identifica versões ignoradas por workspace, configuração e commit', () => {
+  const key = ignoredRevisionKey('file:///workspace', source, 'a'.repeat(40));
+  assert.equal(key, ignoredRevisionKey('file:///workspace', { ...source }, 'a'.repeat(40)));
+  for (const otherKey of [
+    ignoredRevisionKey('file:///other', source, 'a'.repeat(40)),
+    ignoredRevisionKey('file:///workspace', source, 'b'.repeat(40)),
+    ignoredRevisionKey('file:///workspace', { ...source, ref: 'develop' }, 'a'.repeat(40)),
+    ignoredRevisionKey('file:///workspace', { ...source, agentsPath: 'agents' }, 'a'.repeat(40)),
+  ]) assert.notEqual(key, otherKey);
 });
