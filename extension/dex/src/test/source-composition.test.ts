@@ -3,7 +3,15 @@ import test from 'node:test';
 import {
   managedEntriesToReplace,
   newlyDisabledSourceIds,
+  unmanagedEntryConflicts,
 } from '../source-composition';
+
+test('detecta colisões com itens globais externos sem bloquear itens gerenciados', () => {
+  assert.deepEqual(
+    unmanagedEntryConflicts(['externo', 'gerenciado', 'novo'], new Set(['gerenciado']), new Set(['externo', 'gerenciado'])),
+    ['externo'],
+  );
+});
 
 test('substitui apenas skills gerenciadas e preserva entradas externas', () => {
   const destination = new Set(['dex-antiga', 'dex-atual', 'skill-local']);

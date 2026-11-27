@@ -2,7 +2,7 @@
   "name": "dex",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "publisher": "sordi",
   "license": "SEE LICENSE IN license.MD",
   "repository": {
@@ -80,6 +80,11 @@
         "title": "%command.answerSpecQuestionnaire.title%",
         "category": "%command.category%",
         "icon": "$(question)"
+      },
+      {
+        "command": "dex.propagateKiroPermissions",
+        "title": "%command.propagateKiroPermissions.title%",
+        "category": "%command.category%"
       }
     ],
     "views": {
@@ -147,7 +152,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "check": "tsc --noEmit -p ./",
-    "test": "npm run compile && node --test out/test/*.test.js",
+    "test": "npm run compile && node --experimental-test-coverage --test out/test/*.test.js",
     "package": "vsce package",
     "publish": "vsce publish && ovsx publish"
   },

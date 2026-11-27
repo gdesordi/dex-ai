@@ -14,9 +14,14 @@ Na raiz do projeto, garanta a existência de `AGENTS.md`, `README.md` e
 `CHANGELOG.md`. Antes de criar qualquer um deles, verifique se já existe:
 preserve o conteúdo existente e complemente-o somente quando necessário.
 
-- Em `AGENTS.md`, inclua instruções para manter os arquivos `README.md` e
-  `CHANGELOG.md` na raiz atualizados quando mudanças do projeto afetarem sua
-  documentação ou histórico.
+- Em `AGENTS.md`, inclua instruções para manter o `README.md` na raiz
+  atualizado quando mudarem informações de uso ou configuração. Oriente a
+  registrar no `CHANGELOG.md` somente mudanças com impacto para quem usa o
+  produto, como funcionalidades, correções, alterações de interface,
+  compatibilidade, segurança ou operação. Decisões internas de implementação,
+  refatorações sem efeito perceptível para usuários, convenções do repositório
+  e mudanças em `AGENTS.md` ou skills não devem ser registradas no changelog,
+  salvo quando acompanharem uma mudança voltada a usuários.
 - Em `README.md`, registre informações voltadas a quem usa ou contribui com o
   projeto. Não invente comandos, requisitos ou funcionalidades: use o contexto
   e os arquivos disponíveis no repositório.
@@ -40,5 +45,5 @@ novas entradas e às que forem editadas no trabalho atual.
 
 Quando um arquivo obrigatório não existir, crie uma versão inicial mínima e
 útil. Não sobrescreva arquivos existentes, não crie commits, tags, releases ou
-publicações sem solicitação explícita e registre no changelog as mudanças
-relevantes feitas no projeto.
+publicações sem solicitação explícita e registre no changelog somente mudanças
+com impacto para quem usa o produto, conforme os critérios acima.

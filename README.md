@@ -1,7 +1,8 @@
 # Dex AI
 
 Dex AI é uma extensão compatível com Visual Studio Code e Kiro que sincroniza
-skills de múltiplos repositórios públicos do GitHub para o workspace atual.
+skills de múltiplos repositórios públicos do GitHub para o workspace ou a pasta
+global do usuário.
 
 ## Como usar
 
@@ -29,6 +30,10 @@ Durante a ativação, a extensão consulta o catálogo público de fontes conhec
 para manter o seletor atualizado sem exigir uma nova publicação. Se a consulta
 falhar ou o catálogo for inválido, a lista distribuída pela extensão é usada.
 Essa consulta não altera fontes já declaradas no workspace.
+Na inicialização, a extensão também verifica atualizações nas fontes globais e
+nas fontes de todas as pastas abertas.
+Para cada atualização encontrada, é possível sincronizar a fonte ou ignorar o
+commit informado até que uma nova versão esteja disponível.
 
 Uma fonte possui um identificador, a URL pública do GitHub, uma branch, tag ou
 commit e o caminho da pasta de skills no repositório. O cadastro guiado solicita
@@ -45,6 +50,15 @@ Para contribuir com o projeto, consulte o
 [guia de desenvolvimento](README.dev.md).
 
 O histórico de mudanças do projeto está em [CHANGELOG.md](CHANGELOG.md).
+
+## Padronizar projetos Node.js
+
+A skill [node-project-standards](skills/node-project-standards/SKILL.md)
+inicializa ou adequa aplicações, CLIs, bibliotecas e monorepos Node.js com
+documentação, scripts, TypeScript, testes, cobertura e gates de CI e publicação.
+Preserva as ferramentas existentes e define cobertura inicial mínima de 80%
+por métrica quando não há política anterior. A configuração não executa
+publicações, releases ou criação de tags.
 
 ## Publicar aplicações no GHCR
 

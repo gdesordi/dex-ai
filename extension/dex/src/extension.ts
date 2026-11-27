@@ -1,4 +1,8 @@
 import * as vscode from 'vscode';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import { constants } from 'node:fs';
 import { WorkspaceConfigManager } from './workspace-config';
 import { SourceService } from './source-service';
 import { SourcesTreeProvider, isSourceNode } from './sources-tree';
@@ -8,6 +12,7 @@ import { newlyDisabledSourceIds } from './source-composition';
 import { fallbackKnownSources } from './default-sources';
 import { KnownSourcesCatalog } from './remote-known-sources';
 import { runInitialSourceSync } from './initial-source-sync';
+import { ignoredRevisionKey } from './source-revision';
 import {
   calculateWorkdayProgress,
   formatWorkdayProgress,
@@ -18,7 +23,12 @@ export function activate(context: vscode.ExtensionContext): void {
   const outputChannel = vscode.window.createOutputChannel('Dex');
   const knownSourcesCatalog = new KnownSourcesCatalog(fallbackKnownSources);
   createTimeStatusBar(context);
-  const workspaceConfigManager = new WorkspaceConfigManager();
+  const globalFolder: vscode.WorkspaceFolder = {
+    uri: vscode.Uri.joinPath(context.globalStorageUri, 'global-sources'),
+    name: 'Global',
+    index: -1,
+  };
+  const workspaceConfigManager = new WorkspaceConfigManager(globalFolder);
   const sourceService = new SourceService(
     context,
     workspaceConfigManager,
@@ -46,7 +56,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const syncSourcesCommand = vscode.commands.registerCommand(
     'dex.syncSources',
     async () => {
-      const folder = await selectWorkspaceFolder();
+      const folder = await selectInstallScope(globalFolder);
       if (!folder) return false;
       try {
         const results = await sourceService.syncAll(folder);
@@ -193,7 +203,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const openSyncConfigCommand = vscode.commands.registerCommand(
     'dex.openSyncConfig',
     async () => {
-      const folder = await selectWorkspaceFolder();
+      const folder = await selectInstallScope(globalFolder);
       if (!folder) return;
       const document = await vscode.workspace.openTextDocument(
         vscode.Uri.joinPath(folder.uri, '.dex', 'sync.json'),
@@ -205,7 +215,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const addSourceCommand = vscode.commands.registerCommand(
     'dex.addSource',
     async () => {
-      const folder = await selectWorkspaceFolder();
+      const folder = await selectInstallScope(globalFolder);
       if (!folder) return;
 
       const sourceChoice = await vscode.window.showQuickPick(
@@ -334,14 +344,38 @@ export function activate(context: vscode.ExtensionContext): void {
     'dex.checkSkillsUpdates',
     async () => {
       try {
-        const folder = await selectWorkspaceFolder();
-        if (!folder) return;
-        const updates = await sourceService.checkUpdates(folder);
-        void vscode.window.showInformationMessage(
-          updates.length
-            ? `Atualizações disponíveis para: ${updates.join(', ')}.`
-            : 'Todas as fontes de skills estão atualizadas.',
-        );
+        let total = 0;
+        let failures = 0;
+        for (const folder of [globalFolder, ...(vscode.workspace.workspaceFolders ?? [])]) {
+          let updates: Awaited<ReturnType<SourceService['checkUpdates']>>;
+          try {
+            updates = await sourceService.checkUpdates(folder);
+          } catch (error) {
+            failures++;
+            const message = error instanceof Error ? error.message : String(error);
+            outputChannel.appendLine(`Falha ao verificar “${folder.name}”: ${message}`);
+            continue;
+          }
+          total += updates.length;
+          for (const { source, commit } of updates) {
+            const key = ignoredRevisionKey(folder.uri.toString(), source, commit);
+            if (context.globalState.get<boolean>(key)) continue;
+            const choice = await vscode.window.showInformationMessage(
+              `Atualização disponível para “${source.id}” em ${folder.name} (${commit.slice(0, 12)}).`,
+              'Atualizar',
+              'Ignorar essa versão',
+            );
+            if (choice === 'Atualizar') {
+              await vscode.commands.executeCommand('dex.syncSource', { kind: 'source', folder, source });
+            } else if (choice === 'Ignorar essa versão') {
+              await context.globalState.update(key, true);
+            }
+          }
+        }
+        if (failures) {
+          outputChannel.show(true);
+          void vscode.window.showWarningMessage(`Não foi possível verificar ${failures} destino(s). Consulte a saída Dex.`);
+        } else if (!total) void vscode.window.showInformationMessage('Todas as fontes de skills estão atualizadas.');
       } catch (error) {
         outputChannel.show(true);
         const message = error instanceof Error ? error.message : String(error);
@@ -349,6 +383,48 @@ export function activate(context: vscode.ExtensionContext): void {
           `Não foi possível verificar atualizações das skills: ${message}`,
         );
       }
+    },
+  );
+
+  const propagateKiroPermissionsCommand = vscode.commands.registerCommand(
+    'dex.propagateKiroPermissions',
+    async () => {
+      await vscode.window.withProgress(
+        { location: vscode.ProgressLocation.Notification, title: 'Propagando permissões no Kiro...' },
+        async () => {
+          const kiro = path.join(os.homedir(), '.kiro');
+          const source = path.join(kiro, 'settings', 'permissions.yaml');
+          const roots = path.join(kiro, 'workspace-roots');
+          let failures = 0;
+          let copied = 0;
+          try {
+            const sourceStat = await fs.stat(source);
+            if (!sourceStat.isFile()) throw new Error(`A origem não é um arquivo: ${source}`);
+            const entries = await fs.readdir(roots, { withFileTypes: true });
+            for (const entry of entries) {
+              if (!entry.isDirectory()) continue;
+              const destination = path.join(roots, entry.name, 'permissions.yaml');
+              try {
+                await fs.copyFile(source, destination, constants.COPYFILE_EXCL);
+                copied++;
+              } catch (error) {
+                if ((error as NodeJS.ErrnoException).code === 'EEXIST') continue;
+                failures++;
+                outputChannel.appendLine(`Falha ao copiar para ${destination}: ${error instanceof Error ? error.stack ?? error.message : String(error)}`);
+              }
+            }
+          } catch (error) {
+            failures++;
+            outputChannel.appendLine(`Falha ao propagar permissões do Kiro: ${error instanceof Error ? error.stack ?? error.message : String(error)}`);
+          }
+          if (failures) {
+            outputChannel.show(true);
+            void vscode.window.showErrorMessage('Não foi possível propagar todas as permissões no Kiro. Consulte a saída Dex.');
+          } else {
+            void vscode.window.showInformationMessage(`Permissões propagadas no Kiro para ${copied} pasta(s).`);
+          }
+        },
+      );
     },
   );
 
@@ -372,8 +448,16 @@ export function activate(context: vscode.ExtensionContext): void {
     syncSourcesCommand,
     checkSkillsUpdatesCommand,
     answerSpecQuestionnaireCommand,
+    propagateKiroPermissionsCommand,
     configChangeSubscription,
   );
+
+  void vscode.commands.executeCommand('dex.checkSkillsUpdates').then(undefined, (error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error);
+    outputChannel.appendLine(
+      `[${new Date().toISOString()}] Falha ao iniciar verificação de atualizações: ${message}`,
+    );
+  });
 
   void initializeConfigObservation(
     workspaceConfigManager,
@@ -402,7 +486,7 @@ async function initializeConfigObservation(
   configs: WorkspaceConfigManager,
   states: Map<string, SyncSource[]>,
 ): Promise<void> {
-  for (const folder of vscode.workspace.workspaceFolders ?? []) {
+  for (const folder of [...(configs.globalFolder ? [configs.globalFolder] : []), ...(vscode.workspace.workspaceFolders ?? [])]) {
     states.set(folder.uri.toString(), (await configs.read(folder)).config.sources);
   }
   await configs.start();
@@ -488,6 +572,15 @@ async function selectWorkspaceFolder(): Promise<
   return vscode.window.showWorkspaceFolderPick({
     placeHolder: 'Selecione o workspace que receberá as skills',
   });
+}
+
+async function selectInstallScope(globalFolder: vscode.WorkspaceFolder): Promise<vscode.WorkspaceFolder | undefined> {
+  const choice = await vscode.window.showQuickPick([
+    { label: 'Workspace', description: 'Instalar no repositório do workspace', global: false },
+    { label: 'Global', description: 'Instalar na pasta pessoal do usuário', global: true },
+  ], { title: 'Escolha o destino das skills' });
+  if (!choice) return undefined;
+  return choice.global ? globalFolder : selectWorkspaceFolder();
 }
 
 async function promptInputValue(

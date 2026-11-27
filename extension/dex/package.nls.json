@@ -12,5 +12,6 @@
   "command.disableSource.title": "Disable skill source",
   "command.removeSource.title": "Remove skill source",
   "command.answerSpecQuestionnaire.title": "Answer specification questionnaire",
-  "view.skillSources.name": "Dex Skill Sources"
+  "view.skillSources.name": "Dex Skill Sources",
+  "command.propagateKiroPermissions.title": "Propagate Kiro permissions"
 }

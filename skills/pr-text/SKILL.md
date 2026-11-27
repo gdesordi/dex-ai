@@ -79,12 +79,18 @@ repositório estiverem em outro idioma, exceto se o usuário pedir explicitament
 outro idioma. Entregar somente o Markdown final, sem preâmbulo, análise do Git
 ou instruções de uso.
 
+Redigir o título e as seções como um resumo factual das alterações realizadas,
+com verbos no presente do indicativo, como “Implementa impressão de boletos”
+ou “Adiciona documentação da API”. Não usar o imperativo nem formular o título
+como instrução ou pedido. Antes de entregar, conferir se o título e as seções
+descrevem as alterações em vez de dizer ao leitor o que fazer.
+
 Usar esta estrutura quando houver informação suficiente:
 
 ```markdown
 ## Título
 
-<título curto, no imperativo ou descrevendo o resultado>
+<título curto que descreve a alteração no presente do indicativo>
 
 ## Contexto
 

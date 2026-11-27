@@ -8,14 +8,31 @@ mantidas como histórico.
 
 ## [Não publicado]
 
+## [3.2.0] - 2026-11
+
 ### Adicionado
 
+- Instalação de fontes de skills no workspace ou na pasta global do usuário,
+  com verificação de atualizações para ambos os escopos.
+- Notificações de atualização das fontes permitem sincronizar ou ignorar um
+  commit específico por workspace e fonte.
+- Skill `node-project-standards` para inicializar ou padronizar projetos Node.js
+  com documentação, qualidade, cobertura e gates de CI e publicação, com
+  referências por tema e preservação das ferramentas existentes.
+- A execução dos testes da extensão exibe um relatório de cobertura.
+- Comando para propagar permissões do Kiro aos workspaces sem substituir arquivos existentes.
 - A skill `node-app-ghcr` exige imagens multi-plataforma para `linux/amd64` e
   `linux/arm64`, sob a mesma tag no GHCR.
 - Skill `node-app-ghcr` para configurar publicação de aplicações com `package.json`,
   incluindo APIs e front-ends Angular e React,
   no GHCR por tags validadas contra a versão do manifesto, incluindo um script
   npm para criar e enviar somente a tag da versão.
+
+### Modificado
+
+- A extensão verifica atualizações das fontes de skills na inicialização.
+- A skill `pr-text` passa a exigir títulos e descrições de PR factuais, com
+  verbos no presente do indicativo e revisão do tom antes da entrega.
 
 ### Corrigido
 

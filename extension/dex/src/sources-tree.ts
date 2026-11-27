@@ -47,7 +47,7 @@ export class SourcesTreeProvider
   }
 
   async getChildren(node?: SourcesTreeNode): Promise<SourcesTreeNode[]> {
-    if (!node) return (vscode.workspace.workspaceFolders ?? []).map((folder) => ({ kind: 'folder', folder }));
+    if (!node) return [...(this.configs.globalFolder ? [this.configs.globalFolder] : []), ...(vscode.workspace.workspaceFolders ?? [])].map((folder) => ({ kind: 'folder', folder }));
     if (node.kind === 'source') return [];
     try {
       const { config } = await this.configs.read(node.folder);

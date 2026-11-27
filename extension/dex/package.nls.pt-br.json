@@ -12,5 +12,6 @@
   "command.disableSource.title": "Desativar fonte de skills",
   "command.removeSource.title": "Remover fonte de skills",
   "command.answerSpecQuestionnaire.title": "Responder questionário de especificação",
-  "view.skillSources.name": "Fontes de skills Dex"
+  "view.skillSources.name": "Fontes de skills Dex",
+  "command.propagateKiroPermissions.title": "Propagar permissões no Kiro"
 }

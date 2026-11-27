@@ -1,13 +1,14 @@
 # Dex
 
 Dex gerencia fontes públicas de skills e agentes hospedados no GitHub e compõe os
-catálogos habilitados em cada workspace pelo Visual Studio Code ou pelo Kiro.
+catálogos no workspace ou no perfil global pelo Visual Studio Code ou pelo Kiro.
 
 ## Como usar
 
 1. Abra uma pasta ou workspace confiável.
 2. No Explorer, localize a seção **Fontes de skills Dex**.
-3. Use o botão `+` e escolha o catálogo Dex ou uma fonte personalizada.
+3. Use o botão `+`, escolha o destino **Workspace** ou **Global** e selecione
+   o catálogo Dex ou uma fonte personalizada.
 4. Use o botão de sincronização no cabeçalho para atualizar todas as fontes
    habilitadas.
 
@@ -16,13 +17,26 @@ A extensão identifica o editor automaticamente e grava a composição em:
 - Visual Studio Code: `.agents/skills`;
 - Kiro: `.kiro/skills`.
 
+No destino global, as skills ficam em `~/.agents/skills` no VS Code e
+`~/.kiro/skills` no Kiro. `~` representa a pasta pessoal no macOS, Linux ou
+Windows. As fontes globais são independentes das fontes de cada workspace.
+
 Os agentes baixados ficam em `.agents/agents` no Visual Studio Code ou em
 `.kiro/agents` no Kiro. Cada repositório de agentes pode disponibilizar as duas
 variações na pasta configurada: a extensão instala apenas arquivos `.md` no
 Visual Studio Code e em outros editores, ou apenas arquivos `.json` no Kiro.
+No destino global, os agentes ficam em `~/.copilot/agents` no VS Code e
+`~/.kiro/agents` no Kiro.
 
 É necessário ter acesso à internet durante a sincronização e a verificação de
 atualizações.
+
+## Permissões do Kiro
+
+Na paleta de comandos, execute **Dex: Propagar permissões no Kiro** para copiar
+`~/.kiro/settings/permissions.yaml` para cada subpasta de
+`~/.kiro/workspace-roots`. Arquivos existentes são preservados. Em caso de
+falha, consulte os detalhes no canal de saída **Dex**.
 
 ## Tempo do mês
 
@@ -40,6 +54,7 @@ skills automaticamente. Durante a ativação, a extensão consulta apenas o
 catálogo público de fontes conhecidas para manter o seletor atualizado; essa
 consulta não altera o workspace. O arquivo é criado somente quando uma fonte é
 adicionada pela extensão.
+As fontes globais usam uma configuração separada no armazenamento da extensão.
 
 Exemplo de configuração:
 
@@ -84,18 +99,26 @@ configuração é preservada para uma nova tentativa manual.
 Durante a composição, as pastas de skills e agentes permanecem no lugar e
 somente seu conteúdo é substituído. A extensão mantém uma cópia temporária do
 conteúdo anterior para restauração em caso de falha. Como esses destinos são
-gerenciados pela Dex, arquivos adicionados manualmente dentro deles são removidos
-na próxima composição.
+gerenciados pela Dex, itens gerenciados são substituídos na próxima composição.
+No destino global, itens externos são preservados; um nome já existente que não
+seja gerenciado pela Dex impede a instalação dessa composição.
 
 Se o download de uma fonte falhar durante a sincronização global, a extensão
 registra a falha e usa sua última cópia local válida, quando disponível, para
 compor o destino. Os detalhes ficam no canal de saída **Dex**.
 
-A verificação de atualizações é manual. Para cada repositório configurado, ela
+A verificação de atualizações ocorre na inicialização da extensão e também pode
+ser executada manualmente. Ela verifica as fontes globais e as de todas as pastas
+abertas. Para cada repositório configurado, ela
 resolve a referência remota e compara seu commit com o commit armazenado na
 última sincronização, sem depender de um manifesto de versão e sem baixar o
 catálogo. Mudanças de repositório, referência ou caminho também indicam que a
 fonte precisa ser sincronizada.
+
+Para cada atualização disponível, a notificação oferece **Atualizar**, que
+sincroniza a fonte, e **Ignorar essa versão**. A versão ignorada fica registrada
+no armazenamento da extensão para aquela fonte e workspace; um novo commit
+volta a gerar uma notificação. Ignorar não sincroniza nem altera o catálogo.
 
 Ao alterar uma fonte de `enabled: true` para `enabled: false`, a extensão remove
 imediatamente do workspace as skills e os agentes fornecidos por ela e informa
@@ -108,7 +131,7 @@ fonte permanece ativa para permitir uma nova tentativa manual.
 
 ## Tree View
 
-A seção **Fontes de skills Dex** lista as fontes de cada raiz do workspace.
+A seção **Fontes de skills Dex** lista as fontes globais e as de cada raiz do workspace.
 
 - O botão `+` lista primeiro os catálogos conhecidos — Dex AI, GCT, GCT Staging, TOTVS
   EngPro ADVPL/TLPP e TOTVS EngPro Superpowers — e mantém **Fonte de skills

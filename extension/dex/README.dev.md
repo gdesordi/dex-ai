@@ -30,7 +30,9 @@ local dessa pasta.
 - `npm run compile`: compila `src` para `out` e gera source maps.
 - `npm run watch`: recompila automaticamente durante o desenvolvimento.
 - `npm run check`: valida os tipos sem gerar arquivos.
-- `npm test`: compila e executa os testes automatizados.
+- `npm test`: compila e executa os testes automatizados e exibe ao final a
+  cobertura de linhas, ramificações e funções dos arquivos carregados pelos
+  testes. Arquivos não carregados não entram no percentual.
 - `npm run vscode:prepublish`: prepara a extensão para empacotamento.
 - `npm run package`: compila e gera o arquivo `.vsix` da versão atual.
 - `npm run publish`: publica a versão atual no Visual Studio Marketplace e, em
@@ -74,11 +76,18 @@ separada por workspace e identificador. O `SourceService` compõe as fontes
 habilitadas em `.agents/skills` no VS Code ou `.kiro/skills` no Kiro. A decisão
 do destino fica centralizada em `src/environment.ts` e considera
 `vscode.env.appName` e `vscode.env.uriScheme`.
+O escopo global usa uma configuração separada no armazenamento da extensão e
+compõe skills em `~/.agents/skills` ou `~/.kiro/skills`. O registro de itens
+globais gerenciados impede a substituição de itens externos; as revisões só são
+registradas como instaladas após a composição.
 
 O metadata de cada fonte registra repositório, referência, caminho e commit Git
 resolvido. A verificação de atualizações repete a resolução remota para qualquer
 fonte configurada e compara esses dados, sem exigir arquivo de versão dentro do
 catálogo.
+Cada atualização oferece sincronização individual ou a opção de ignorar o
+commit. A escolha de ignorar é persistida no `globalState`, identificada pelo
+workspace, configuração da fonte e commit, sem alterar `.dex/sync.json`.
 
 Durante a composição, a extensão mantém a pasta `skills` no lugar e substitui
 somente seus arquivos e subdiretórios. Uma cópia temporária do conteúdo anterior
@@ -86,8 +95,9 @@ permite restaurá-lo se a atualização falhar. Isso evita renomear a pasta
 observada pelo editor, operação que pode falhar com `EPERM` no Kiro.
 
 A extensão é ativada em `onStartupFinished` para registrar comandos, criar a
-Tree View e observar as configurações dos workspaces. Nenhuma fonte é consultada
-ou sincronizada automaticamente durante a ativação.
+Tree View, observar as configurações e executar `dex.checkSkillsUpdates`. Em
+verificação consulta as fontes habilitadas globais e de todas as pastas abertas,
+sem sincronizá-las.
 
 A configuração declarativa fica em `.dex/sync.json`. A ativação não cria o
 arquivo nem mantém uma fonte implícita em memória. `dex.addSource` é o fluxo que
